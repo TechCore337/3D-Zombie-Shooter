@@ -1579,7 +1579,41 @@ function hostCreate(attempt) {
   if (noPeer()) return;
   var code = ''; for (var i = 0; i < 5; i++) code += CODECH[Math.floor(Math.random() * CODECH.length)];
   NET.role = 'host'; NET.code = code;
-  var peer = new Peer('nochezombi-' + code); NET.peer = peer;
+  
+  var peer = new Peer('nz-' + code, {
+    key: 'peerjs',
+    host: '0.peerjs.com',
+    secure: true,
+    config: {
+      iceServers: [
+        {
+          urls: "stun:stun.relay.metered.ca:80"
+        },
+        {
+          urls: "turn:global.relay.metered.ca:80",
+          username: "0cadad24c95af33169c85094",
+          credential: "AQUÍ_VA_TU_CONTRASEÑA_DE_METERED"
+        },
+        {
+          urls: "turn:global.relay.metered.ca:80?transport=tcp",
+          username: "0cadad24c95af33169c85094",
+          credential: "AQUÍ_VA_TU_CONTRASEÑA_DE_METERED"
+        },
+        {
+          urls: "turn:global.relay.metered.ca:443",
+          username: "0cadad24c95af33169c85094",
+          credential: "AQUÍ_VA_TU_CONTRASEÑA_DE_METERED"
+        },
+        {
+          urls: "turns:global.relay.metered.ca:443?transport=tcp",
+          username: "0cadad24c95af33169c85094",
+          credential: "AQUÍ_VA_TU_CONTRASEÑA_DE_METERED"
+        }
+      ]
+    }
+  }); 
+  NET.peer = peer;
+
   peer.on('open', function () { $('lobCode').textContent = code; $('lobMsg').textContent = 'Pasales el código a tus amigos. Mantené esta pestaña abierta: la partida corre en tu navegador.'; showLobby(); });
   peer.on('error', function (err) {
     if (err.type === 'unavailable-id' && attempt < 4) { peer.destroy(); hostCreate(attempt + 1); }
@@ -1602,6 +1636,7 @@ function hostCreate(attempt) {
     });
   });
 }
+
 function hostGot(id, m) {
   var r = NET.rp[id], i; if (!r) return;
   if (m.t === 'st') {
@@ -1621,22 +1656,58 @@ function hostGot(id, m) {
     }
   }
 }
+
 function joinGame(code) {
   code = (code || '').trim().toUpperCase();
   if (code.length < 4) { netMsg('Ingresá el código de la sala.'); return; }
   if (noPeer()) return;
   netMsg('Conectando…');
   NET.role = 'client'; NET.code = code;
-  var peer = new Peer(); NET.peer = peer;
+  
+  var peer = new Peer({
+    key: 'peerjs',
+    host: '0.peerjs.com',
+    secure: true,
+    config: {
+      iceServers: [
+        {
+          urls: "stun:stun.relay.metered.ca:80"
+        },
+        {
+          urls: "turn:global.relay.metered.ca:80",
+          username: "0cadad24c95af33169c85094",
+          credential: "XDQIwLYkXUWqdDo3"
+        },
+        {
+          urls: "turn:global.relay.metered.ca:80?transport=tcp",
+          username: "0cadad24c95af33169c85094",
+          credential: "XDQIwLYkXUWqdDo3"
+        },
+        {
+          urls: "turn:global.relay.metered.ca:443",
+          username: "0cadad24c95af33169c85094",
+          credential: "XDQIwLYkXUWqdDo3"
+        },
+        {
+          urls: "turns:global.relay.metered.ca:443?transport=tcp",
+          username: "0cadad24c95af33169c85094",
+          credential: "XDQIwLYkXUWqdDo3"
+        }
+      ]
+    }
+  }); 
+  NET.peer = peer;
+
   peer.on('error', function (err) { netLeave(); netMsg(err.type === 'peer-unavailable' ? 'No se encontró la sala ' + code + '.' : 'Error de red: ' + err.type); });
   peer.on('open', function () {
-    var c = peer.connect('nochezombi-' + code, { serialization: 'json', reliable: true }); NET.host = c;
+    var c = peer.connect('nz-' + code, { serialization: 'json', reliable: true }); NET.host = c;
     var to = setTimeout(function () { if (!c.open && NET.role === 'client') { netLeave(); netMsg('No se pudo conectar con la sala ' + code + '.'); } }, 10000);
     c.on('open', function () { clearTimeout(to); $('lobMsg').textContent = 'Conectado. Esperando que el anfitrión empiece…'; $('lobCode').textContent = code; showLobby(); });
     c.on('data', clientGot);
     c.on('close', function () { if (NET.role === 'client') { netLeave(); netMsg('Se perdió la conexión con el anfitrión.'); } });
   });
 }
+
 function clientGot(m) {
   if (m.t === 'hi') NET.myId = m.id;
   else if (m.t === 'start') {
@@ -1654,6 +1725,7 @@ function clientGot(m) {
   else if (m.t === 'over') { if (mode === 'play') endGame(); }
   else if (m.t === 'full') { netLeave(); netMsg('La sala está llena (máximo 4).'); }
 }
+
 $('btnHost').addEventListener('click', function () { initAudio(); netMsg('Creando sala…'); hostCreate(0); });
 $('btnJoin').addEventListener('click', function () { initAudio(); joinGame($('joinCode').value); });
 $('btnLobStart').addEventListener('click', function () { initAudio(); NET.ready = false; startGame(); });
