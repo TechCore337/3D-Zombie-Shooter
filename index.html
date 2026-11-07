@@ -180,6 +180,16 @@ input.code{font:600 20px var(--display);letter-spacing:.25em;text-transform:uppe
 .item b{font-size:24px}.item small{display:block;font-size:15px;color:var(--bone-dim)}
 #plist{margin:0;padding:0;list-style:none;font-size:20px}
 #btnSwap{right:calc(max(16px,env(safe-area-inset-right,0px)) + 180px);bottom:calc(24px + env(safe-area-inset-bottom,0px));width:64px;height:64px;font-size:12px;background:rgba(147,194,107,.35)}
+button.alt.on{background:var(--lamp);color:#160d05;box-shadow:0 0 0 1px var(--lamp),0 3px 0 #8a5d17}
+button.alt.on:hover:not(:disabled){background:#ffc460}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.field{display:flex;flex-direction:column;gap:6px}
+.field>.lbl{font-family:var(--display);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--bone-dim)}
+.stepper{display:flex;align-items:center;gap:14px}
+.stepper b{font-size:38px;line-height:1;min-width:1.4ch;text-align:center;font-variant-numeric:tabular-nums}
+.bigcode{font-family:var(--display);font-size:clamp(34px,10vw,54px);letter-spacing:.2em;color:var(--lamp);-webkit-user-select:text;user-select:text}
+#roomList{max-height:230px;overflow-y:auto;-webkit-user-select:text;user-select:text;font-size:18px;color:var(--bone-dim)}
+input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
 </style>
 
 <div id="stage">
@@ -260,20 +270,90 @@ input.code{font:600 20px var(--display);letter-spacing:.25em;text-transform:uppe
           <div><kbd>Recar.</kbd> recargar</div>
         </div>
         <p class="note desk">Un tiro a la cabeza hace mucho más daño. Si el navegador no captura el mouse, apuntá con las flechas y disparás con Espacio.</p>
-        <button class="go" id="btnStart" type="button">Entrar al cementerio</button>
         <div class="row2">
-          <button class="alt" id="btnVis" type="button">Sala: Privada</button>
-          <button class="alt" id="btnHost" type="button">Crear sala</button>
-          <input class="code" id="joinCode" maxlength="5" placeholder="CÓDIGO" autocomplete="off" aria-label="Código de sala">
-          <button class="alt" id="btnJoin" type="button">Unirse</button>
+          <button class="go" id="btnSolo" type="button">Un jugador</button>
+          <button class="go" id="btnCoop" type="button">Co-Op</button>
         </div>
-        <div class="row2">
-          <input class="code" id="nick" maxlength="12" placeholder="Tu nombre" autocomplete="off" aria-label="Tu nombre" style="width:14ch;letter-spacing:.05em;text-transform:none">
-          <button class="alt" id="btnRooms" type="button">Salas públicas</button>
-        </div>
-        <p class="note" id="netMsg">Co-Op de 2 a 4 jugadores por conexión directa. El anfitrión comparte el código de sala.</p>
       </div>
     </div>
+  </section>
+
+  <section class="screen" id="solo" hidden>
+    <div class="memo"><div class="tape"></div><div class="in">
+      <span class="kicker">Un jugador</span>
+      <h1 style="font-size:clamp(32px,8vw,52px)">Solo <em>contra todos</em></h1>
+      <div class="field">
+        <span class="lbl">Dificultad</span>
+        <div class="seg">
+          <button class="alt on" type="button" data-d="normal">Normal</button>
+          <button class="alt" type="button" data-d="hardcore">Hardcore</button>
+        </div>
+      </div>
+      <p class="note diffDesc"></p>
+      <div class="row2">
+        <button class="go" id="btnStart" type="button">Entrar al cementerio</button>
+        <button class="alt" id="btnSoloBack" type="button">Volver</button>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="screen" id="coop" hidden>
+    <div class="memo"><div class="tape"></div><div class="in">
+      <span class="kicker">Co-Op</span>
+      <h1 style="font-size:clamp(32px,8vw,52px)">Lista de <em>servidores</em></h1>
+      <div id="roomList"></div>
+      <div class="row2"><button class="alt" id="btnRoomsRefresh" type="button">Actualizar lista</button></div>
+      <div class="row2">
+        <button class="go" id="btnCreate" type="button">Crear servidor</button>
+        <input class="code nick" id="nick" maxlength="12" placeholder="Username" autocomplete="off" aria-label="Username">
+      </div>
+      <div class="row2">
+        <input class="code" id="joinCode" maxlength="5" placeholder="CÓDIGO" autocomplete="off" aria-label="Código de servidor">
+        <button class="alt" id="btnJoin" type="button">Unirse con código</button>
+      </div>
+      <p class="note" id="netMsg">Elegí un servidor de la lista o creá el tuyo. Conexión directa entre jugadores.</p>
+      <div class="row2"><button class="alt" id="btnCoopBack" type="button">Volver</button></div>
+    </div></div>
+  </section>
+
+  <section class="screen" id="create" hidden>
+    <div class="memo"><div class="tape"></div><div class="in">
+      <span class="kicker">Co-Op · Nuevo servidor</span>
+      <h1 style="font-size:clamp(32px,8vw,52px)">Crear <em>servidor</em></h1>
+      <div class="field">
+        <span class="lbl">Dificultad</span>
+        <div class="seg">
+          <button class="alt on" type="button" data-d="normal">Normal</button>
+          <button class="alt" type="button" data-d="hardcore">Hardcore</button>
+        </div>
+        <p class="note diffDesc" style="margin-top:2px"></p>
+      </div>
+      <div class="field">
+        <span class="lbl">Visibilidad</span>
+        <div class="seg">
+          <button class="alt on" type="button" data-v="priv">Privado</button>
+          <button class="alt" type="button" data-v="pub">Público</button>
+        </div>
+        <p class="note" id="crDesc" style="margin-top:2px"></p>
+      </div>
+      <div class="field">
+        <span class="lbl">Código del servidor</span>
+        <div class="bigcode" id="crCode">-----</div>
+      </div>
+      <div class="field">
+        <span class="lbl">Jugadores (2 – 8)</span>
+        <div class="stepper">
+          <button class="alt" id="crMinus" type="button" aria-label="Menos jugadores">−</button>
+          <b id="crMax">4</b>
+          <button class="alt" id="crPlus" type="button" aria-label="Más jugadores">+</button>
+        </div>
+      </div>
+      <p class="note" id="crMsg"></p>
+      <div class="row2">
+        <button class="go" id="btnCreateGo" type="button">Crear servidor</button>
+        <button class="alt" id="btnCreateBack" type="button">Volver</button>
+      </div>
+    </div></div>
   </section>
 
   <section class="screen" id="shop" hidden>
@@ -286,20 +366,12 @@ input.code{font:600 20px var(--display);letter-spacing:.25em;text-transform:uppe
     </div></div>
   </section>
 
-  <section class="screen" id="rooms" hidden>
-    <div class="memo"><div class="tape"></div><div class="in">
-      <span class="kicker">Co-Op</span>
-      <h1 style="font-size:clamp(32px,8vw,52px)">Salas <em>públicas</em></h1>
-      <div id="roomList"></div>
-      <div class="row2"><button class="alt" id="btnRoomsRefresh" type="button">Actualizar</button><button class="alt" id="btnRoomsBack" type="button">Volver</button></div>
-    </div></div>
-  </section>
-
   <section class="screen" id="lobby" hidden>
     <div class="memo"><div class="tape"></div><div class="in">
-      <span class="kicker">Sala Co-Op</span>
-      <h1>Sala <em id="lobCode">-----</em></h1>
+      <span class="kicker">Servidor Co-Op</span>
+      <h1 style="font-size:clamp(32px,8vw,52px)">Servidor <em id="lobCode">-----</em></h1>
       <p id="lobMsg">Pasales el código a tus amigos. Mantené esta pestaña abierta: la partida corre en tu navegador.</p>
+      <p class="note" id="lobInfo"></p>
       <ul id="plist"></ul>
       <div class="row2"><button class="go" id="btnLobStart" type="button">Empezar partida</button><button class="alt" id="btnLobBack" type="button">Salir</button></div>
     </div></div>
@@ -473,7 +545,7 @@ function makeTrees(list) {
 }
 (function () {
   var list = [], i, a, r;
-  for (i = 0; i < 24; i++) {            // árboles dentro del cementerio
+  for (i = 0; i < 40; i++) {            // árboles dentro del cementerio
     a = rand(0, TAU); r = rand(14, ARENA - 5);
     var tx = Math.cos(a) * r, tz = Math.sin(a) * r, ts = rand(0.9, 1.3);
     list.push({ x: tx, z: tz, s: ts });
@@ -484,6 +556,88 @@ function makeTrees(list) {
     list.push({ x: Math.cos(a) * r, z: Math.sin(a) * r, s: rand(1.0, 1.8) });
   }
   makeTrees(list);
+})();
+
+// más ambiente: chozas, árboles muertos y cruces de madera (siempre lejos del farol, del punto de inicio y de la armería)
+var KEEPOUT = [[0, 0, 7], [0, 9, 8], [-9.5, 2, 7]];
+function freeSpot(rmin, rmax, clear) {
+  for (var n = 0; n < 80; n++) {
+    var a = rand(0, TAU), r = rand(rmin, rmax), x = Math.cos(a) * r, z = Math.sin(a) * r, ok = true, i;
+    for (i = 0; i < KEEPOUT.length && ok; i++) if (Math.hypot(x - KEEPOUT[i][0], z - KEEPOUT[i][1]) < KEEPOUT[i][2] + clear) ok = false;
+    for (i = 0; i < obstacles.length && ok; i++) if (Math.hypot(x - obstacles[i].x, z - obstacles[i].z) < obstacles[i].r + clear) ok = false;
+    if (ok) return { x: x, z: z };
+  }
+  return null;
+}
+function makeHut(x, z) {
+  var g = new THREE.Group(); g.position.set(x, 0, z);
+  var th = Math.atan2(-x, -z) + rand(-0.5, 0.5);        // la puerta mira (más o menos) al centro
+  g.rotation.y = th;
+  var wallM = new THREE.MeshPhongMaterial({ color: 0x4d3b2c, shininess: 3 });
+  var roofM = new THREE.MeshPhongMaterial({ color: 0x2a2320, shininess: 2 });
+  var darkM = new THREE.MeshPhongMaterial({ color: 0x14110f, shininess: 2 });
+  var stoneM = new THREE.MeshPhongMaterial({ color: 0x5a5d5c, shininess: 3 });
+  var glowM = new THREE.MeshBasicMaterial({ color: 0x8a6428 });
+  function bx(w, hh, d, px, py, pz, m) { var b = new THREE.Mesh(new THREE.BoxGeometry(w, hh, d), m || wallM); b.position.set(px, py, pz); g.add(b); return b; }
+  bx(4, 2.4, 3.4, 0, 1.2, 0);                                  // paredes
+  var rg = new THREE.ConeGeometry(1, 1.5, 4); rg.rotateY(Math.PI / 4);
+  var roof = new THREE.Mesh(rg, roofM); roof.scale.set(3.3, 1, 2.9); roof.position.y = 3.15; g.add(roof);
+  bx(0.5, 1.5, 0.5, -1.2, 3.1, -0.7, stoneM);                  // chimenea
+  bx(0.95, 1.75, 0.07, 0.6, 0.88, 1.72, darkM);                // puerta
+  bx(0.88, 0.72, 0.05, -1.0, 1.4, 1.71, darkM);                // marco de la ventana
+  bx(0.66, 0.5, 0.06, -1.0, 1.4, 1.73, glowM);                 // ventana con luz tenue
+  bx(1.4, 0.14, 0.55, 0.6, 0.07, 2.0, wallM);                  // escalón
+  bx(0.6, 0.6, 0.6, 1.6, 0.3, 2.15, wallM);                    // cajón
+  scene.add(g);
+  var c = Math.cos(th), s = Math.sin(th);
+  [-1.5, -0.5, 0.5, 1.5].forEach(function (lx) {
+    [-1.2, 0, 1.2].forEach(function (lz) {
+      obstacles.push({ x: x + lx * c + lz * s, z: z - lx * s + lz * c, r: 0.85, h: 3 });
+    });
+  });
+}
+(function () {
+  var i, s, k;
+  for (i = 0; i < 3; i++) { s = freeSpot(22, ARENA - 16, 3.4); if (s) makeHut(s.x, s.z); }
+
+  // árboles muertos: tronco retorcido con ramas peladas
+  var dead = [];
+  for (i = 0; i < 16; i++) {
+    s = freeSpot(12, ARENA - 6, 2.4); if (!s) continue;
+    s.s = rand(0.9, 1.4); s.ry = rand(0, TAU); dead.push(s);
+    obstacles.push({ x: s.x, z: s.z, r: 0.4 * s.s, h: 30 });
+  }
+  var barkM = new THREE.MeshPhongMaterial({ color: 0x2b2420, shininess: 2 });
+  function branch(len, rz, ry, y) {
+    var bg = new THREE.CylinderGeometry(0.04, 0.1, len, 4); bg.translate(0, len / 2, 0); bg.rotateZ(rz); bg.rotateY(ry); bg.translate(0, y, 0); return bg;
+  }
+  var trunkG = new THREE.CylinderGeometry(0.12, 0.28, 3.6, 5); trunkG.translate(0, 1.8, 0);
+  var parts = [trunkG, branch(1.9, 1.0, 0.4, 2.4), branch(1.6, -0.9, 2.2, 2.9), branch(1.3, 0.8, 4.2, 3.3), branch(1.0, -1.1, 5.3, 1.9)];
+  function place(geo, mat, list, tilt) {
+    var im = new THREE.InstancedMesh(geo, mat, list.length);
+    for (var q = 0; q < list.length; q++) {
+      dummy.position.set(list[q].x, 0, list[q].z);
+      dummy.rotation.set(0, list[q].ry, tilt ? rand(-tilt, tilt) : 0);
+      dummy.scale.setScalar(list[q].s); dummy.updateMatrix(); im.setMatrixAt(q, dummy.matrix);
+    }
+    scene.add(im);
+  }
+  if (dead.length) parts.forEach(function (pg) { place(pg, barkM, dead, 0); });
+
+  // cruces de madera con su montículo de tierra
+  var crosses = [];
+  for (i = 0; i < 30; i++) {
+    s = freeSpot(9, ARENA - 5, 1.2); if (!s) continue;
+    s.s = rand(0.85, 1.25); s.ry = rand(0, TAU); crosses.push(s);
+    obstacles.push({ x: s.x, z: s.z, r: 0.3 * s.s, h: 1.5 * s.s });
+  }
+  if (crosses.length) {
+    var crossM = new THREE.MeshPhongMaterial({ color: 0x4a3a2c, shininess: 2 });
+    var vG = new THREE.BoxGeometry(0.12, 1.5, 0.1); vG.translate(0, 0.75, 0);
+    var hG = new THREE.BoxGeometry(0.6, 0.12, 0.1); hG.translate(0, 1.1, 0);
+    var mG = new THREE.SphereGeometry(0.5, 8, 5, 0, TAU, 0, Math.PI / 2); mG.scale(1, 0.35, 1.7); mG.translate(0, 0, 0.9);
+    place(vG, crossM, crosses, 0.1); place(hG, crossM, crosses, 0.0); place(mG, new THREE.MeshPhongMaterial({ color: 0x3a2c20, shininess: 1 }), crosses, 0);
+  }
 })();
 
 // reja perimetral
@@ -689,8 +843,11 @@ var P = {
   flashT: 0, hurt: 0, shake: 0, bob: 0, speed: 0, shots: 0, hits: 0
 };
 var mode = 'menu';   // menu | play | paused | over
+var DIFF = 'normal'; // normal | hardcore
 var G = { wave: 0, toSpawn: 0, spawnTimer: 0, inter: 0, kills: 0, score: 0, best: 0, cleared: false };
-try { G.best = parseInt(localStorage.getItem('nocheZombiBest') || '0', 10) || 0; } catch (e) { G.best = 0; }
+function bestKey() { return DIFF === 'hardcore' ? 'nocheZombiBestHC' : 'nocheZombiBest'; }
+function loadBest() { try { G.best = parseInt(localStorage.getItem(bestKey()) || '0', 10) || 0; } catch (e) { G.best = 0; } }
+loadBest();
 
 /* ---------- entrada ---------- */
 var keys = {}, mouseDown = false, rightDrag = false;
@@ -832,9 +989,9 @@ function markHit(head) {
 
 /* ---------- zombis ---------- */
 var ZT = {
-  walker: { hp: 60, speed: 1.9, dmg: 9, sc: 1.0, score: 100 },
-  runner: { hp: 36, speed: 4.4, dmg: 6, sc: 0.94, score: 150 },
-  brute: { hp: 240, speed: 1.5, dmg: 24, sc: 1.35, score: 400 }
+  walker: { hp: 60, speed: 1.9, dmg: 9, sc: 1.0, score: 60 },
+  runner: { hp: 36, speed: 4.4, dmg: 6, sc: 0.94, score: 90 },
+  brute: { hp: 240, speed: 1.5, dmg: 24, sc: 1.35, score: 240 }
 };
 var SKIN = [0x6f9460, 0x7c9d6c, 0x62845a, 0x88a27a, 0x6b8a70];
 var SHIRT = [0x3c4350, 0x5b3d36, 0x30493c, 0x4b4b55, 0x6a5a3c];
@@ -890,7 +1047,7 @@ function spawnZombie(typeName, px, pz, idle) {
   var zb = {
     type: typeName, T: T, root: root, head: head, armL: armL, armR: armR, legL: legL, legR: legR, blob: blob,
     mats: [mSkin, mShirt, mPants], x: px, z: pz, yaw: Math.atan2(P.x - px, P.z - pz),
-    hp: T.hp * hpMul, speed: T.speed * spMul * rand(0.9, 1.15), dmg: T.dmg, sc: sc, r: 0.42 * sc,
+    hp: T.hp * hpMul, speed: T.speed * spMul * rand(0.9, 1.15) * (DIFF === 'hardcore' ? 2 : 1), dmg: T.dmg, sc: sc, r: 0.42 * sc,
     atkCd: rand(0.2, 0.7), swing: 0, flash: 0, anim: rand(0, TAU), groan: rand(1, 6),
     dead: false, dyingT: 0, inReach: false, idle: !!idle, id: ++NET.zid, tx: px, tz: pz, tyaw: 0
   };
@@ -1085,7 +1242,7 @@ function obstacleBlock(o, d, maxDist) {
 function startReload() {
   if (mode !== 'play' || P.reloading > 0 || P.ammo >= MAG || P.reserve <= 0) return;
   P.reloading = RELT;
-  sfxReload();
+  sfxReload(); fxSend('r');
 }
 
 function fire() {
@@ -1096,13 +1253,16 @@ function fire() {
   P.heat = Math.min(1, P.heat + 0.16 * W.auto);
   muzzleLight.intensity = 3.4; flashMesh.visible = true;
   flashMesh.scale.setScalar(rand(0.7, 1.4));
-  sfxShot();
+  sfxShot(); fxSend('s');
   var spread = (W.sp + P.heat * 0.03 * W.auto + (P.speed > 0.5 ? 0.01 : 0)) * (1 - 0.65 * P.adsK);
   camera.updateMatrixWorld(true);
   camera.getWorldPosition(vO);
   var roots = zombies.map(function (zb) { return zb.root; }), anyHit = false;
   for (var p = 0; p < W.pel; p++) {
-    vD.set((Math.random() - 0.5) * 2 * spread, (Math.random() - 0.5) * 2 * spread, -1).normalize().transformDirection(camera.matrixWorld);
+    var sx, sy;
+    if (W.pel > 1) { var ang = Math.random() * TAU, rad = spread * Math.pow(Math.random(), 0.8); sx = Math.cos(ang) * rad; sy = Math.sin(ang) * rad; }   // cono circular, más denso al centro
+    else { sx = (Math.random() - 0.5) * 2 * spread; sy = (Math.random() - 0.5) * 2 * spread; }
+    vD.set(sx, sy, -1).normalize().transformDirection(camera.matrixWorld);
     ray.set(vO, vD); ray.far = 90;
     var hits = ray.intersectObjects(roots, true), best = null;
     for (var i = 0; i < hits.length; i++) { if (hits[i].object.userData.zb) { best = hits[i]; break; } }
@@ -1110,7 +1270,8 @@ function fire() {
     if (best && best.distance < wall) {
       var hz = best.object.userData.zb, head = !!best.object.userData.head;
       anyHit = true; markHit(head);
-      hurtZombie(hz, head ? W.head : W.body, head, best.point, null);
+      var fall = W.pel > 1 ? clamp(1.15 - best.distance / 40, 0.35, 1) : 1;   // los perdigones pierden fuerza con la distancia
+      hurtZombie(hz, (head ? W.head : W.body) * fall, head, best.point, null);
     }
   }
   if (anyHit) P.hits++;
@@ -1139,7 +1300,7 @@ function killZombie(zb, head, by) {
   corpses.push(zb);
   zb.dyingT = 0; zb.blob.visible = false;
   G.kills++;
-  var pts = zb.T.score + (head ? 50 : 0);
+  var pts = zb.T.score + (head ? 25 : 0);
   G.score += pts;
   if (by) netSendTo(by, { t: 'cash', v: pts, h: head ? 1 : 0 });
   else { G.cash += pts; showPop((head ? 'Cabeza  +' : '+') + pts); }
@@ -1155,24 +1316,25 @@ function hurtPlayer(dmg) {
 }
 
 /* ---------- oleadas ---------- */
-function waveSize(n) { return Math.round((7 + n * 4) * (1 + 0.6 * (NET.count() - 1))); }
+function waveSize(n) { return Math.round((7 + n * 4) * (1 + 0.6 * (NET.count() - 1)) * (DIFF === 'hardcore' ? 2 : 1)); }
 function startWave(n) {
   revive();
   G.wave = n; G.toSpawn = waveSize(n); G.spawnTimer = 1.5; G.cleared = false;
-  showBanner('Oleada ' + n, waveSize(n) + ' infectados en camino');
+  showBanner('Oleada ' + n, (DIFF === 'hardcore' ? 'Hardcore · ' : '') + waveSize(n) + ' infectados en camino');
   sfxWave();
 }
 function updateWaves(dt) {
   if (G.toSpawn > 0) {
     G.spawnTimer -= dt;
-    var maxAlive = Math.min((8 + G.wave * 2) * NET.count(), 26 * NET.count());
+    var hcm = DIFF === 'hardcore' ? 2 : 1;
+    var maxAlive = Math.min(Math.min((8 + G.wave * 2) * NET.count(), 26 * NET.count()) * hcm, 110);
     if (G.spawnTimer <= 0 && zombies.length < maxAlive) {
       spawnAtEdge(); G.toSpawn--;
-      G.spawnTimer = Math.max(0.35, 1.5 - G.wave * 0.1);
+      G.spawnTimer = Math.max(0.35, 1.5 - G.wave * 0.1) * (DIFF === 'hardcore' ? 0.6 : 1);
     }
   } else if (zombies.length === 0 && !G.cleared) {
     G.cleared = true; G.inter = 5;
-    var bonus = 200 * G.wave;
+    var bonus = 120 * G.wave;
     G.score += bonus; G.cash += bonus; P.nades = Math.min(8, P.nades + 1); netBroadcast({ t: 'cash', v: bonus, b: 1 });
     showBanner('Oleada ' + G.wave + ' superada', '+' + bonus + ' puntos');
     for (var k = 0; k < 2; k++) {
@@ -1336,8 +1498,9 @@ function startGame() {
   initAudio();
   resetGame();
   shopOpen = false; show('shop', false); show('lobby', false);
-  if (NET.role === 'host') netBroadcast({ t: 'start' });
-  show('menu', false); show('over', false); show('pause', false); show('hud', true);
+  loadBest();
+  if (NET.role === 'host') netBroadcast({ t: 'start', d: DIFF === 'hardcore' ? 1 : 0 });
+  showMenuScreen(''); show('over', false); show('pause', false); show('hud', true);
   mode = 'play';
   requestLock();
   if (NET.role !== 'client') startWave(1);
@@ -1373,7 +1536,7 @@ function endGame() {
   var newBest = G.score > G.best;
   if (newBest) {
     G.best = G.score;
-    try { localStorage.setItem('nocheZombiBest', String(G.best)); } catch (e) {}
+    try { localStorage.setItem(bestKey(), String(G.best)); } catch (e) {}
   }
   $('oWave').textContent = G.wave;
   $('oKills').textContent = G.kills;
@@ -1397,7 +1560,7 @@ window.addEventListener('keydown', function (e) {
 /* ---------- armas y armería ---------- */
 var WEAPONS = {
   rifle:   { name: 'Fusil',         mag: 24, max: 240, res: 96,  cd: 0.12, pel: 1, body: 28,  head: 68,  sp: 0.006,  auto: 1, rl: 1.5, price: 0,    ammoP: 100, len: 1,    info: 'Equilibrado, ráfaga estable' },
-  shotgun: { name: 'Escopeta',      mag: 6,  max: 60,  res: 24,  cd: 0.85, pel: 8, body: 15,  head: 30,  sp: 0.055,  auto: 0, rl: 2.2, price: 800,  ammoP: 120, len: 0.85, info: '8 perdigones, letal de cerca' },
+  shotgun: { name: 'Escopeta',      mag: 6,  max: 60,  res: 24,  cd: 0.85, pel: 8, body: 9,   head: 20,  sp: 0.10,   auto: 0, rl: 2.2, price: 800,  ammoP: 120, len: 0.85, info: '8 perdigones dispersos, letal de cerca' },
   smg:     { name: 'Subfusil',      mag: 40, max: 320, res: 120, cd: 0.07, pel: 1, body: 19,  head: 44,  sp: 0.013,  auto: 1, rl: 1.7, price: 1200, ammoP: 150, len: 0.7,  info: 'Cadencia altísima, 40 balas' },
   sniper:  { name: 'Francotirador', mag: 5,  max: 40,  res: 15,  cd: 1.1,  pel: 1, body: 150, head: 420, sp: 0.0012, auto: 0, rl: 2.4, price: 1600, ammoP: 200, len: 1.3,  info: 'Un tiro, un infectado' }
 };
@@ -1490,29 +1653,89 @@ $('btnShopClose').addEventListener('click', closeShop);
 
 /* ---------- Co-Op: WebRTC con PeerJS (sin servidor propio; sirve en GitHub Pages) ---------- */
 var NET = {
-  role: 'none', hostName: 'Anfitrión', pub: false, zid: 0, kid: 0, peer: null, host: null, conns: {}, rp: {}, myId: 0, nid: 0, left: 0, acc: 0, ready: false, code: '',
+  role: 'none', max: 4, hostName: 'Anfitrión', pub: false, zid: 0, kid: 0, peer: null, host: null, conns: {}, rp: {}, myId: 0, nid: 0, left: 0, acc: 0, ready: false, code: '',
   count: function () { return 1 + Object.keys(NET.rp).length; },
   eachRemote: function (f) { for (var k in NET.rp) f(NET.rp[k]); }
 };
 var CODECH = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789', ZTN = ['walker', 'runner', 'brute'];
 function r2(v) { return Math.round(v * 100) / 100; }
-function netMsg(t) { $('netMsg').textContent = t; $('lobMsg').textContent = t; }
+function netMsg(t) { $('netMsg').textContent = t; $('lobMsg').textContent = t; $('crMsg').textContent = t; }
 function netSend(m) { if (NET.role === 'client' && NET.host && NET.host.open) NET.host.send(m); }
+function fxSend(k) {   // avisa a los demás de mis disparos y recargas
+  if (NET.role === 'client') netSend({ t: 'fx', k: k, w: P.w });
+  else if (NET.role === 'host') netBroadcast({ t: 'fx', id: 0, k: k, w: P.w });
+}
 function netSendTo(id, m) { var c = NET.conns[id]; if (c && c.open) c.send(m); }
 function netBroadcast(m) { for (var k in NET.conns) if (NET.conns[k].open) NET.conns[k].send(m); }
 
-function makeAvatar(name) {
+var AV_COL = [0x3d6ea8, 0xa84a3d, 0x4f9a5a, 0x9a7a2f, 0x7a4fa8, 0x2f9a9a, 0xa84f86, 0x8a8f96];
+function makeAvatar(name, id) {
   var g = new THREE.Group();
-  var body = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1, 0.35), new THREE.MeshPhongMaterial({ color: 0x3d6ea8, shininess: 6 })); body.position.y = 1.1;
+  var body = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1, 0.35), new THREE.MeshPhongMaterial({ color: AV_COL[(id || 0) % AV_COL.length], shininess: 6 })); body.position.y = 1.1;
   var head = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.34, 0.34), new THREE.MeshPhongMaterial({ color: 0xd7b08a })); head.position.y = 1.8;
-  var gn = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.1, 0.7), new THREE.MeshPhongMaterial({ color: 0x2b3035 })); gn.position.set(0.3, 1.3, -0.35);
+  var gun = new THREE.Group(); gun.position.set(0.3, 1.35, -0.1);
+  var gmat = new THREE.MeshPhongMaterial({ color: 0x2b3035, shininess: 20, emissive: 0x000000 });
+  var gn = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.1, 0.7), gmat); gn.position.set(0, 0, -0.3); gun.add(gn);
+  var fl = new THREE.Mesh(new THREE.SphereGeometry(0.13, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffd68a, fog: false })); fl.position.set(0, 0, -0.78); fl.visible = false; gun.add(fl);
   var c = document.createElement('canvas'); c.width = 256; c.height = 64;
   var x = c.getContext('2d'); x.font = '700 34px sans-serif'; x.textAlign = 'center'; x.lineWidth = 5; x.strokeStyle = '#000'; x.fillStyle = '#fff';
   x.strokeText(name, 128, 44); x.fillText(name, 128, 44);
   var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false, fog: false }));
   sp.scale.set(2, 0.5, 1); sp.position.y = 2.4; sp.renderOrder = 9;
-  g.add(body, head, gn, sp); g.rotation.order = 'YXZ'; scene.add(g);
+  g.add(body, head, gun, sp); g.rotation.order = 'YXZ'; scene.add(g);
+  g.userData.gun = gun; g.userData.flash = fl; g.userData.gmat = gmat;
   return g;
+}
+
+// trazadoras de los disparos ajenos
+var TR = [], trCur = 0;
+(function () {
+  for (var i = 0; i < 28; i++) {
+    var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(6), 3));
+    var l = new THREE.Line(g, new THREE.LineBasicMaterial({ color: 0xffe2a0, transparent: true, opacity: 0.8, fog: false }));
+    l.visible = false; l.frustumCulled = false; scene.add(l); TR.push({ l: l, t: 0 });
+  }
+})();
+function addTracer(o, d, len) {
+  var q = TR[trCur]; trCur = (trCur + 1) % TR.length;
+  var a = q.l.geometry.attributes.position;
+  a.setXYZ(0, o.x, o.y, o.z); a.setXYZ(1, o.x + d.x * len, o.y + d.y * len, o.z + d.z * len); a.needsUpdate = true;
+  q.t = 0.09; q.l.material.opacity = 0.8; q.l.visible = true;
+}
+function updateTracers(dt) {
+  for (var i = 0; i < TR.length; i++) {
+    var q = TR[i]; if (q.t <= 0) continue;
+    q.t -= dt;
+    if (q.t <= 0) q.l.visible = false; else q.l.material.opacity = Math.min(0.8, q.t * 12);
+  }
+}
+function sfxShotAt(d, pan, w) {
+  var v = clamp(1 - d / 60, 0, 1) * 0.8; if (v < 0.03) return;
+  noiseHit(w === 'sniper' ? 2400 : 3200, 260, v, w === 'sniper' ? 0.32 : 0.2, 'lowpass', pan);
+  tone('sine', w === 'shotgun' ? 110 : 150, 40, v * 0.8, 0.14, pan);
+}
+function sfxReloadAt(d, pan) {
+  var v = clamp(1 - d / 32, 0, 1) * 0.3; if (v < 0.03) return;
+  noiseHit(4000, 1500, v, 0.05, 'highpass', pan);
+  setTimeout(function () { noiseHit(3500, 1200, v, 0.07, 'highpass', pan); }, 620);
+  setTimeout(function () { noiseHit(4200, 2000, v, 0.05, 'highpass', pan); }, 1250);
+}
+var FXO = new THREE.Vector3(), FXD = new THREE.Vector3();
+function fxRemote(r, k, w) {   // disparo o recarga de otro jugador
+  var WP = WEAPONS[w] || WEAPONS.rifle;
+  var dx = r.x - P.x, dz = r.z - P.z, d = Math.hypot(dx, dz) || 0.001;
+  var pan = clamp((dx * Math.cos(P.yaw) - dz * Math.sin(P.yaw)) / d, -1, 1);
+  if (k === 'r') { r.relD = WP.rl; r.relT = WP.rl; sfxReloadAt(d, pan); return; }
+  r.flashT = 0.07; r.relT = 0;
+  sfxShotAt(d, pan, w);
+  var ox = r.mesh ? r.mesh.position.x : r.x, oz = r.mesh ? r.mesh.position.z : r.z, yaw = r.yaw, pit = r.pitch || 0;
+  var c = Math.cos(yaw), s = Math.sin(yaw), n = WP.pel > 1 ? 6 : 1, f = WP.pel > 1 ? 1 : 0.3;
+  for (var i = 0; i < n; i++) {
+    var y2 = yaw + (Math.random() - 0.5) * 2 * WP.sp * f, p2 = pit + (Math.random() - 0.5) * 2 * WP.sp * f;
+    FXD.set(-Math.sin(y2) * Math.cos(p2), Math.sin(p2), -Math.cos(y2) * Math.cos(p2));
+    FXO.set(ox + 0.3 * c - 0.85 * s, 1.35 + Math.sin(pit) * 0.8, oz - 0.3 * s - 0.85 * c);
+    addTracer(FXO, FXD, Math.min(45, obstacleBlock(FXO, FXD, 45)));
+  }
 }
 
 function nearestTarget(zb) {
@@ -1548,11 +1771,18 @@ function netTick(dt) {
   if (NET.acc >= 0.066) {
     NET.acc = 0;
     if (NET.role === 'host') hostSnapshot();
-    else netSend({ t: 'st', x: P.x, z: P.z, y: P.yaw, h: P.hp, d: P.dead ? 1 : 0 });
+    else netSend({ t: 'st', x: P.x, z: P.z, y: P.yaw, p: r2(P.pitch), h: P.hp, d: P.dead ? 1 : 0 });
   }
   var k = Math.min(1, dt * 12);
   NET.eachRemote(function (r) {
-    if (!r.mesh) { r.mesh = makeAvatar(r.name); r.mesh.position.set(r.x, 0, r.z); }
+    if (r.mesh && r.mesh.userData.nm !== r.name) { scene.remove(r.mesh); r.mesh = null; }   // el nombre llegó después
+    if (!r.mesh) { r.mesh = makeAvatar(r.name, r.id); r.mesh.userData.nm = r.name; r.mesh.position.set(r.x, 0, r.z); }
+    var ud = r.mesh.userData;
+    r.flashT = Math.max(0, (r.flashT || 0) - dt); r.relT = Math.max(0, (r.relT || 0) - dt);
+    ud.flash.visible = r.flashT > 0 && !r.dead;
+    var rl = r.relT > 0 ? Math.sin((1 - r.relT / (r.relD || 1.5)) * Math.PI) : 0;
+    ud.gun.rotation.x = (r.pitch || 0) + rl * 0.9 + (r.flashT > 0 ? 0.12 : 0);
+    ud.gmat.emissive.setHex(r.relT > 0 ? 0x5a3a08 : 0x000000);
     r.mesh.position.x += (r.x - r.mesh.position.x) * k;
     r.mesh.position.z += (r.z - r.mesh.position.z) * k;
     r.mesh.rotation.y += wrapAngle(r.yaw - r.mesh.rotation.y) * k;
@@ -1563,8 +1793,8 @@ function netTick(dt) {
 function hostSnapshot() {
   var z = zombies.map(function (q) { return [q.id, q.type === 'walker' ? 0 : q.type === 'runner' ? 1 : 2, r2(q.x), r2(q.z), r2(q.yaw)]; });
   var pk = pickups.map(function (q) { return [q.id, q.kind === 'ammo' ? 0 : 1, r2(q.x), r2(q.z)]; });
-  var ps = [[0, r2(P.x), r2(P.z), r2(P.yaw), Math.ceil(P.hp), P.dead ? 1 : 0, NET.hostName]];
-  NET.eachRemote(function (r) { ps.push([r.id, r2(r.x), r2(r.z), r2(r.yaw), Math.ceil(r.hp), r.dead ? 1 : 0, r.name]); });
+  var ps = [[0, r2(P.x), r2(P.z), r2(P.yaw), Math.ceil(P.hp), P.dead ? 1 : 0, NET.hostName, r2(P.pitch)]];
+  NET.eachRemote(function (r) { ps.push([r.id, r2(r.x), r2(r.z), r2(r.yaw), Math.ceil(r.hp), r.dead ? 1 : 0, r.name, r2(r.pitch || 0)]); });
   netBroadcast({ t: 's', w: G.wave, l: zombies.length + G.toSpawn, sc: G.score, k: G.kills, z: z, pk: pk, ps: ps });
 }
 function clientSnapshot(m) {
@@ -1598,13 +1828,13 @@ function clientSnapshot(m) {
     if (b[0] === NET.myId) return;
     live[b[0]] = 1;
     var r = NET.rp[b[0]] || (NET.rp[b[0]] = { id: b[0], name: b[6], remote: true });
-    r.x = b[1]; r.z = b[2]; r.yaw = b[3]; r.hp = b[4]; r.dead = !!b[5];
+    r.x = b[1]; r.z = b[2]; r.yaw = b[3]; r.hp = b[4]; r.dead = !!b[5]; r.pitch = +b[7] || 0; if (b[6]) r.name = b[6];
   });
   for (var k in NET.rp) if (!live[k]) { if (NET.rp[k].mesh) scene.remove(NET.rp[k].mesh); delete NET.rp[k]; }
 }
 
 function showLobby() {
-  show('menu', false); show('over', false); show('pause', false); show('lobby', true);
+  showMenuScreen(''); show('over', false); show('pause', false); show('lobby', true);
   var b = $('btnLobStart');
   b.hidden = NET.role === 'client' && !NET.ready;
   b.textContent = NET.role === 'host' ? 'Empezar partida' : 'Entrar a la partida';
@@ -1614,16 +1844,17 @@ function lobbyList() {
   var h = NET.role === 'host' ? '<li>' + NET.hostName + ' (vos)</li>' : '<li>Conectado a la sala ' + NET.code + '</li>';
   if (NET.role === 'host') NET.eachRemote(function (r) { h += '<li>' + r.name + '</li>'; });
   $('plist').innerHTML = h;
+  $('lobInfo').textContent = (DIFF === 'hardcore' ? 'Hardcore' : 'Normal') + (NET.role === 'host' ? ' · ' + NET.count() + '/' + NET.max + ' jugadores' : '');
 }
 function netLeave() {
-  dirStop(); var was = mode;
+  dirStop(); var was = mode, wasNet = NET.role !== 'none';
   NET.eachRemote(function (r) { if (r.mesh) scene.remove(r.mesh); });
   try { if (NET.peer) NET.peer.destroy(); } catch (e) {}
   NET.peer = null; NET.host = null; NET.conns = {}; NET.rp = {}; NET.role = 'none'; NET.ready = false; NET.myId = 0; NET.left = 0;
   if (mode !== 'menu') { clearZombies(); clearPickups(); resetWeapons(); P.hp = 100; }
   mode = 'menu'; shopOpen = false; mouseDown = false;
-  ['lobby', 'over', 'pause', 'hud', 'shop', 'rooms'].forEach(function (id) { show(id, false); });
-  show('menu', true);
+  ['lobby', 'over', 'pause', 'hud', 'shop'].forEach(function (id) { show(id, false); });
+  if (wasNet) openCoop(); else showMenuScreen('menu');
   if (was !== 'menu') menuScene();
   if (document.pointerLockElement) { try { document.exitPointerLock(); } catch (e) {} }
 }
@@ -1631,12 +1862,13 @@ function noPeer() { if (typeof Peer === 'undefined') { netMsg('No se pudo cargar
 
 function hostCreate(attempt) {
   if (noPeer()) return;
-  var code = ''; for (var i = 0; i < 5; i++) code += CODECH[Math.floor(Math.random() * CODECH.length)];
-  NET.role = 'host'; NET.code = code; NET.pub = pubSel; NET.hostName = getNick() || 'Anfitrión';
+  var code = (attempt === 0 && pendCode) ? pendCode : genCode(); pendCode = '';
+  $('crCode').textContent = code;
+  NET.role = 'host'; NET.code = code; NET.pub = pubSel; NET.max = maxSel; NET.hostName = getNick() || 'Anfitrión';
   
   var peer = new Peer('nz-' + code, peerOpts()); NET.peer = peer;
 
-  peer.on('open', function () { $('lobCode').textContent = code; $('lobMsg').textContent = (NET.pub ? 'Sala pública: aparece en la lista. ' : 'Sala privada: solo entra quien tenga el código. ') + 'Mantené esta pestaña abierta: la partida corre en tu navegador.'; showLobby(); if (NET.pub) dirStart(); });
+  peer.on('open', function () { $('lobCode').textContent = code; $('lobMsg').textContent = (NET.pub ? 'Servidor público: aparece en la lista. ' : 'Servidor privado: solo entra quien tenga el código. ') + 'Mantené esta pestaña abierta: la partida corre en tu navegador.'; showLobby(); if (NET.pub) dirStart(); });
   peer.on('error', function (err) {
     if (err.type === 'unavailable-id' && attempt < 4) { peer.destroy(); hostCreate(attempt + 1); }
     else if (err.type === 'peer-unavailable') { DIR.regConn = null; setTimeout(dirStart, 2500); }
@@ -1644,11 +1876,11 @@ function hostCreate(attempt) {
   });
   peer.on('connection', function (conn) {
     conn.on('open', function () {
-      if (NET.count() >= 4) { conn.send({ t: 'full' }); setTimeout(function () { conn.close(); }, 300); return; }
+      if (NET.count() >= NET.max) { conn.send({ t: 'full' }); setTimeout(function () { conn.close(); }, 300); return; }
       var id = ++NET.nid; NET.conns[id] = conn;
       var r = NET.rp[id] = { id: id, name: 'Jugador ' + (id + 1), x: 0, z: 9, yaw: 0, hp: 100, dead: false, remote: true };
-      conn.send({ t: 'hi', id: id });
-      if (mode === 'play') conn.send({ t: 'start' });
+      conn.send({ t: 'hi', id: id, mx: NET.max, d: DIFF === 'hardcore' ? 1 : 0 });
+      if (mode === 'play') conn.send({ t: 'start', d: DIFF === 'hardcore' ? 1 : 0 });
       lobbyList(); sysChat(r.name + ' se unió');
       conn.on('data', function (m) { hostGot(id, m); });
       conn.on('close', function () {
@@ -1669,7 +1901,13 @@ function hostGot(id, m) {
     var bx = clamp(+m.x || 0, -ARENA, ARENA), bz = clamp(+m.z || 0, -ARENA, ARENA);
     boom(bx, 0.3, bz); applyBlast(bx, bz, id); netBroadcast({ t: 'bx', x: bx, y: 0.3, z: bz, f: id });
   }
+  else if (m.t === 'fx' && !r.dead) {
+    var fk = m.k === 'r' ? 'r' : 's', fw = WEAPONS[m.w] ? m.w : 'rifle';
+    fxRemote(r, fk, fw);
+    for (var ck in NET.conns) if (+ck !== id && NET.conns[ck].open) NET.conns[ck].send({ t: 'fx', id: id, k: fk, w: fw });
+  }
   else if (m.t === 'st') {
+    r.pitch = clamp(+m.p || 0, -1.4, 1.4);
     r.x = clamp(+m.x || 0, -ARENA, ARENA); r.z = clamp(+m.z || 0, -ARENA, ARENA); r.yaw = +m.y || 0; r.hp = +m.h || 0; r.dead = !!m.d;
     if (r.dead) hostCheckOver();
   } else if (m.t === 'hit' && !r.dead) {
@@ -1689,17 +1927,17 @@ function hostGot(id, m) {
 
 function joinGame(code) {
   code = (code || '').trim().toUpperCase();
-  if (code.length < 4) { netMsg('Ingresá el código de la sala.'); return; }
+  if (code.length < 4) { netMsg('Ingresá el código del servidor.'); return; }
   if (noPeer()) return;
   netMsg('Conectando…');
   NET.role = 'client'; NET.code = code;
   
   var peer = new Peer(peerOpts()); NET.peer = peer;
 
-  peer.on('error', function (err) { netLeave(); netMsg(err.type === 'peer-unavailable' ? 'No se encontró la sala ' + code + '.' : 'Error de red: ' + err.type); });
+  peer.on('error', function (err) { netLeave(); netMsg(err.type === 'peer-unavailable' ? 'No se encontró el servidor ' + code + '.' : 'Error de red: ' + err.type); });
   peer.on('open', function () {
     var c = peer.connect('nz-' + code, { serialization: 'json', reliable: true }); NET.host = c;
-    var to = setTimeout(function () { if (!c.open && NET.role === 'client') { netLeave(); netMsg('No se pudo conectar con la sala ' + code + '.'); } }, 10000);
+    var to = setTimeout(function () { if (!c.open && NET.role === 'client') { netLeave(); netMsg('No se pudo conectar con el servidor ' + code + '.'); } }, 10000);
     c.on('open', function () { c.send({ t: 'nm', n: getNick() }); clearTimeout(to); $('lobMsg').textContent = 'Conectado. Esperando que el anfitrión empiece…'; $('lobCode').textContent = code; showLobby(); });
     c.on('data', clientGot);
     c.on('close', function () { if (NET.role === 'client') { netLeave(); netMsg('Se perdió la conexión con el anfitrión.'); } });
@@ -1707,15 +1945,17 @@ function joinGame(code) {
 }
 
 function clientGot(m) {
-  if (m.t === 'hi') NET.myId = m.id;
+  if (m.t === 'hi') { NET.myId = m.id; NET.max = +m.mx || 4; setDiff(m.d ? 'hardcore' : 'normal'); }
   else if (m.t === 'start') {
     if (mode === 'play') return;
+    setDiff(m.d ? 'hardcore' : 'normal');
     NET.ready = true; showLobby();
     $('lobMsg').textContent = '¡El anfitrión empezó! Entrá a la partida.';
   }
   else if (m.t === 's') { if (mode === 'play') clientSnapshot(m); }
   else if (m.t === 'hurt') hurtPlayer(m.v);
   else if (m.t === 'c') addChat(String(m.n || '').slice(0, 12), String(m.x || '').slice(0, 120));
+  else if (m.t === 'fx') { var fr = NET.rp[m.id]; if (fr && m.id !== NET.myId) fxRemote(fr, m.k === 'r' ? 'r' : 's', WEAPONS[m.w] ? m.w : 'rifle'); }
   else if (m.t === 'bx') { if (m.f !== NET.myId) boom(+m.x || 0, +m.y || 0, +m.z || 0); }
   else if (m.t === 'got') {
     if (m.k === 'med') { P.hp = Math.min(100, P.hp + 40); showPop('+40 salud'); } else { P.reserve = Math.min(MAXRES, P.reserve + 36); showPop('+36 balas'); }
@@ -1723,10 +1963,9 @@ function clientGot(m) {
   }
   else if (m.t === 'cash') { G.cash += m.v; if (!m.b) showPop((m.h ? 'Cabeza  +' : '+') + m.v); }
   else if (m.t === 'over') { if (mode === 'play') endGame(); }
-  else if (m.t === 'full') { netLeave(); netMsg('La sala está llena (máximo 4).'); }
+  else if (m.t === 'full') { netLeave(); netMsg('El servidor está lleno.'); }
 }
 
-$('btnHost').addEventListener('click', function () { initAudio(); netMsg('Creando sala…'); hostCreate(0); });
 $('btnJoin').addEventListener('click', function () { initAudio(); joinGame($('joinCode').value); });
 $('btnLobStart').addEventListener('click', function () { initAudio(); NET.ready = false; startGame(); });
 $('btnLobBack').addEventListener('click', netLeave);
@@ -1838,7 +2077,7 @@ var DIR = { peer: null, isDir: false, regConn: null, timer: null, starting: fals
 function getNick() { return ($('nick').value || '').replace(/[<>]/g, '').trim().slice(0, 12); }
 try { $('nick').value = localStorage.getItem('nocheZombiNick') || ''; } catch (e) {}
 $('nick').addEventListener('change', function () { try { localStorage.setItem('nocheZombiNick', getNick()); } catch (e) {} });
-function roomInfo() { return { c: NET.code, n: NET.hostName, p: NET.count(), m: 4, w: G.wave, pl: mode === 'play' ? 1 : 0 }; }
+function roomInfo() { return { c: NET.code, n: NET.hostName, p: NET.count(), m: NET.max, d: DIFF === 'hardcore' ? 1 : 0, w: G.wave, pl: mode === 'play' ? 1 : 0 }; }
 function dirTick() {
   if (NET.role !== 'host' || !NET.pub) return;
   var r = roomInfo();
@@ -1856,7 +2095,7 @@ function dirStart() {
       c.on('data', function (m) {
         if (m.t === 'reg' && m.r && m.r.c) {
           var q = m.r, code = String(q.c).slice(0, 5);
-          DIR.rooms[code] = { c: code, n: String(q.n || '').slice(0, 12), p: +q.p || 1, m: 4, w: +q.w || 0, pl: q.pl ? 1 : 0, ts: Date.now() };
+          DIR.rooms[code] = { c: code, n: String(q.n || '').slice(0, 12), p: +q.p || 1, m: clamp(+q.m || 4, 2, 8), d: q.d ? 1 : 0, w: +q.w || 0, pl: q.pl ? 1 : 0, ts: Date.now() };
         } else if (m.t === 'list') {
           var now = Date.now(), a = [];
           for (var k in DIR.rooms) { if (now - DIR.rooms[k].ts > 15000) delete DIR.rooms[k]; else a.push(DIR.rooms[k]); }
@@ -1883,37 +2122,68 @@ function dirStop() {
 }
 function renderRooms(a) {
   var l = $('roomList'); l.textContent = '';
-  if (!a.length) { l.textContent = 'No hay salas públicas por ahora.'; return; }
+  if (!a.length) { l.textContent = 'No hay servidores públicos por ahora.'; return; }
   a.forEach(function (r) {
     var d = document.createElement('div'); d.className = 'item';
     var t = document.createElement('div'), b = document.createElement('b'), sm = document.createElement('small');
-    b.textContent = 'Sala de ' + r.n; sm.textContent = r.p + '/' + r.m + ' jugadores · ' + (r.pl ? 'Oleada ' + r.w : 'En espera');
+    b.textContent = 'Servidor de ' + r.n; sm.textContent = r.p + '/' + r.m + ' jugadores · ' + (r.d ? 'Hardcore' : 'Normal') + ' · ' + (r.pl ? 'Oleada ' + r.w : 'En espera');
     t.appendChild(b); t.appendChild(sm);
     var bt = document.createElement('button'); bt.className = 'alt'; bt.textContent = r.p >= r.m ? 'Llena' : 'Unirse'; bt.disabled = r.p >= r.m;
-    bt.addEventListener('click', function () { show('rooms', false); show('menu', true); joinGame(String(r.c).slice(0, 5)); });
+    bt.addEventListener('click', function () { initAudio(); joinGame(String(r.c).slice(0, 5)); });
     d.appendChild(t); d.appendChild(bt); l.appendChild(d);
   });
 }
 function fetchRooms() {
-  var l = $('roomList'); l.textContent = 'Buscando salas…';
+  var l = $('roomList'); l.textContent = 'Buscando servidores…';
   if (noPeer()) { l.textContent = $('netMsg').textContent; return; }
   var p = new Peer(peerOpts()), done = false, to;
   function fin(msg) { if (done) return; done = true; clearTimeout(to); try { p.destroy(); } catch (e) {} if (msg) l.textContent = msg; }
   to = setTimeout(function () { fin('No se pudo consultar la lista. Probá de nuevo.'); }, 8000);
-  p.on('error', function (e) { fin(e.type === 'peer-unavailable' ? 'No hay salas públicas por ahora.' : 'Error de red: ' + e.type); });
+  p.on('error', function (e) { fin(e.type === 'peer-unavailable' ? 'No hay servidores públicos por ahora.' : 'Error de red: ' + e.type); });
   p.on('open', function () {
     var c = p.connect(DIR_ID, { serialization: 'json' });
     c.on('open', function () { c.send({ t: 'list' }); });
     c.on('data', function (m) { if (m.t === 'rooms') { renderRooms(m.r || []); fin(); } });
   });
 }
-$('btnVis').addEventListener('click', function () {
-  pubSel = !pubSel; this.textContent = 'Sala: ' + (pubSel ? 'Pública' : 'Privada');
-  $('netMsg').textContent = pubSel ? 'Pública: aparecerá en la lista de salas.' : 'Privada: solo entra quien tenga el código.';
-});
-$('btnRooms').addEventListener('click', function () { show('menu', false); show('rooms', true); fetchRooms(); });
+/* ---------- menús: principal, un jugador, Co-Op y crear servidor ---------- */
+var maxSel = 4, pendCode = '';
+var DIFFTXT = { normal: 'Oleadas estándar: la experiencia de siempre.', hardcore: 'El doble de infectados en cada oleada y se mueven el doble de rápido.' };
+function each(sel, f) { Array.prototype.forEach.call(document.querySelectorAll(sel), f); }
+function showMenuScreen(id) { ['menu', 'solo', 'coop', 'create'].forEach(function (s) { show(s, s === id); }); }
+function setDiff(d) {
+  DIFF = d === 'hardcore' ? 'hardcore' : 'normal'; loadBest();
+  each('[data-d]', function (b) { b.classList.toggle('on', b.dataset.d === DIFF); });
+  each('.diffDesc', function (q) { q.textContent = DIFFTXT[DIFF]; });
+}
+function setVis(pub) {
+  pubSel = !!pub;
+  each('[data-v]', function (b) { b.classList.toggle('on', (b.dataset.v === 'pub') === pubSel); });
+  $('crDesc').textContent = pubSel ? 'Público: aparece en la lista de servidores.' : 'Privado: solo entra quien tenga el código.';
+}
+function setMax(n) {
+  maxSel = clamp(n, 2, 8); $('crMax').textContent = maxSel;
+  $('crMinus').disabled = maxSel <= 2; $('crPlus').disabled = maxSel >= 8;
+}
+function genCode() { var c = ''; for (var i = 0; i < 5; i++) c += CODECH[Math.floor(Math.random() * CODECH.length)]; return c; }
+function openCoop() { showMenuScreen('coop'); fetchRooms(); }
+function openCreate() {
+  pendCode = genCode(); $('crCode').textContent = pendCode; $('crMsg').textContent = '';
+  setDiff(DIFF); setVis(pubSel); setMax(maxSel); showMenuScreen('create');
+}
+each('[data-d]', function (b) { b.addEventListener('click', function () { setDiff(b.dataset.d); }); });
+each('[data-v]', function (b) { b.addEventListener('click', function () { setVis(b.dataset.v === 'pub'); }); });
+$('crMinus').addEventListener('click', function () { setMax(maxSel - 1); });
+$('crPlus').addEventListener('click', function () { setMax(maxSel + 1); });
+$('btnSolo').addEventListener('click', function () { setDiff(DIFF); showMenuScreen('solo'); });
+$('btnSoloBack').addEventListener('click', function () { showMenuScreen('menu'); });
+$('btnCoop').addEventListener('click', openCoop);
+$('btnCoopBack').addEventListener('click', function () { showMenuScreen('menu'); });
+$('btnCreate').addEventListener('click', openCreate);
+$('btnCreateBack').addEventListener('click', openCoop);
+$('btnCreateGo').addEventListener('click', function () { initAudio(); netMsg('Creando servidor…'); hostCreate(0); });
 $('btnRoomsRefresh').addEventListener('click', fetchRooms);
-$('btnRoomsBack').addEventListener('click', function () { show('rooms', false); show('menu', true); });
+setDiff('normal'); setVis(false); setMax(4);
 $('btnQuit').addEventListener('click', netLeave);
 $('btnQuit2').addEventListener('click', netLeave);
 
@@ -1928,7 +2198,7 @@ function frame(now) {
     updatePlayer(dt);
     updateZombies(dt, true);
     if (NET.role !== 'client') updateWaves(dt);
-    shopTick(); netTick(dt); updateNades(dt);
+    shopTick(); netTick(dt); updateNades(dt); updateTracers(dt);
     updatePickups(dt);
     placeCamera(dt, clock);
     updateHud();
