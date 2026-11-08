@@ -217,6 +217,10 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
 @keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-7%,5%)}40%{transform:translate(6%,-8%)}60%{transform:translate(-4%,-3%)}80%{transform:translate(8%,6%)}100%{transform:translate(0,0)}}
 @media (prefers-reduced-motion:reduce){#grain{animation:none}}
 .kbtn{min-width:150px}
+#btnTorch{width:60px;height:60px;font-size:12px;bottom:calc(140px + env(safe-area-inset-bottom,0px));right:calc(max(16px,env(safe-area-inset-right,0px)) + 216px);background:rgba(255,240,200,.25)}
+#onlineBox{display:flex;align-items:center;gap:8px;font-family:var(--display);font-size:15px!important;letter-spacing:.1em;text-transform:uppercase}
+#onlineBox i{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--toxic);box-shadow:0 0 8px var(--toxic)}
+#onlineBox b{color:var(--bone);font-size:22px;font-family:var(--num);letter-spacing:0}
 #useTip{position:absolute;left:50%;bottom:196px;transform:translateX(-50%);font-family:var(--display);font-size:18px;letter-spacing:.08em;color:#fff;text-shadow:0 1px 2px #000;padding:8px 16px;pointer-events:auto;cursor:pointer;text-transform:uppercase;background:linear-gradient(90deg,#b07a22 var(--p,100%),rgba(10,14,15,.88) var(--p,100%));box-shadow:0 0 0 1px var(--line);white-space:nowrap}
 #spec{position:absolute;left:50%;top:136px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:18px;letter-spacing:.1em;text-transform:uppercase;background:rgba(6,11,12,.72);padding:6px 10px;box-shadow:0 0 0 1px var(--line);pointer-events:none;white-space:nowrap}
 #spec button{pointer-events:auto;padding:6px 12px}
@@ -260,7 +264,7 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
     <div id="useTip" hidden></div>
     <div id="rest" hidden></div>
     <div id="spec" hidden><button class="alt" id="specPrev" type="button">‹</button><span id="specName"></span><button class="alt" id="specNext" type="button">›</button></div>
-    <div id="chat"><div id="chatLog"></div><input id="chatIn" maxlength="120" placeholder="Mensaje (Enter envía, Esc cierra)" autocomplete="off"></div>
+    <div id="chat"><div id="chatLog"></div><input id="chatIn" maxlength="120" placeholder="Mensaje (Enter envía; vacío cierra)" autocomplete="off"></div>
 
     <div class="bottom">
       <div class="vital">
@@ -281,6 +285,7 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
       <div class="tbtn" id="btnNade">Granada</div>
       <div class="tbtn" id="btnAds">Mira</div>
       <div class="tbtn" id="btnChat">Chat</div>
+      <div class="tbtn" id="btnTorch">Luz</div>
       <div class="tbtn" id="btnFire">Fuego</div>
     </div>
   </div>
@@ -305,7 +310,8 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
           <div><kbd data-k="nade">G</kbd> granada</div>
           <div><kbd data-k="chat">Enter</kbd> chat (Co-Op)</div>
           <div><kbd data-k="score">Tab</kbd> jugadores</div>
-          <div><kbd data-k="use">F</kbd> interactuar</div>
+          <div><kbd data-k="use">Q</kbd> interactuar</div>
+          <div><kbd data-k="torch">F</kbd> linterna</div>
         </div>
         <div class="keys mob">
           <div><kbd>Palanca</kbd> moverse</div>
@@ -316,7 +322,9 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
         <p class="note desk">Un tiro a la cabeza hace mucho más daño. Si el navegador no captura el mouse, apuntá con las flechas y disparás con <b data-k="fire">Espacio</b>.</p>
         <div class="tags" id="menuBest">
           <div class="tag"><span class="lbl">Récord Normal</span><b id="mbN">0</b></div>
-          <div class="tag"><span class="lbl">Récord Hardcore</span><b id="mbH">0</b></div>
+          <div class="tag"><span class="lbl">Récord Difícil</span><b id="mbH">0</b></div>
+          <div class="tag"><span class="lbl">Récord Hardcore</span><b id="mbX">0</b></div>
+          <div class="tag"><span class="lbl">Récord Pesadilla</span><b id="mbP">0</b></div>
         </div>
         <div class="row2">
           <button class="go" id="btnSolo" type="button">Un jugador</button>
@@ -335,7 +343,9 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
         <span class="lbl">Dificultad</span>
         <div class="seg">
           <button class="alt on" type="button" data-d="normal">Normal</button>
-          <button class="alt" type="button" data-d="hardcore">Hardcore</button>
+          <button class="alt" type="button" data-d="hardcore">Difícil</button>
+          <button class="alt" type="button" data-d="extreme">Hardcore</button>
+          <button class="alt" type="button" data-d="nightmare">Pesadilla</button>
         </div>
       </div>
       <p class="note diffDesc"></p>
@@ -352,6 +362,7 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
     <div class="memo"><div class="tape"></div><div class="in">
       <span class="kicker">Co-Op</span>
       <h1 style="font-size:clamp(32px,8vw,52px)">Lista de <em>servidores</em></h1>
+      <p class="note" id="onlineBox"><i></i><span><b id="onlineN">—</b> jugadores en línea</span></p>
       <div id="roomList"></div>
       <div class="row2"><button class="alt" id="btnRoomsRefresh" type="button">Actualizar lista</button></div>
       <div class="row2">
@@ -382,7 +393,9 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
         <span class="lbl">Dificultad</span>
         <div class="seg">
           <button class="alt on" type="button" data-d="normal">Normal</button>
-          <button class="alt" type="button" data-d="hardcore">Hardcore</button>
+          <button class="alt" type="button" data-d="hardcore">Difícil</button>
+          <button class="alt" type="button" data-d="extreme">Hardcore</button>
+          <button class="alt" type="button" data-d="nightmare">Pesadilla</button>
         </div>
         <p class="note diffDesc" style="margin-top:2px"></p>
       </div>
@@ -434,6 +447,10 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
       <span class="kicker">Configuración</span>
       <h1 style="font-size:clamp(32px,8vw,52px)">Grá<em>ficos</em></h1>
       <div id="gfxList"></div>
+      <div class="field">
+        <span class="lbl">Campo de visión (FOV) · <b id="fovVal">72°</b></span>
+        <input type="range" class="rng" id="fovRng" min="60" max="110" step="1" value="72" aria-label="Campo de visión">
+      </div>
       <div class="row2"><button class="alt" id="btnGfxBack" type="button">Volver</button></div>
     </div></div>
   </section>
@@ -447,7 +464,7 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
         <input type="range" class="rng" id="sensRng" min="0.2" max="3" step="0.05" value="1" aria-label="Sensibilidad de la cámara">
       </div>
       <label class="chk"><input type="checkbox" id="bobChk"> Balanceo de cámara al correr</label>
-      <p class="note">El balanceo agrega vaivén y leve inclinación al caminar y correr. Viene desactivado.</p>
+      <p class="note">El balanceo agrega vaivén y leve inclinación al caminar y correr. Viene activado.</p>
       <div class="row2"><button class="alt" id="btnCtlBack" type="button">Volver</button></div>
     </div></div>
   </section>
@@ -492,6 +509,7 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
         <div class="stats sm" id="pauseInfo"></div>
         <p id="pauseMsg">Los infectados esperan. Cuando estés listo, seguí.</p>
         <button class="go" id="btnResume" type="button">Continuar</button>
+        <button class="alt" id="btnPauseCfg" type="button" style="align-self:flex-start">Configuración</button>
         <button class="alt" id="btnQuit" type="button" style="align-self:flex-start">Salir de la partida</button>
       </div>
     </div>
@@ -537,15 +555,15 @@ var FOGC = 0x0b1a1c;
 
 /* ---------- ajustes: gráficos y mapeo de teclas ---------- */
 var FOG_FAR = 0.026, FOG_NEAR = 0.05;
-var CFG = { shadows: true, fogNear: false, vig: false, grain: false, moreP: false, grade: false, chroma: false, dyn: false };
+var CFG = { shadows: true, fogNear: false, vig: false, grain: false, moreP: false, grade: false, chroma: false, dyn: false, bloom: false, film: false, light: false, cam: false, eye: false };
 var KEYDEF = { fwd: 'KeyW', left: 'KeyA', back: 'KeyS', right: 'KeyD', sprint: 'ShiftLeft', fire: 'Space', reload: 'KeyR', shop: 'KeyE', nade: 'KeyG',
-  w1: 'Digit1', w2: 'Digit2', w3: 'Digit3', w4: 'Digit4', w5: 'Digit5', chat: 'Enter', score: 'Tab', mute: 'KeyM', use: 'KeyF',
+  w1: 'Digit1', w2: 'Digit2', w3: 'Digit3', w4: 'Digit4', w5: 'Digit5', chat: 'Enter', score: 'Tab', mute: 'KeyM', use: 'KeyQ', torch: 'KeyF',
   aimL: 'ArrowLeft', aimR: 'ArrowRight', aimU: 'ArrowUp', aimD: 'ArrowDown' };
 var KEYLBL = [['fwd', 'Avanzar'], ['left', 'Izquierda'], ['back', 'Retroceder'], ['right', 'Derecha'], ['sprint', 'Correr'], ['fire', 'Disparar (teclado)'],
   ['reload', 'Recargar'], ['shop', 'Armería'], ['nade', 'Granada'], ['w1', 'Arma 1 · Fusil'], ['w2', 'Arma 2 · Escopeta'], ['w3', 'Arma 3 · Subfusil'],
-  ['w4', 'Arma 4 · Francotirador'], ['w5', 'Arma 5 · Puños'], ['chat', 'Abrir chat'], ['score', 'Lista de jugadores'], ['use', 'Interactuar (máquinas / revivir)'], ['mute', 'Sonido'],
+  ['w4', 'Arma 4 · Francotirador'], ['w5', 'Arma 5 · Puños'], ['chat', 'Abrir chat'], ['score', 'Lista de jugadores'], ['use', 'Interactuar (máquinas / revivir)'], ['torch', 'Linterna (activar / desactivar)'], ['mute', 'Sonido'],
   ['aimL', 'Mirar a la izquierda'], ['aimR', 'Mirar a la derecha'], ['aimU', 'Mirar arriba'], ['aimD', 'Mirar abajo']];
-var CTL = { sens: 1, bob: false };
+var CTL = { sens: 1, bob: true, fov: 72 };
 var BIND = {};
 (function () {
   var k;
@@ -553,8 +571,10 @@ var BIND = {};
   try {
     var sk = JSON.parse(localStorage.getItem('nocheZombiKeys') || '{}');
     for (k in sk) if (KEYDEF[k] && typeof sk[k] === 'string') BIND[k] = sk[k];
+    if (sk.torch === undefined) for (k in BIND) if (k !== 'torch' && BIND[k] === BIND.torch) BIND[k] = KEYDEF[k];   // F pasa a ser la linterna: lo que la usaba vuelve a su tecla por defecto
     var sc = JSON.parse(localStorage.getItem('nocheZombiCfg') || '{}');
     for (k in CFG) if (typeof sc[k] === 'boolean') CFG[k] = sc[k];
+    if (sc.real === true && typeof sc.cam !== 'boolean' && typeof sc.eye !== 'boolean') CFG.cam = CFG.eye = true;   // "Realista" se disolvió en dos opciones
   } catch (e) {}
 })();
 function keyName(c) {
@@ -584,6 +604,7 @@ function resize() {
   renderer.setSize(w, h, false);
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
+  if (typeof ppResize === 'function') ppResize();
 }
 window.addEventListener('resize', resize);
 resize();
@@ -593,8 +614,8 @@ scene.add(new THREE.AmbientLight(0x2e4650, 1.1));
 var moonLight = new THREE.DirectionalLight(0x86a4d6, 0.85);
 moonLight.position.set(-30, 50, 20);
 scene.add(moonLight); scene.add(moonLight.target);
-moonLight.shadow.mapSize.set(1024, 1024); moonLight.shadow.bias = -0.0008;
-(function () { var c = moonLight.shadow.camera; c.left = -30; c.right = 30; c.top = 30; c.bottom = -30; c.near = 1; c.far = 150; })();
+moonLight.shadow.mapSize.set(2048, 2048); moonLight.shadow.bias = -0.0006; moonLight.shadow.normalBias = 0.04;
+(function () { var c = moonLight.shadow.camera; c.left = -34; c.right = 34; c.top = 34; c.bottom = -34; c.near = 1; c.far = 160; c.updateProjectionMatrix(); })();
 
 var torch = new THREE.SpotLight(0xfff0d0, 2.3, 50, 0.42, 0.55, 1.1);
 torch.position.set(0.15, -0.1, 0);
@@ -609,6 +630,29 @@ camera.add(muzzleLight);
 var lanternLight = new THREE.PointLight(0xff9a45, 1.7, 28, 2);
 lanternLight.position.set(0, 2.7, 0);
 scene.add(lanternLight);
+
+/* ---------- iluminación mejorada: halos, charcos de luz, linterna volumétrica y luces dinámicas ---------- */
+var LFX = [], LSRC = [], LSRC_M = [], XL = [], xlT = 0;
+var GLOWTEX = (function () {
+  var c = document.createElement('canvas'); c.width = c.height = 128;
+  var g = c.getContext('2d'), gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.22, 'rgba(255,255,255,0.5)'); gr.addColorStop(0.55, 'rgba(255,255,255,0.12)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+  return new THREE.CanvasTexture(c);
+})();
+function addGlow(parent, x, y, z, col, size, pool, reg) {   // halo (sprite aditivo) + charco de luz opcional en el suelo
+  var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: GLOWTEX, color: col, transparent: true, opacity: 0.8, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
+  sp.position.set(x, y, z); sp.scale.set(size, size, 1); sp.visible = CFG.light; sp.raycast = function () {};
+  parent.add(sp);
+  var o = { sp: sp, pl: null, base: size, ph: Math.random() * 6.28 };
+  if (pool) {
+    var pl = new THREE.Mesh(new THREE.PlaneGeometry(pool * 2, pool * 2), new THREE.MeshBasicMaterial({ map: GLOWTEX, color: col, transparent: true, opacity: 0.34, depthWrite: false, blending: THREE.AdditiveBlending }));
+    pl.rotation.x = -Math.PI / 2; pl.position.set(x, 0.05, z); pl.visible = CFG.light; pl.raycast = function () {};
+    parent.add(pl); o.pl = pl;
+  }
+  if (reg) LFX.push(o);
+  return o;
+}
 
 /* ---------- suelo ---------- */
 function makeGroundTexture() {
@@ -814,12 +858,14 @@ function makeHut(x, z) {
   var lamp = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.42, 0.34), new THREE.MeshBasicMaterial({ color: 0xffc27a }));
   lamp.position.y = 2.75;
   scene.add(pole); scene.add(lamp);
+  addGlow(scene, 0, 2.75, 0, 0xffb060, 6, 0, true).fl = 1;
   obstacles.push({ x: 0, z: 0, r: 0.35, h: 3 });
 })();
 
 // luna y estrellas (siguen al jugador, sin niebla)
 var moon = new THREE.Mesh(new THREE.SphereGeometry(7, 20, 20), new THREE.MeshBasicMaterial({ color: 0xdfe8f5, fog: false }));
 scene.add(moon);
+addGlow(moon, 0, 0, 0, 0xa9c0ff, 42, 0, true);
 var stars;
 (function () {
   var arr = [];
@@ -971,6 +1017,7 @@ function updateParticles(dt) {
 /* ---------- arma en primera persona ---------- */
 var gun = new THREE.Group();
 camera.add(gun);
+var gunMag = null, MAGMAT = null, GOLDMAT = new THREE.MeshPhongMaterial({ color: 0xf2c14e, emissive: 0x5c4108, shininess: 90 });   // el cargador se dora con Munición infinita
 (function () {
   var metal = new THREE.MeshPhongMaterial({ color: 0x2b3035, shininess: 40 });
   var wood = new THREE.MeshPhongMaterial({ color: 0x5a3b26, shininess: 8 });
@@ -979,7 +1026,7 @@ camera.add(gun);
   var barrel = part(new THREE.CylinderGeometry(0.018, 0.02, 0.38, 8), metal, 0, 0.025, -0.34);
   barrel.rotation.x = Math.PI / 2;
   part(new THREE.BoxGeometry(0.06, 0.1, 0.24), wood, 0, -0.01, 0.31);
-  part(new THREE.BoxGeometry(0.05, 0.17, 0.07), metal, 0, -0.13, -0.02);
+  gunMag = part(new THREE.BoxGeometry(0.05, 0.17, 0.07), metal, 0, -0.13, -0.02); MAGMAT = metal;
   part(new THREE.BoxGeometry(0.035, 0.03, 0.05), metal, 0, 0.075, -0.2);
 })();
 // puños en primera persona
@@ -1012,12 +1059,19 @@ var P = {
   flashT: 0, hurt: 0, shake: 0, bob: 0, speed: 0, shots: 0, hits: 0
 };
 var mode = 'menu';   // menu | play | paused | over
-var DIFF = 'normal'; // normal | hardcore
+var DIFF = 'normal'; // normal | hardcore (se muestra como Difícil) | extreme (Hardcore) | nightmare (Pesadilla)
+var DKEYS = ['normal', 'hardcore', 'extreme', 'nightmare'];   // el índice viaja por la red
+var DF = {   // wave: infectados por oleada · spd: velocidad de zombis · alive: vivos a la vez (tope cap) · gap: intervalo de aparición · drop: prob. de botín · pts: puntos · price: Armería · walk: velocidad del jugador
+  normal:    { name: 'Normal',    wave: 1, spd: 1,   alive: 1, cap: 110, gap: 1,   drop: 0.55,   pts: 1,    price: 1,    walk: 1,    atk: 1,    bk: 'nocheZombiBest' },
+  hardcore:  { name: 'Difícil',   wave: 2, spd: 2,   alive: 2, cap: 110, gap: 0.6, drop: 0.25,   pts: 0.85, price: 1.25, walk: 1,    atk: 0.85, bk: 'nocheZombiBestHC' },
+  extreme:   { name: 'Hardcore',  wave: 3, spd: 2.5, alive: 3, cap: 150, gap: 0.8, drop: 0.22,   pts: 0.8,  price: 1.35, walk: 1,    atk: 0.8, bk: 'nocheZombiBestXC' },
+  nightmare: { name: 'Pesadilla', wave: 4, spd: 3,   alive: 4, cap: 200, gap: 0.9, drop: 0.3575, pts: 0.65, price: 1.5,  walk: 0.75, atk: 0.75, bk: 'nocheZombiBestNM' }
+};
 var G = { wave: 0, toSpawn: 0, spawnTimer: 0, inter: 0, kills: 0, score: 0, best: 0, cleared: false };
 var KEEP = false;     // Mantener cuerpos
 var COLORS = ['#d0442f', '#e8872f', '#f0b24a', '#e8dc4a', '#93c26b', '#4f9a5a', '#2f9a9a', '#4fd0ff', '#3d6ea8', '#2f4fa8', '#7a4fa8', '#c07bff', '#a84f86', '#ff7aa8', '#8a8f96', '#e9e5d4'];
 var COLNAME = ['Rojo', 'Naranja', 'Ámbar', 'Amarillo', 'Lima', 'Verde', 'Turquesa', 'Celeste', 'Azul', 'Añil', 'Violeta', 'Lila', 'Magenta', 'Rosa', 'Gris', 'Hueso'];
-function bestKey() { return DIFF === 'hardcore' ? 'nocheZombiBestHC' : 'nocheZombiBest'; }
+function bestKey() { return DF[DIFF].bk; }
 function loadBest() { try { G.best = parseInt(localStorage.getItem(bestKey()) || '0', 10) || 0; } catch (e) { G.best = 0; } }
 loadBest();
 
@@ -1035,6 +1089,7 @@ window.addEventListener('keydown', function (e) {
   if (c === BIND.shop) { if (shopOpen) closeShop(); else if (nearShop) openShop(); }
   if (c === BIND.nade) throwNade();
   if (c === BIND.use && !e.repeat) useKey();
+  if (c === BIND.torch && !e.repeat) toggleTorch();
   if (P.dead && NET.role !== 'none' && mode === 'play') { if (c === BIND.left || c === BIND.aimL) specStep(-1); else if (c === BIND.right || c === BIND.aimR) specStep(1); }
   for (var wn = 1; wn <= 5; wn++) if (c === BIND['w' + wn]) { var wi = WORDER[wn - 1]; if (wi) switchWeapon(wi); }
   if (c === BIND.reload) startReload();
@@ -1043,7 +1098,7 @@ window.addEventListener('keydown', function (e) {
 });
 window.addEventListener('keyup', function (e) { keys[e.code] = false; });
 document.addEventListener('mousedown', function (e) {
-  if (mode !== 'play' || shopOpen || chatOpen) return;
+  if (mode !== 'play' || shopOpen || chatOpen || cfgOpen() || !$('pause').hidden) return;
   if (P.dead) { if (e.button === 0) specStep(1); else if (e.button === 2) specStep(-1); return; }
   if (e.button === 0) mouseDown = true;
   if (e.button === 2) { rightDrag = true; P.ads = true; }
@@ -1056,8 +1111,8 @@ document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 document.addEventListener('mousemove', function (e) {
   if (mode !== 'play') return;
   if (locked || rightDrag) {
-    P.yaw -= (e.movementX || 0) * 0.0022 * (camera.fov / 72) * CTL.sens;
-    P.pitch = clamp(P.pitch - (e.movementY || 0) * 0.0022 * (camera.fov / 72) * CTL.sens, -1.35, 1.35);
+    P.yaw -= (e.movementX || 0) * 0.0022 * (camera.fov / CTL.fov) * CTL.sens;
+    P.pitch = clamp(P.pitch - (e.movementY || 0) * 0.0022 * (camera.fov / CTL.fov) * CTL.sens, -1.35, 1.35);
   }
 });
 window.addEventListener('blur', function () { mouseDown = false; P.ads = false; keys = {}; if (mode === 'play') pauseGame(); });
@@ -1099,6 +1154,7 @@ function touchStart(e) {
     else if (el.closest && el.closest('#btnNade')) { throwNade(); }
     else if (el.closest && el.closest('#btnAds')) { P.ads = !P.ads; }
     else if (el.closest && el.closest('#btnChat')) { openChat(); }
+    else if (el.closest && el.closest('#btnTorch')) { toggleTorch(); }
     else if (el.closest && el.closest('#shopTip')) { openShop(); }
     else if (el.closest && el.closest('#useTip')) { if (deadNear()) { rvTouch = true; rvId = t.identifier; } else useKey(); }
     else if (el.closest && el.closest('#specPrev')) { specStep(-1); }
@@ -1208,6 +1264,7 @@ function spawnZombie(typeName, px, pz, idle) {
     e.userData.head = true;
     head.add(e);
   });
+  var eyeG = addGlow(head, 0, 0.04, 0.2, 0xff3b2a, 0.9, 0, false).sp;
   var torso = new THREE.Mesh(GEO.torso, mShirt);
   torso.position.set(0, 1.25, 0);
   var armL = new THREE.Group(), armR = new THREE.Group();
@@ -1227,8 +1284,8 @@ function spawnZombie(typeName, px, pz, idle) {
   var spMul = Math.min(1.45, 1 + 0.035 * Math.max(0, G.wave - 1));
   var zb = {
     type: typeName, T: T, root: root, head: head, armL: armL, armR: armR, legL: legL, legR: legR, blob: blob,
-    mats: [mSkin, mShirt, mPants], x: px, z: pz, yaw: Math.atan2(P.x - px, P.z - pz),
-    hp: T.hp * hpMul, speed: T.speed * spMul * rand(0.9, 1.15) * (DIFF === 'hardcore' ? 2 : 1), dmg: T.dmg, sc: sc, r: 0.42 * sc,
+    eyeG: eyeG, mats: [mSkin, mShirt, mPants], x: px, z: pz, yaw: Math.atan2(P.x - px, P.z - pz),
+    hp: T.hp * hpMul, speed: T.speed * spMul * rand(0.9, 1.15) * DF[DIFF].spd, dmg: T.dmg, sc: sc, r: 0.42 * sc,
     atkCd: rand(0.2, 0.7), swing: 0, flash: 0, anim: rand(0, TAU), groan: rand(1, 6),
     dead: false, dyingT: 0, inReach: false, idle: !!idle, id: ++NET.zid, tx: px, tz: pz, tyaw: 0
   };
@@ -1262,24 +1319,28 @@ function updateZombies(dt, active) {
   for (i = 0; i < zombies.length; i++) {
     zb = zombies[i];
     var tg = NET.role === 'client' ? P : nearestTarget(zb), dx = tg.x - zb.x, dz = tg.z - zb.z, dist = Math.hypot(dx, dz) || 0.001;
-    var sw;
+    var sw, adt = dt;
+    if (NET.role !== 'client' && active && !zb.idle && dist > 58) {   // culling de IA: los lejanos piensan 4 veces por segundo
+      zb.lodT = (zb.lodT || 0) + dt;
+      if (zb.lodT < 0.25) adt = 0; else { adt = zb.lodT; zb.lodT = 0; }
+    }
     if (NET.role === 'client' && active) {
       var kf = Math.min(1, dt * 12);
       zb.x += (zb.tx - zb.x) * kf; zb.z += (zb.tz - zb.z) * kf;
       zb.yaw += wrapAngle(zb.tyaw - zb.yaw) * kf; zb.anim += dt * zb.speed * 2.4;
-    } else if (active && !zb.idle) {
-      zb.yaw += clamp(wrapAngle(Math.atan2(dx, dz) - zb.yaw), -5 * dt, 5 * dt);
+    } else if (active && !zb.idle && adt > 0) {
+      zb.yaw += clamp(wrapAngle(Math.atan2(dx, dz) - zb.yaw), -5 * adt, 5 * adt);
       var reach = 0.55 + zb.sc * 0.8;
       if (dist > reach) {
         zb.inReach = false;
-        var step = zb.speed * dt;
+        var step = zb.speed * adt;
         zb.x += Math.sin(zb.yaw) * step;
         zb.z += Math.cos(zb.yaw) * step;
-        zb.anim += dt * zb.speed * 2.4;
+        zb.anim += adt * zb.speed * 2.4;
       } else {
-        if (!zb.inReach) { zb.inReach = true; zb.atkCd = Math.max(zb.atkCd, 0.4); }
-        zb.atkCd -= dt;
-        if (zb.atkCd <= 0) { zb.atkCd = 1.0; zb.swing = 0.4; damageTarget(tg, zb.dmg); }
+        if (!zb.inReach) { zb.inReach = true; zb.atkCd = Math.max(zb.atkCd, 0.4 * DF[DIFF].atk); }
+        zb.atkCd -= adt;
+        if (zb.atkCd <= 0) { zb.atkCd = 1.0 * DF[DIFF].atk; zb.swing = 0.4; damageTarget(tg, zb.dmg); }
       }
       for (j = i + 1; j < zombies.length; j++) {
         o = zombies[j];
@@ -1297,19 +1358,24 @@ function updateZombies(dt, active) {
       var fr = Math.hypot(zb.x, zb.z);
       if (fr > ARENA - 0.5) { zb.x *= (ARENA - 0.5) / fr; zb.z *= (ARENA - 0.5) / fr; }
 
-      zb.groan -= dt;
+      zb.groan -= adt;
       if (zb.groan <= 0) {
         zb.groan = rand(4, 9);
         var pan = clamp(((zb.x - P.x) * Math.cos(P.yaw) - (zb.z - P.z) * Math.sin(P.yaw)) / dist, -1, 1);
         sfxGroan(dist, zb.type === 'brute', pan);
       }
-    } else {
+    } else if (!active || zb.idle) {
       zb.anim += dt * 0.9;      // zombis de adorno en el menú: se balancean en el lugar
     }
+    // culling de render: más allá de la niebla no se dibuja ni se anima
+    if (zb.eyeG.visible !== CFG.light) zb.eyeG.visible = CFG.light;
+    var cdx = zb.x - camera.position.x, cdz = zb.z - camera.position.z, vis = cdx * cdx + cdz * cdz < 8100;
+    if (zb.root.visible !== vis) zb.root.visible = vis;
+    if (!vis) { zb.root.position.set(zb.x, 0, zb.z); zb.root.rotation.y = zb.yaw; continue; }
     sw = Math.sin(zb.anim);
-    zb.legL.rotation.x = sw * 0.75; zb.legR.rotation.x = -sw * 0.75;
     var atk = 0;
     if (zb.swing > 0) { atk = -Math.sin((1 - zb.swing / 0.4) * Math.PI) * 0.7; zb.swing -= dt; }
+    zb.legL.rotation.x = sw * 0.75; zb.legR.rotation.x = -sw * 0.75;
     var base = -1.3 + Math.sin(zb.anim * 0.5) * 0.1;
     zb.armL.rotation.x = base + atk; zb.armR.rotation.x = base - sw * 0.08 + atk;
     zb.root.rotation.x = 0.14;
@@ -1322,10 +1388,12 @@ function updateZombies(dt, active) {
 function updateCorpses(dt) {
   for (var i = corpses.length - 1; i >= 0; i--) {
     var c = corpses[i];
-    c.dyingT += dt;
+    c.dyingT += dt; if (!c.root.visible) c.root.visible = true;
     var k = Math.min(1, c.dyingT / 0.55), e = 1 - (1 - k) * (1 - k);
     c.root.rotation.x = 0.14 - (0.14 + Math.PI / 2) * e;
     c.root.position.y = 0.2 * c.sc * e - (!KEEP && c.dyingT > 4 ? (c.dyingT - 4) * 0.45 : 0);
+    var kl = Math.min(1, dt * 6); c.legL.rotation.x -= c.legL.rotation.x * kl; c.legR.rotation.x -= c.legR.rotation.x * kl;   // piernas abajo al morir
+    if (c.eyeG && c.eyeG.visible) c.eyeG.visible = false;
     if (KEEP) { var ka = Math.min(1, dt * 6); c.armL.rotation.x -= c.armL.rotation.x * ka; c.armR.rotation.x -= c.armR.rotation.x * ka; }   // brazos caídos al piso
     if (c.flash > 0) { c.flash -= dt; if (c.flash <= 0) setEmissive(c, 0x000000); }
     if (!KEEP && c.dyingT > 6.5) {
@@ -1383,16 +1451,24 @@ var PK = {};
     PK[kind] = { g: g, beam: beam };
   }
   tpl('ammo'); tpl('med');
+  (function () {   // fajo de billetes: 50$
+    var g = new THREE.Group(), bill = new THREE.MeshPhongMaterial({ color: 0x4f9a5a, emissive: 0x143018, shininess: 10 }), strap = new THREE.MeshBasicMaterial({ color: 0xe9e5d4 });
+    for (var i = 0; i < 3; i++) { var b = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.05, 0.22), bill); b.position.y = i * 0.055 - 0.05; b.rotation.y = (i - 1) * 0.18; g.add(b); }
+    var sb = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.2, 0.26), strap); sb.position.y = 0.005; g.add(sb);
+    var beam = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 3.2, 6, 1, true), new THREE.MeshBasicMaterial({ color: 0x6fd36f, transparent: true, opacity: 0.3, depthWrite: false, blending: THREE.AdditiveBlending }));
+    beam.position.y = 1.7; g.add(beam);
+    PK.cash = { g: g, beam: beam };
+  })();
   special('dmg', 0xff5a30, new THREE.OctahedronGeometry(0.28));
   special('spd', 0x4fd0ff, new THREE.TetrahedronGeometry(0.32));
   special('inf', 0xc07bff, new THREE.IcosahedronGeometry(0.27));
   special('nuke', 0xfff6c0, new THREE.DodecahedronGeometry(0.32));
 })();
-var PKINDS = ['ammo', 'med', 'dmg', 'spd', 'inf', 'nuke'], PKCOL = { ammo: '#f0b24a', med: '#e9e5d4', dmg: '#ff5a30', spd: '#4fd0ff', inf: '#c07bff', nuke: '#ffffff' };
-function dropMul() { return DIFF === 'hardcore' ? 0.25 : 0.55; }      // -75% en Hardcore, -45% en Normal
-function pickKind() {   // normales: peso 1; especiales: peso 0.75; Aniquilación: 0,1%
-  if (Math.random() < 0.001) return 'nuke';
-  var w = { ammo: 1, med: 1, dmg: 0.75, spd: 0.75, inf: 0.75 }, tot = 4.25, r = Math.random() * tot, k;
+var PKINDS = ['ammo', 'med', 'dmg', 'spd', 'inf', 'nuke', 'cash'], PKCOL = { ammo: '#f0b24a', med: '#e9e5d4', dmg: '#ff5a30', spd: '#4fd0ff', inf: '#c07bff', nuke: '#ffffff', cash: '#6fd36f' };
+function dropMul() { return DF[DIFF].drop; }      // -75% en Difícil, -45% en Normal
+function pickKind() {   // normales: peso 1; especiales: peso 0.75; Aniquilación: 0,4%
+  if (Math.random() < 0.004) return 'nuke';
+  var w = { ammo: 1, med: 1, cash: 1, dmg: 0.75, spd: 0.75, inf: 0.75 }, tot = 5.25, r = Math.random() * tot, k;
   for (k in w) { if (r < w[k]) return k; r -= w[k]; }
   return 'ammo';
 }
@@ -1407,12 +1483,13 @@ function dropPickup(x, z, kind) {
   var g = PK[kind].g.clone(true);
   g.position.set(x, 0.45, z); g.scale.setScalar(1.5);
   scene.add(g);
-  pickups.push({ kind: kind, g: g, x: x, z: z, t: rand(0, TAU), life: 32, id: ++NET.kid });
+  var halo = addGlow(g, 0, 0.3, 0, PKCOL[kind], 1.6, 0, false).sp;
+  pickups.push({ kind: kind, g: g, halo: halo, x: x, z: z, t: rand(0, TAU), life: 32, id: ++NET.kid });
 }
 function updatePickups(dt) {
   for (var i = pickups.length - 1; i >= 0; i--) {
     var pk = pickups[i], took = false;
-    pk.t += dt; pk.life -= dt;
+    pk.t += dt; pk.life -= dt; if (pk.halo.visible !== CFG.light) pk.halo.visible = CFG.light;
     pk.g.rotation.y = pk.t * 1.6;
     pk.g.position.y = 0.45 + Math.sin(pk.t * 3) * 0.07;
     pk.g.visible = pk.life > 5 || Math.floor(pk.life * 6) % 2 === 0;
@@ -1421,6 +1498,7 @@ function updatePickups(dt) {
     } else if (!P.dead && Math.hypot(pk.x - P.x, pk.z - P.z) < 1.7) {
       if (pk.kind === 'med' && P.hp < P.maxHp) { P.hp = Math.min(P.maxHp, P.hp + 25); took = true; showPop('+25 salud'); }
       else if (pk.kind === 'ammo' && P.reserve < MAXRES) { P.reserve = Math.min(MAXRES, P.reserve + 36); took = true; showPop('+36 balas'); }
+      else if (pk.kind === 'cash') { G.cash += 50; took = true; showPop('+50$'); }
       else if (pk.kind !== 'med' && pk.kind !== 'ammo') { shareBuff(pk.kind, 0); took = true; }
       if (took) sfxPickup();
     }
@@ -1463,7 +1541,7 @@ function startReload() {
 
 function sfxPunch() { noiseHit(1400, 300, 0.45, 0.12, 'lowpass'); tone('sine', 120, 55, 0.4, 0.09); }
 function punch() {
-  P.fireCd = W.cd; P.shots++;
+  P.fireCd = W.cd; P.shots++; SHOTN++;
   var hd = P.pHand; P.pHand = 1 - P.pHand; P.pk[hd] = 1;
   sfxPunch(); fxSend('s');
   var dmul = P.tDmg > 0 ? 2 : 1;
@@ -1493,12 +1571,12 @@ function fire() {
   if (W.melee) { punch(); return; }
   if (P.ammo <= 0 && P.tInf <= 0) { sfxEmpty(); P.fireCd = 0.3; startReload(); return; }
   if (P.tInf <= 0) P.ammo--;
-  P.shots++;
+  P.shots++; SHOTN++;
   P.fireCd = W.cd; P.kick = 1; P.flashT = 0.05;
   P.heat = Math.min(1, P.heat + 0.16 * W.auto);
   var dd = P.tDmg > 0, dmul = dd ? 2 : 1;
   muzzleLight.color.setHex(dd ? 0xff5a30 : 0xffb55a); flashMesh.material.color.setHex(dd ? 0xff6a3a : 0xffd68a);
-  muzzleLight.intensity = 3.4; flashMesh.visible = true;
+  muzzleLight.intensity = CFG.light ? 5.5 : 3.4; flashMesh.visible = true;
   flashMesh.scale.setScalar(rand(0.7, 1.4));
   sfxShot(); fxSend('s');
   var spread = (W.sp + P.heat * 0.03 * W.auto + (P.speed > 0.5 ? 0.01 : 0)) * (1 - 0.65 * P.adsK);
@@ -1531,10 +1609,11 @@ function fire() {
 function hurtZombie(zb, dmg, head, point, by) {
   if (zb.dead) return;
   if (NET.role === 'client') {
-    netSend({ t: 'hit', id: zb.id, d: dmg, h: head ? 1 : 0 });
+    var hq = hitQ[zb.id] || (hitQ[zb.id] = { d: 0, h: 0 }); hq.d += dmg; if (head) hq.h = 1;   // se agrupan y salen una vez por cuadro
     zb.flash = 0.09; setEmissive(zb, 0x661515); burst(point, head ? 9 : 5, 0x6b1a1a, 3.2); sfxThud();
     return;
   }
+  if (zb.lastShot !== SHOTN) { zb.lastShot = SHOTN; zb.nShots = (zb.nShots || 0) + 1; }   // disparos distintos que recibió (para Insta-Kill)
   zb.hp -= dmg;
   zb.flash = 0.09; setEmissive(zb, 0x661515);
   burst(point, head ? 9 : 5, 0x6b1a1a, 3.2);
@@ -1542,9 +1621,21 @@ function hurtZombie(zb, dmg, head, point, by) {
   if (zb.hp <= 0) killZombie(zb, head, by);
 }
 
-var inBlast = false;
-function award(base) {   // puntos (Hardcore -15%) y dinero = 25% de los puntos, redondeado hacia abajo
-  var pts = DIFF === 'hardcore' ? Math.floor(base * 0.85) : base;
+var inBlast = false, SHOTN = 0, COMBO_T = 3.5;
+// combos: rachas de bajas seguidas (hasta 3,5 s entre una y otra) e Insta-Kills seguidos (un infectado caído con un solo disparo/golpe)
+function comboKill(kp, zb) {
+  var out = { b: 0, tx: '' };
+  if (!kp) return out;
+  var insta = !inBlast && zb.nShots === 1;
+  if (clock - (kp.cT === undefined ? -99 : kp.cT) > COMBO_T) { kp.streak = 0; kp.iN = 0; }
+  kp.cT = clock; kp.streak = (kp.streak || 0) + 1;
+  kp.iN = insta ? (kp.iN || 0) + 1 : 0;
+  if (kp.streak >= 3) { out.b += Math.min(30, 3 * (kp.streak - 2)); out.tx = 'Racha x' + kp.streak; }
+  if (kp.iN >= 2) { out.b += Math.min(50, 8 * (kp.iN - 1)); out.tx = (out.tx ? out.tx + ' · ' : '') + 'Insta-Kill x' + kp.iN; }
+  return out;
+}
+function award(base) {   // puntos (Difícil -15%) y dinero = 25% de los puntos, redondeado hacia abajo
+  var pts = Math.floor(base * DF[DIFF].pts);
   return { p: pts, c: Math.floor(pts * 0.25) };
 }
 function killZombie(zb, head, by) {
@@ -1559,12 +1650,12 @@ function killZombie(zb, head, by) {
     var kp = by ? NET.rp[by] : P;
     if (kp) { var kd = Math.hypot(kp.x - zb.x, kp.z - zb.z); lng = kd >= 45 ? 40 : kd >= 30 ? 20 : 0; }
   }
-  var aw = award(base + lng), pts = aw.p;
+  var cb = comboKill(by ? NET.rp[by] : P, zb), aw = award(base + lng + cb.b), pts = aw.p;
   G.score += pts;
-  if (by) { var kr = NET.rp[by]; if (kr) kr.score = (kr.score || 0) + pts; netSendTo(by, { t: 'cash', v: aw.c, p: pts, h: head ? 1 : 0, l: lng ? 1 : 0 }); }
-  else { G.cash += aw.c; P.pscore += pts; showPop((lng ? 'Largo alcance  +' : head ? 'Cabeza  +' : '+') + pts); }
+  if (by) { var kr = NET.rp[by]; if (kr) kr.score = (kr.score || 0) + pts; netSendTo(by, { t: 'cash', v: aw.c, p: pts, h: head ? 1 : 0, l: lng ? 1 : 0, x: cb.tx }); }
+  else { G.cash += aw.c; P.pscore += pts; showPop((cb.tx ? cb.tx + '  +' : lng ? 'Largo alcance  +' : head ? 'Cabeza  +' : '+') + pts); }
   burst(new THREE.Vector3(zb.x, 1.2 * zb.sc, zb.z), 16, 0x6b1a1a, 4.6);
-  if (!noDrop && Math.random() < (zb.type === 'brute' ? 1 : 0.2) * dropMul()) dropPickup(zb.x, zb.z, pickKind());
+  if (!noDrop && Math.random() < (zb.type === 'brute' ? 1 : 0.2 * dropMul())) dropPickup(zb.x, zb.z, pickKind());
 }
 
 function hurtPlayer(dmg) {
@@ -1575,22 +1666,21 @@ function hurtPlayer(dmg) {
 }
 
 /* ---------- oleadas ---------- */
-function waveSize(n) { return Math.round((7 + n * 4) * (1 + 0.6 * (NET.count() - 1)) * (DIFF === 'hardcore' ? 2 : 1)); }
+function waveSize(n) { return Math.round((7 + n * 4) * (1 + 0.6 * (NET.count() - 1)) * DF[DIFF].wave); }
 function startWave(n) {
   revive();
   G.wave = n; G.toSpawn = waveSize(n); G.spawnTimer = 1.5; G.cleared = false;
-  RAIN = Math.random() < 0.02;
-  showBanner('Oleada ' + n, (DIFF === 'hardcore' ? 'Hardcore · ' : '') + waveSize(n) + ' infectados en camino' + (RAIN ? ' · Empieza a llover' : ''));
+  var wr = Math.random(); RAIN = wr < 0.04; WIND = !RAIN && wr < 0.07;   // 4% lluvia, 3% tormenta de viento
+  showBanner('Oleada ' + n, (DIFF !== 'normal' ? DF[DIFF].name + ' · ' : '') + waveSize(n) + ' infectados en camino' + (RAIN ? ' · Empieza a llover' : WIND ? ' · Se levanta una tormenta de viento' : ''));
   sfxWave();
 }
 function updateWaves(dt) {
   if (G.toSpawn > 0) {
     G.spawnTimer -= dt;
-    var hcm = DIFF === 'hardcore' ? 2 : 1;
-    var maxAlive = Math.min(Math.min((8 + G.wave * 2) * NET.count(), 26 * NET.count()) * hcm, 110);
+    var maxAlive = Math.min(Math.min((8 + G.wave * 2) * NET.count(), 26 * NET.count()) * DF[DIFF].alive, DF[DIFF].cap);
     if (G.spawnTimer <= 0 && zombies.length < maxAlive) {
       spawnAtEdge(); G.toSpawn--;
-      G.spawnTimer = Math.max(0.35, 1.5 - G.wave * 0.1) * (DIFF === 'hardcore' ? 0.6 : 1);
+      G.spawnTimer = Math.max(0.35, 1.5 - G.wave * 0.1) * DF[DIFF].gap;
     }
   } else if (zombies.length === 0 && !G.cleared) {
     G.cleared = true; G.inter = 10; G.revived = false;
@@ -1625,7 +1715,7 @@ function updatePlayer(dt) {
   var mag = Math.hypot(fwd, str);
   if (mag > 1) { fwd /= mag; str /= mag; mag = 1; }
   var sprint = kd('sprint') || (BIND.sprint === 'ShiftLeft' && keys.ShiftRight) || (touchMode && Math.hypot(stick.x, stick.y) > 0.92);
-  var speed = (sprint ? 8.4 : 5.4) * (1 - 0.4 * P.adsK) * (P.tSpd > 0 ? 1.5 : 1) * (P.up.speed ? 1.5 : 1);
+  var speed = (sprint ? 8.4 : 5.4) * (1 - 0.4 * P.adsK) * (P.tSpd > 0 ? 1.5 : 1) * (P.up.speed ? 1.5 : 1) * DF[DIFF].walk;
   var sinY = Math.sin(P.yaw), cosY = Math.cos(P.yaw);
   var vx = (-sinY * fwd + cosY * str) * speed;
   var vz = (-cosY * fwd - sinY * str) * speed;
@@ -1670,9 +1760,10 @@ function updatePlayer(dt) {
 function placeCamera(dt, t) {
   if (mode !== 'play' || P.dead) P.ads = false;
   P.adsK += ((P.ads ? 1 : 0) - P.adsK) * Math.min(1, dt * 10);
-  var fv = 72 / (1 + (W.zoom - 1) * P.adsK);
+  var fv = CTL.fov / (1 + (W.zoom - 1) * P.adsK);
   if (Math.abs(camera.fov - fv) > 0.05) { camera.fov = fv; camera.updateProjectionMatrix(); }
   var scoped = W.zoom > 2 && P.adsK > 0.6;
+  gunMag.material = P.tInf > 0 ? GOLDMAT : MAGMAT;
   gun.visible = !scoped && !W.melee && !P.dead; fists.visible = !!W.melee && !P.dead; $('scope').style.opacity = scoped ? '1' : '0';
   P.bob += dt * (P.speed > 0.5 ? P.speed * 1.5 : 0);
   var bobY = CTL.bob && P.speed > 0.5 ? Math.sin(P.bob) * 0.045 * (P.speed > 7 ? 1.5 : 1) : 0;
@@ -1698,9 +1789,16 @@ function placeCamera(dt, t) {
       h.rotation.x = 0.15 + ext * 0.1;
     }
   }
+  if (CFG.cam && !specActive()) {   // respiración y pulso: la cámara nunca está del todo quieta (menos al apuntar)
+    var swk = 1 - P.adsK * 0.5;
+    camera.rotation.x += (Math.sin(t * 1.3) * 0.0016 + Math.sin(t * 0.43) * 0.0011) * swk;
+    camera.rotation.y += Math.sin(t * 0.9 + 1) * 0.0014 * swk;
+  }
   if (CFG.dyn) { moonLight.position.set(camera.position.x - 30, 50, camera.position.z + 20); moonLight.target.position.set(camera.position.x, 0, camera.position.z); }
   // luces ambientales
-  lanternLight.intensity = 1.55 + Math.sin(t * 9) * 0.1 + Math.sin(t * 23) * 0.07;
+  lanternLight.intensity = (1.55 + Math.sin(t * 9) * 0.1 + Math.sin(t * 23) * 0.07) * (CFG.light ? 1.3 : 1);
+  updateLightFx(dt, t);
+  torch.intensity = P.torchOn ? (CFG.light ? 2.9 * (1 + Math.sin(t * 13) * 0.015) : 2.3) : 0;   // la intensidad (no la luz) se apaga: así no se recompilan los shaders
   moon.position.set(camera.position.x - 75, 82, camera.position.z - 82);
   stars.position.set(camera.position.x, 0, camera.position.z);
 }
@@ -1783,7 +1881,8 @@ function resetGame() {
   P.flashT = 0; P.hurt = 0; P.shake = 0; P.shots = 0; P.hits = 0; P.speed = 0;
   G.wave = 0; G.toSpawn = 0; G.kills = 0; G.score = 0; G.cleared = false; P.pscore = 0;
   RAIN = false; rainK = 0; P.spec = -1; P.rvT = 0; rvProg = {};
-  NET.eachRemote(function (r) { r.score = 0; r.cash = 0; });
+  P.streak = 0; P.iN = 0; P.cT = -99; WIND = false; windK = 0;
+  NET.eachRemote(function (r) { r.score = 0; r.cash = 0; r.streak = 0; r.iN = 0; r.cT = -99; });
   muzzleLight.intensity = 0; flashMesh.visible = false;
 }
 
@@ -1794,7 +1893,7 @@ function startGame() {
   loadBest();
   if (NET.role !== 'client') { clearMachines(); MACH = UPG ? genMachines() : []; }
   buildMachines(MACH);
-  if (NET.role === 'host') netBroadcast({ t: 'start', d: DIFF === 'hardcore' ? 1 : 0, kb: KEEP ? 1 : 0, up: UPG ? 1 : 0, mc: MACH });
+  if (NET.role === 'host') netBroadcast({ t: 'start', d: DKEYS.indexOf(DIFF), kb: KEEP ? 1 : 0, up: UPG ? 1 : 0, mc: MACH });
   showMenuScreen(''); show('over', false); show('pause', false); show('hud', true);
   mode = 'play';
   requestLock();
@@ -1802,7 +1901,7 @@ function startGame() {
 }
 
 function pauseGame() {
-  if (mode !== 'play') return;
+  if (mode !== 'play' || cfgOpen()) return;
   if (NET.role === 'none') mode = 'paused';
   mouseDown = false; touchFire = false;
   $('pauseMsg').textContent = NET.role === 'none' ? 'Los infectados esperan. Cuando estés listo, seguí.' : 'En Co-Op el juego no se detiene. Volvé rápido.';
@@ -1812,7 +1911,7 @@ function pauseGame() {
 }
 var pauseKey = '';
 function updatePauseInfo(force) {
-  var rows = [['Dificultad', DIFF === 'hardcore' ? 'Hardcore' : 'Normal']];
+  var rows = [['Dificultad', DF[DIFF].name]];
   if (NET.role === 'none') rows.push(['Puntaje', P.pscore]);
   else rows.push(['Jugadores', NET.count() + ' / ' + NET.max], ['Visibilidad', NET.pub ? 'Público' : 'Privado'], ['Código', NET.code], ['Tu puntaje', P.pscore]);
   var key = JSON.stringify(rows);
@@ -1863,11 +1962,8 @@ $('btnRetry').addEventListener('click', function () {
 });
 $('btnResume').addEventListener('click', function () { resumeGame(false); });
 window.addEventListener('keydown', function (e) {
-  if (e.code !== 'Escape') return;
-  if (shopOpen) closeShop();
-  else if (chatOpen) closeChat();
-  else if (mode === 'paused' || (NET.role !== 'none' && !$('pause').hidden)) resumeGame(false);
-  else if (mode === 'play') pauseGame();
+  if (e.code !== 'Escape' || shopOpen || chatOpen || !$('pause').hidden) return;   // Esc ya no cierra nada: se usa el botón
+  if (mode === 'play') pauseGame();
 });
 
 /* ---------- armas y armería ---------- */
@@ -1914,6 +2010,7 @@ var SHOP = { x: -11, z: 2 }, shopOpen = false, nearShop = false, shopCash = -1;
   sign.position.set(2.31, 3.75, 0); sign.rotation.y = Math.PI / 2; g.add(sign);
   var lamp = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 0.3), new THREE.MeshBasicMaterial({ color: 0xffc27a })); lamp.position.set(0.6, 2.9, 0); g.add(lamp);
   var sl = new THREE.PointLight(0xffc27a, 1.5, 16, 2); sl.position.set(0.6, 2.6, 0); g.add(sl);
+  addGlow(g, 0.6, 2.85, 0, 0xffc27a, 3.6, 0, true).fl = 1;
   [-2, -1, 0, 1, 2].forEach(function (k) {
     obstacles.push({ x: SHOP.x + 1.7, z: SHOP.z + k, r: 0.6, h: 3 });
     obstacles.push({ x: SHOP.x - 1.6, z: SHOP.z + k, r: 0.6, h: 3 });
@@ -1940,7 +2037,7 @@ function closeShop() {
   shopOpen = false; show('shop', false);
   if (mode === 'play' && !touchMode && !lockFailed) { resuming = true; setTimeout(function () { resuming = false; }, 600); requestLock(); }
 }
-function pr(base) { return Math.round(base * 2 * (DIFF === 'hardcore' ? 1.25 : 1)); }
+function pr(base) { return Math.round(base * 2 * DF[DIFF].price); }
 function renderShop() {
   shopCash = G.cash; $('shCash').textContent = G.cash;
   var h = '';
@@ -1969,7 +2066,7 @@ $('btnShopClose').addEventListener('click', closeShop);
 
 /* ---------- Co-Op: WebRTC con PeerJS (sin servidor propio; sirve en GitHub Pages) ---------- */
 var NET = {
-  role: 'none', max: 4, hostName: 'Anfitrión', pub: false, zid: 0, kid: 0, peer: null, host: null, conns: {}, rp: {}, myId: 0, nid: 0, left: 0, acc: 0, ready: false, code: '', ping: 0, pingT: 9,
+  role: 'none', max: 4, hostName: 'Anfitrión', pub: false, zid: 0, kid: 0, peer: null, host: null, conns: {}, rp: {}, myId: 0, nid: 0, left: 0, acc: 0, ready: false, code: '', ping: 0, pingT: 9, stSig: '', stT: 0,
   count: function () { return 1 + Object.keys(NET.rp).length; },
   eachRemote: function (f) { for (var k in NET.rp) f(NET.rp[k]); }
 };
@@ -1979,11 +2076,31 @@ function netMsg(t) { $('netMsg').textContent = t; $('lobMsg').textContent = t; $
 function netSend(m) { if (NET.role === 'client' && NET.host && NET.host.open) NET.host.send(m); }
 function fxSend(k) {   // avisa a los demás de mis disparos y recargas
   var dd = P.tDmg > 0 ? 1 : 0;
-  if (NET.role === 'client') netSend({ t: 'fx', k: k, w: P.w, dd: dd });
-  else if (NET.role === 'host') netBroadcast({ t: 'fx', id: 0, k: k, w: P.w, dd: dd });
+  var wi = WORDER.indexOf(P.w);
+  if (NET.role === 'client') netSend({ t: 'fx', k: k, w: wi, d: dd });
+  else if (NET.role === 'host') netNear({ t: 'fx', id: 0, k: k, w: wi, d: dd }, P.x, P.z, FX_R, -1);
 }
 function netSendTo(id, m) { var c = NET.conns[id]; if (c && c.open) c.send(m); }
 function netBroadcast(m) { for (var k in NET.conns) if (NET.conns[k].open) NET.conns[k].send(m); }
+// interés: solo a los jugadores cercanos (o caídos, que espectan) al punto del evento
+var FX_R = 62, CULL_R = 64;
+function netNear(m, x, z, rad, except) {
+  for (var k in NET.conns) {
+    var c = NET.conns[k], r = NET.rp[k];
+    if (!c.open || +k === except) continue;
+    if (r && !r.dead && Math.hypot(r.x - x, r.z - z) > rad) continue;
+    c.send(m);
+  }
+}
+var hitQ = {};
+function flushHits() {
+  var a = [], k;
+  for (k in hitQ) a.push(+k, Math.round(hitQ[k].d), hitQ[k].h);
+  hitQ = {};
+  if (a.length) netSend({ t: 'h', a: a });
+}
+function q10(v) { return Math.round(v * 10); }
+function q20(v) { return Math.round(v * 20); }
 
 var AV_COL = [0x3d6ea8, 0xa84a3d, 0x4f9a5a, 0x9a7a2f, 0x7a4fa8, 0x2f9a9a, 0xa84f86, 0x8a8f96];
 function makeAvatar(name, id, col) {
@@ -2081,7 +2198,7 @@ function hostCheckOver() {
 }
 function playerDown() {
   if (NET.role === 'none') { endGame(); return; }
-  P.dead = true; P.tDmg = 0; P.tSpd = 0; P.tInf = 0;
+  P.dead = true; P.streak = 0; P.iN = 0; P.tDmg = 0; P.tSpd = 0; P.tInf = 0;
   if (shopOpen) { shopOpen = false; show('shop', false); }
   showBanner('Caíste', 'Un compañero puede revivirte, o esperá el Descanso'); P.spec = -1; specStep(1); P.rvT = 0;
   hostCheckOver();
@@ -2090,10 +2207,11 @@ function playerDown() {
 function netTick(dt) {
   if (NET.role === 'none') return;
   NET.acc += dt;
-  if (NET.acc >= 0.066) {
+  if (NET.role === 'client') flushHits();
+  if (NET.acc >= 0.1) {   // 10 envíos por segundo
     NET.acc = 0;
     if (NET.role === 'host') hostSnapshot();
-    else netSend({ t: 'st', x: P.x, z: P.z, y: P.yaw, p: r2(P.pitch), h: P.hp, d: P.dead ? 1 : 0, s: P.tSpd > 0 ? 1 : 0, w: P.w, ca: G.cash, pi: NET.ping, u: upBits() });
+    else clientState();
   }
   if (NET.role === 'client') { NET.pingT += dt; if (NET.pingT >= 2) { NET.pingT = 0; netSend({ t: 'pg', ts: performance.now() }); } }
   var k = Math.min(1, dt * 12);
@@ -2119,46 +2237,89 @@ function netTick(dt) {
     r.mesh.position.y = r.dead ? 0.25 : 0;
   });
 }
+function clientState() {   // solo se envía si cambió algo (o como latido cada 0,5 s)
+  var fl = (P.dead ? 1 : 0) | (P.tSpd > 0 ? 2 : 0), wi = WORDER.indexOf(P.w);
+  var m = { t: 'st', x: q10(P.x), z: q10(P.z), y: q20(P.yaw), p: q20(P.pitch), h: Math.ceil(P.hp), f: fl, w: wi, ca: G.cash, pi: NET.ping, u: upBits() };
+  var sig = [m.x, m.z, m.y, m.p, m.h, m.f, m.w, m.ca, m.pi, m.u].join(',');
+  NET.stT += 0.1;
+  if (sig === NET.stSig && NET.stT < 0.5) return;
+  NET.stSig = sig; NET.stT = 0; netSend(m);
+}
+var snapN = 0;
 function hostSnapshot() {
-  var z = zombies.map(function (q) { return [q.id, q.type === 'walker' ? 0 : q.type === 'runner' ? 1 : 2, r2(q.x), r2(q.z), r2(q.yaw)]; });
-  var pk = pickups.map(function (q) { return [q.id, PKINDS.indexOf(q.kind), r2(q.x), r2(q.z)]; });
-  var ps = [[0, r2(P.x), r2(P.z), r2(P.yaw), Math.ceil(P.hp), P.dead ? 1 : 0, NET.hostName, r2(P.pitch), P.tSpd > 0 ? 1 : 0, P.pscore, G.cash, 0, P.w, P.col]];
-  NET.eachRemote(function (r) { ps.push([r.id, r2(r.x), r2(r.z), r2(r.yaw), Math.ceil(r.hp), r.dead ? 1 : 0, r.name, r2(r.pitch || 0), r.spd ? 1 : 0, r.score || 0, r.cash || 0, r.ping || 0, r.w || 'rifle', r.col == null ? -1 : r.col]); });
-  netBroadcast({ t: 's', w: G.wave, l: zombies.length + G.toSpawn, sc: G.score, k: G.kills, z: z, pk: pk, ps: ps, rs: G.cleared ? Math.ceil(G.inter) : 0, rn: RAIN ? 1 : 0 });
+  snapN++;
+  var slow = snapN % 5 === 0, zl = zombies.map(function (q) { return q; });
+  var ps = [0, q10(P.x), q10(P.z), q20(P.yaw), Math.ceil(P.hp), (P.dead ? 1 : 0) | (P.tSpd > 0 ? 2 : 0), q20(P.pitch)];
+  NET.eachRemote(function (r) { ps.push(r.id, q10(r.x), q10(r.z), q20(r.yaw), Math.ceil(r.hp), (r.dead ? 1 : 0) | (r.spd ? 2 : 0), q20(r.pitch || 0)); });
+  var info = null;
+  if (slow) {
+    info = [[0, NET.hostName, P.pscore, G.cash, 0, WORDER.indexOf(P.w), P.col]];
+    NET.eachRemote(function (r) { info.push([r.id, r.name, r.score || 0, r.cash || 0, r.ping || 0, Math.max(0, WORDER.indexOf(r.w || 'rifle')), r.col == null ? -1 : r.col]); });
+  }
+  var pkSig = pickups.map(function (q) { return q.id; }).join(','), left = zombies.length + G.toSpawn, rs = G.cleared ? Math.ceil(G.inter) : 0;
+  for (var cid in NET.conns) {
+    var c = NET.conns[cid], r = NET.rp[cid];
+    if (!c.open || !r) continue;
+    var z = [], i, q, all = r.dead;
+    for (i = 0; i < zl.length; i++) {   // culling de red: solo los infectados cercanos a ese jugador
+      q = zl[i];
+      if (!all && Math.hypot(q.x - r.x, q.z - r.z) > CULL_R) continue;
+      z.push(q.id * 4 + (q.type === 'walker' ? 0 : q.type === 'runner' ? 1 : 2), q10(q.x), q10(q.z), q20(q.yaw));
+    }
+    var m = { t: 's', w: G.wave, l: left, sc: G.score, k: G.kills, z: z, pp: ps, rs: rs, rn: RAIN ? 1 : WIND ? 2 : 0 };
+    if (info) m.pi = info;
+    if (r.pkSig !== pkSig || (slow && snapN % 25 === 0)) {
+      r.pkSig = pkSig; m.pk = [];
+      pickups.forEach(function (p) { m.pk.push(p.id, PKINDS.indexOf(p.kind), q10(p.x), q10(p.z)); });
+    }
+    c.send(m);
+  }
 }
 function clientSnapshot(m) {
   if (m.w > G.wave) {
     G.wave = m.w; showBanner('Oleada ' + m.w, 'Resistan juntos'); sfxWave(); P.nades = Math.min(8, P.nades + 1);
     if (P.dead) { P.dead = false; P.hp = Math.max(P.hp, 60); }
   }
-  G.score = m.sc; G.kills = m.k; NET.left = m.l; NET.rest = +m.rs || 0; RAIN = !!m.rn;
-  var byId = {}, seen = {}, i, a, zb;
+  G.score = m.sc; G.kills = m.k; NET.left = m.l; NET.rest = +m.rs || 0; RAIN = m.rn === 1; WIND = m.rn === 2;
+  var byId = {}, seen = {}, i, zb, zl = m.z || [];
   zombies.forEach(function (q) { byId[q.id] = q; });
-  for (i = 0; i < m.z.length; i++) {
-    a = m.z[i]; seen[a[0]] = 1; zb = byId[a[0]];
-    if (!zb) { zb = spawnZombie(ZTN[a[1]], a[2], a[3]); zb.id = a[0]; zb.x = a[2]; zb.z = a[3]; zb.yaw = a[4]; }
-    zb.tx = a[2]; zb.tz = a[3]; zb.tyaw = a[4];
+  for (i = 0; i + 3 < zl.length; i += 4) {
+    var zid = Math.floor(zl[i] / 4), zt = zl[i] % 4, zx = zl[i + 1] / 10, zz = zl[i + 2] / 10, zy = zl[i + 3] / 20;
+    seen[zid] = 1; zb = byId[zid];
+    if (!zb) { zb = spawnZombie(ZTN[zt] || 'walker', zx, zz); zb.id = zid; zb.x = zx; zb.z = zz; zb.yaw = zy; }
+    zb.tx = zx; zb.tz = zz; zb.tyaw = zy;
   }
   zombies.slice().forEach(function (q) {
     if (seen[q.id]) return;
-    q.dead = true; zombies.splice(zombies.indexOf(q), 1); corpses.push(q);
+    zombies.splice(zombies.indexOf(q), 1);
+    if (Math.hypot(q.x - camera.position.x, q.z - camera.position.z) > CULL_R - 8) {   // salió del radio de interés: no murió
+      scene.remove(q.root); q.mats.forEach(function (mm) { mm.dispose(); }); return;
+    }
+    q.dead = true; corpses.push(q);
     q.dyingT = 0; q.blob.visible = false; blackenCorpse(q);
     burst(new THREE.Vector3(q.x, 1.2 * q.sc, q.z), 14, 0x6b1a1a, 4.4);
   });
-  var pById = {}, pSeen = {};
-  pickups.forEach(function (q) { pById[q.id] = q; });
-  m.pk.forEach(function (b) {
-    pSeen[b[0]] = 1;
-    if (!pById[b[0]]) { dropPickup(b[2], b[3], PKINDS[b[1]] || 'ammo'); var n = pickups[pickups.length - 1]; n.id = b[0]; n.life = 99; }
-  });
-  for (i = pickups.length - 1; i >= 0; i--) if (!pSeen[pickups[i].id]) { scene.remove(pickups[i].g); pickups.splice(i, 1); }
-  var live = {};
-  m.ps.forEach(function (b) {
-    if (b[0] === NET.myId) return;
-    live[b[0]] = 1;
-    var r = NET.rp[b[0]] || (NET.rp[b[0]] = { id: b[0], name: b[6], remote: true });
-    r.x = b[1]; r.z = b[2]; r.yaw = b[3]; r.hp = b[4]; r.dead = !!b[5]; r.pitch = +b[7] || 0; r.spd = !!b[8]; if (b[6]) r.name = b[6];
-    r.score = +b[9] || 0; r.cash = +b[10] || 0; r.ping = +b[11] || 0; r.w = WEAPONS[b[12]] ? b[12] : 'rifle'; r.col = (b[13] >= 0 && b[13] < 16) ? b[13] : undefined;
+  if (m.pk) {   // la lista de bonus solo viaja cuando cambia
+    var pById = {}, pSeen = {}, pl = m.pk;
+    pickups.forEach(function (q) { pById[q.id] = q; });
+    for (i = 0; i + 3 < pl.length; i += 4) {
+      pSeen[pl[i]] = 1;
+      if (!pById[pl[i]]) { dropPickup(pl[i + 2] / 10, pl[i + 3] / 10, PKINDS[pl[i + 1]] || 'ammo'); var n = pickups[pickups.length - 1]; n.id = pl[i]; n.life = 99; }
+    }
+    for (i = pickups.length - 1; i >= 0; i--) if (!pSeen[pickups[i].id]) { scene.remove(pickups[i].g); pickups.splice(i, 1); }
+  }
+  var live = {}, pp = m.pp || [];
+  for (i = 0; i + 6 < pp.length; i += 7) {
+    var pid = pp[i];
+    if (pid === NET.myId) continue;
+    live[pid] = 1;
+    var r = NET.rp[pid] || (NET.rp[pid] = { id: pid, name: 'Jugador', remote: true });
+    r.x = pp[i + 1] / 10; r.z = pp[i + 2] / 10; r.yaw = pp[i + 3] / 20; r.hp = pp[i + 4]; r.dead = !!(pp[i + 5] & 1); r.spd = !!(pp[i + 5] & 2); r.pitch = pp[i + 6] / 20;
+  }
+  if (m.pi) m.pi.forEach(function (b) {   // datos lentos (nombre, puntos, dinero, ping, arma, color): cada medio segundo
+    var r = NET.rp[b[0]]; if (!r) return;
+    if (b[1]) r.name = b[1];
+    r.score = +b[2] || 0; r.cash = +b[3] || 0; r.ping = +b[4] || 0; r.w = WORDER[b[5]] || 'rifle'; r.col = (b[6] >= 0 && b[6] < 16) ? b[6] : undefined;
   });
   for (var k in NET.rp) if (!live[k]) { if (NET.rp[k].mesh) scene.remove(NET.rp[k].mesh); delete NET.rp[k]; }
 }
@@ -2174,14 +2335,14 @@ function lobbyList() {
   var h = NET.role === 'host' ? '<li>' + NET.hostName + ' (vos)</li>' : '<li>Conectado a la sala ' + NET.code + '</li>';
   if (NET.role === 'host') NET.eachRemote(function (r) { h += '<li>' + r.name + '</li>'; });
   $('plist').innerHTML = h;
-  $('lobInfo').textContent = (DIFF === 'hardcore' ? 'Hardcore' : 'Normal') + (NET.role === 'host' ? ' · ' + NET.count() + '/' + NET.max + ' jugadores' : '');
+  $('lobInfo').textContent = (DF[DIFF].name) + (NET.role === 'host' ? ' · ' + NET.count() + '/' + NET.max + ' jugadores' : '');
 }
 function netLeave() {
   dirStop(); var was = mode, wasNet = NET.role !== 'none';
   NET.eachRemote(function (r) { if (r.mesh) scene.remove(r.mesh); });
   try { if (NET.peer) NET.peer.destroy(); } catch (e) {}
   NET.peer = null; NET.host = null; NET.conns = {}; NET.rp = {}; NET.role = 'none'; NET.ready = false; NET.myId = 0; NET.left = 0;
-  if (mode !== 'menu') { clearZombies(); clearPickups(); resetWeapons(); P.hp = 100; clearMachines(); RAIN = false; }
+  if (mode !== 'menu') { clearZombies(); clearPickups(); resetWeapons(); P.hp = 100; clearMachines(); RAIN = false; WIND = false; }
   mode = 'menu'; shopOpen = false; mouseDown = false;
   ['lobby', 'over', 'pause', 'hud', 'shop'].forEach(function (id) { show(id, false); });
   if (wasNet) openCoop(); else showMenuScreen('menu');
@@ -2209,8 +2370,8 @@ function hostCreate(attempt) {
       if (NET.count() >= NET.max) { conn.send({ t: 'full' }); setTimeout(function () { conn.close(); }, 300); return; }
       var id = ++NET.nid; NET.conns[id] = conn;
       var r = NET.rp[id] = { id: id, name: 'Jugador ' + (id + 1), x: 0, z: 9, yaw: 0, hp: 100, dead: false, remote: true };
-      conn.send({ t: 'hi', id: id, mx: NET.max, d: DIFF === 'hardcore' ? 1 : 0, pb: NET.pub ? 1 : 0, kb: KEEP ? 1 : 0 });
-      if (mode === 'play') conn.send({ t: 'start', d: DIFF === 'hardcore' ? 1 : 0, kb: KEEP ? 1 : 0, up: UPG ? 1 : 0, mc: MACH });
+      conn.send({ t: 'hi', id: id, mx: NET.max, d: DKEYS.indexOf(DIFF), pb: NET.pub ? 1 : 0, kb: KEEP ? 1 : 0 });
+      if (mode === 'play') conn.send({ t: 'start', d: DKEYS.indexOf(DIFF), kb: KEEP ? 1 : 0, up: UPG ? 1 : 0, mc: MACH });
       lobbyList(); sysChat(r.name + ' se unió');
       conn.on('data', function (m) { hostGot(id, m); });
       conn.on('close', function () {
@@ -2238,15 +2399,25 @@ function hostGot(id, m) {
     boom(bx, 0.3, bz); applyBlast(bx, bz, id); netBroadcast({ t: 'bx', x: bx, y: 0.3, z: bz, f: id });
   }
   else if (m.t === 'fx' && !r.dead) {
-    var fk = m.k === 'r' ? 'r' : 's', fw = WEAPONS[m.w] ? m.w : 'rifle';
-    fxRemote(r, fk, fw, m.dd);
-    for (var ck in NET.conns) if (+ck !== id && NET.conns[ck].open) NET.conns[ck].send({ t: 'fx', id: id, k: fk, w: fw, dd: m.dd ? 1 : 0 });
+    var fk = m.k === 'r' ? 'r' : 's', fw = WORDER[m.w | 0] || 'rifle';
+    fxRemote(r, fk, fw, m.d);
+    netNear({ t: 'fx', id: id, k: fk, w: WORDER.indexOf(fw), d: m.d ? 1 : 0 }, r.x, r.z, FX_R, id);
   }
   else if (m.t === 'st') {
-    r.pitch = clamp(+m.p || 0, -1.4, 1.4); r.spd = !!m.s; if (WEAPONS[m.w]) r.w = m.w; r.cash = clamp(+m.ca || 0, 0, 1e8); r.ping = clamp(+m.pi || 0, 0, 9999);
-    r.x = clamp(+m.x || 0, -ARENA, ARENA); r.z = clamp(+m.z || 0, -ARENA, ARENA); r.yaw = +m.y || 0; r.hp = +m.h || 0; r.dead = !!m.d; r.up = m.u | 0;
-    if (r.dead) hostCheckOver();
+    r.pitch = clamp((+m.p || 0) / 20, -1.4, 1.4); r.spd = !!(m.f & 2); if (WORDER[m.w | 0]) r.w = WORDER[m.w | 0]; r.cash = clamp(+m.ca || 0, 0, 1e8); r.ping = clamp(+m.pi || 0, 0, 9999);
+    r.x = clamp((+m.x || 0) / 10, -ARENA, ARENA); r.z = clamp((+m.z || 0) / 10, -ARENA, ARENA); r.yaw = (+m.y || 0) / 20; r.hp = +m.h || 0; r.dead = !!(m.f & 1); r.up = m.u | 0;
+    if (r.dead) { r.streak = 0; r.iN = 0; hostCheckOver(); }
+  } else if (m.t === 'h' && !r.dead && Array.isArray(m.a)) {
+    SHOTN++;
+    for (var hi = 0; hi + 2 < m.a.length && hi < 90; hi += 3) {
+      for (i = 0; i < zombies.length; i++) if (zombies[i].id === m.a[hi]) {
+        var hz = zombies[i], hh = m.a[hi + 2] ? 1 : 0;
+        hurtZombie(hz, clamp(+m.a[hi + 1] || 0, 0, 2500), !!hh, new THREE.Vector3(hz.x, (hh ? 1.9 : 1.3) * hz.sc, hz.z), id);
+        break;
+      }
+    }
   } else if (m.t === 'hit' && !r.dead) {
+    SHOTN++;
     for (i = 0; i < zombies.length; i++) if (zombies[i].id === m.id) {
       var zb = zombies[i];
       hurtZombie(zb, clamp(+m.d || 0, 0, 900), !!m.h, new THREE.Vector3(zb.x, (m.h ? 1.9 : 1.3) * zb.sc, zb.z), id);
@@ -2254,7 +2425,7 @@ function hostGot(id, m) {
     }
   } else if (m.t === 'take') {
     for (i = 0; i < pickups.length; i++) if (pickups[i].id === m.id && Math.hypot(pickups[i].x - r.x, pickups[i].z - r.z) < 3.5) {
-      var pkk = pickups[i].kind; if (pkk === 'med' || pkk === 'ammo') netSendTo(id, { t: 'got', k: pkk }); else shareBuff(pkk, id);
+      var pkk = pickups[i].kind; if (pkk === 'med' || pkk === 'ammo' || pkk === 'cash') netSendTo(id, { t: 'got', k: pkk }); else shareBuff(pkk, id);
       scene.remove(pickups[i].g); pickups.splice(i, 1);
       break;
     }
@@ -2272,7 +2443,7 @@ function joinGame(code) {
 
   peer.on('error', function (err) { netLeave(); netMsg(err.type === 'peer-unavailable' ? 'No se encontró el servidor ' + code + '.' : 'Error de red: ' + err.type); });
   peer.on('open', function () {
-    var c = peer.connect('nz-' + code, { serialization: 'json', reliable: true }); NET.host = c;
+    var c = peer.connect('nz-' + code, { serialization: 'binary', reliable: true }); NET.host = c;
     var to = setTimeout(function () { if (!c.open && NET.role === 'client') { netLeave(); netMsg('No se pudo conectar con el servidor ' + code + '.'); } }, 10000);
     c.on('open', function () { c.send({ t: 'nm', n: getNick(), c: P.col }); clearTimeout(to); $('lobMsg').textContent = 'Conectado. Esperando que el anfitrión empiece…'; $('lobCode').textContent = code; showLobby(); });
     c.on('data', clientGot);
@@ -2281,12 +2452,12 @@ function joinGame(code) {
 }
 
 function clientGot(m) {
-  if (m.t === 'hi') { NET.myId = m.id; NET.max = +m.mx || 4; NET.pub = !!m.pb; KEEP = !!m.kb; setDiff(m.d ? 'hardcore' : 'normal'); }
+  if (m.t === 'hi') { NET.myId = m.id; NET.max = +m.mx || 4; NET.pub = !!m.pb; KEEP = !!m.kb; setDiff(DKEYS[m.d | 0]); }
   else if (m.t === 'pn') { NET.ping = clamp(Math.round(performance.now() - (+m.ts || 0)), 0, 9999); }
   else if (m.t === 'start') {
     if (mode === 'play') return;
     KEEP = !!m.kb; UPG = !!m.up; MACH = Array.isArray(m.mc) ? m.mc.slice(0, 12) : [];
-    setDiff(m.d ? 'hardcore' : 'normal');
+    setDiff(DKEYS[m.d | 0]);
     NET.ready = true; showLobby();
     $('lobMsg').textContent = '¡El anfitrión empezó! Entrá a la partida.';
   }
@@ -2295,14 +2466,15 @@ function clientGot(m) {
   else if (m.t === 'rev') { if (P.dead) { P.dead = false; P.hp = Math.max(1, +m.hp || 60); showBanner('¡Te revivieron!', ''); sfxPickup(); } }
   else if (m.t === 'rvall') { if (P.dead) { P.dead = false; P.hp = Math.max(P.hp, 60); showBanner('¡Los caídos regresan!', ''); sfxPickup(); } }
   else if (m.t === 'c') addChat(String(m.n || '').slice(0, 12), String(m.x || '').slice(0, 120));
-  else if (m.t === 'fx') { var fr = NET.rp[m.id]; if (fr && m.id !== NET.myId) fxRemote(fr, m.k === 'r' ? 'r' : 's', WEAPONS[m.w] ? m.w : 'rifle', m.dd); }
+  else if (m.t === 'fx') { var fr = NET.rp[m.id]; if (fr && m.id !== NET.myId) fxRemote(fr, m.k === 'r' ? 'r' : 's', WORDER[m.w | 0] || 'rifle', m.d); }
   else if (m.t === 'bx') { if (m.f !== NET.myId) boom(+m.x || 0, +m.y || 0, +m.z || 0); }
   else if (m.t === 'got') {
     if (m.k === 'med') { P.hp = Math.min(P.maxHp, P.hp + 25); showPop('+25 salud'); sfxPickup(); }
     else if (m.k === 'ammo') { P.reserve = Math.min(MAXRES, P.reserve + 36); showPop('+36 balas'); sfxPickup(); }
+    else if (m.k === 'cash') { G.cash += 50; showPop('+50$'); sfxPickup(); }
     else grantBuff(m.k);
   }
-  else if (m.t === 'cash') { G.cash += m.v; if (m.p !== undefined) P.pscore += +m.p || 0; if (!m.b) showPop((m.l ? 'Largo alcance  +' : m.h ? 'Cabeza  +' : '+') + (m.p !== undefined ? m.p : m.v)); }
+  else if (m.t === 'cash') { G.cash += m.v; if (m.p !== undefined) P.pscore += +m.p || 0; if (!m.b) showPop((m.x ? m.x + '  +' : m.l ? 'Largo alcance  +' : m.h ? 'Cabeza  +' : '+') + (m.p !== undefined ? m.p : m.v)); }
   else if (m.t === 'over') { if (mode === 'play') endGame(); }
   else if (m.t === 'full') { netLeave(); netMsg('El servidor está lleno.'); }
 }
@@ -2312,7 +2484,12 @@ $('btnLobStart').addEventListener('click', function () { initAudio(); NET.ready 
 $('btnLobBack').addEventListener('click', netLeave);
 
 /* ---------- apuntar, granadas y chat ---------- */
-P.ads = false; P.adsK = 0; P.nades = 2; P.nadeCd = 0;
+P.ads = false; P.adsK = 0; P.nades = 2; P.nadeCd = 0; P.torchOn = true;
+function toggleTorch() {
+  if (mode !== 'play' || P.dead || chatOpen) return;
+  P.torchOn = !P.torchOn;
+  noiseHit(2600, 1800, 0.18, 0.03, 'highpass');
+}
 WEAPONS.rifle.zoom = 1.5; WEAPONS.shotgun.zoom = 1.25; WEAPONS.smg.zoom = 1.4; WEAPONS.sniper.zoom = 3;
 var nades = [], NGEO = new THREE.SphereGeometry(0.11, 8, 8), NMAT = new THREE.MeshPhongMaterial({ color: 0x3a4a2a, emissive: 0x101a08, shininess: 20 });
 function clearNades() { nades.forEach(function (n) { scene.remove(n.m); }); nades.length = 0; }
@@ -2347,6 +2524,7 @@ function updateNades(dt) {
   }
 }
 function boom(x, y, z) {   // efecto + daño propio (cada jugador calcula el suyo)
+  RFX.flash = Math.max(RFX.flash, clamp(1 - Math.hypot(P.x - x, P.z - z) / 24, 0, 1));
   burst(new THREE.Vector3(x, y + 0.3, z), 34, 0xffa030, 10);
   burst(new THREE.Vector3(x, y + 0.3, z), 20, 0x444444, 5);
   noiseHit(2200, 70, 1, 0.7, 'lowpass'); tone('sine', 110, 28, 1, 0.55);
@@ -2399,7 +2577,6 @@ function closeChat() {
 window.addEventListener('keydown', function (e) {
   if (e.target && e.target.id === 'chatIn') {
     if (e.code === 'Enter') { sendChat($('chatIn').value); closeChat(); e.preventDefault(); }
-    else if (e.code === 'Escape') closeChat();
     return;
   }
   if (e.code === 'Enter' && mode === 'play' && NET.role !== 'none' && !shopOpen && !chatOpen) { openChat(); e.preventDefault(); }
@@ -2420,7 +2597,7 @@ var DIR = { peer: null, isDir: false, regConn: null, timer: null, starting: fals
 function getNick() { return ($('nick').value || '').replace(/[<>]/g, '').trim().slice(0, 12); }
 try { $('nick').value = localStorage.getItem('nocheZombiNick') || ''; } catch (e) {}
 $('nick').addEventListener('change', function () { try { localStorage.setItem('nocheZombiNick', getNick()); } catch (e) {} });
-function roomInfo() { return { c: NET.code, n: NET.hostName, p: NET.count(), m: NET.max, d: DIFF === 'hardcore' ? 1 : 0, w: G.wave, pl: mode === 'play' ? 1 : 0 }; }
+function roomInfo() { return { c: NET.code, n: NET.hostName, p: NET.count(), m: NET.max, d: DKEYS.indexOf(DIFF), w: G.wave, pl: mode === 'play' ? 1 : 0 }; }
 function dirTick() {
   if (NET.role !== 'host' || !NET.pub) return;
   var r = roomInfo();
@@ -2469,7 +2646,7 @@ function renderRooms(a) {
   a.forEach(function (r) {
     var d = document.createElement('div'); d.className = 'item';
     var t = document.createElement('div'), b = document.createElement('b'), sm = document.createElement('small');
-    b.textContent = 'Servidor de ' + r.n; sm.textContent = r.p + '/' + r.m + ' jugadores · ' + (r.d ? 'Hardcore' : 'Normal') + ' · ' + (r.pl ? 'Oleada ' + r.w : 'En espera');
+    b.textContent = 'Servidor de ' + r.n; sm.textContent = r.p + '/' + r.m + ' jugadores · ' + (DF[DKEYS[r.d | 0]] || DF.normal).name + ' · ' + (r.pl ? 'Oleada ' + r.w : 'En espera');
     t.appendChild(b); t.appendChild(sm);
     var bt = document.createElement('button'); bt.className = 'alt'; bt.textContent = r.p >= r.m ? 'Llena' : 'Unirse'; bt.disabled = r.p >= r.m;
     bt.addEventListener('click', function () { initAudio(); joinGame(String(r.c).slice(0, 5)); });
@@ -2489,16 +2666,69 @@ function fetchRooms() {
     c.on('data', function (m) { if (m.t === 'rooms') { renderRooms(m.r || []); fin(); } });
   });
 }
+/* ---------- jugadores en línea: presencia P2P (el primer visitante hace de centro de conteo y, si se va, otro lo reemplaza) ---------- */
+var PRES = { peer: null, hub: false, conns: {}, link: null, hb: null, tick: null, n: 0, dead: false };
+function presShow(n) { PRES.n = n; var el = $('onlineN'); if (el) el.textContent = n > 0 ? String(n) : '—'; }
+function presReset() {
+  clearInterval(PRES.hb); clearInterval(PRES.tick); PRES.hb = PRES.tick = null;
+  try { if (PRES.peer) PRES.peer.destroy(); } catch (e) {}
+  PRES.peer = null; PRES.hub = false; PRES.conns = {}; PRES.link = null;
+}
+function presRetry(ms) { if (PRES.dead) return; setTimeout(presStart, ms == null ? 600 + Math.random() * 2500 : ms); }
+function presStart() {
+  if (PRES.dead || PRES.peer || typeof Peer === 'undefined') return;
+  var p; try { p = new Peer('nz-presence', peerOpts()); } catch (e) { return; }
+  PRES.peer = p;
+  p.on('open', function () {
+    PRES.hub = true; PRES.conns = {};
+    p.on('connection', function (c) {
+      c.on('open', function () { PRES.conns[c.peer] = { c: c, ts: Date.now() }; });
+      c.on('data', function (m) { var e = PRES.conns[c.peer]; if (e && m && m.t === 'hb') e.ts = Date.now(); });
+      c.on('close', function () { delete PRES.conns[c.peer]; });
+    });
+    PRES.tick = setInterval(function () {
+      var now = Date.now(), n = 1, k, e;
+      for (k in PRES.conns) { e = PRES.conns[k]; if (now - e.ts > 20000 || !e.c.open) delete PRES.conns[k]; else n++; }
+      presShow(n);
+      for (k in PRES.conns) { try { PRES.conns[k].c.send({ t: 'n', n: n }); } catch (x) {} }
+    }, 3000);
+    presShow(1);
+  });
+  p.on('error', function (e) {
+    if (e.type === 'unavailable-id') { presReset(); presJoin(); }   // ya hay un centro de conteo: me uno como visitante
+    else { presReset(); presRetry(8000); }
+  });
+  p.on('disconnected', function () { try { p.reconnect(); } catch (e) {} });
+}
+function presJoin() {
+  if (PRES.dead || typeof Peer === 'undefined') return;
+  var p; try { p = new Peer(peerOpts()); } catch (e) { return; }
+  PRES.peer = p;
+  p.on('open', function () {
+    var c = p.connect('nz-presence', { serialization: 'json', reliable: true }); PRES.link = c;
+    c.on('open', function () { c.send({ t: 'hb' }); PRES.hb = setInterval(function () { if (c.open) c.send({ t: 'hb' }); }, 6000); });
+    c.on('data', function (m) { if (m && m.t === 'n') presShow(+m.n || 0); });
+    c.on('close', function () { presReset(); presRetry(); });
+    c.on('error', function () { presReset(); presRetry(); });
+  });
+  p.on('error', function (e) { presReset(); presRetry(e.type === 'peer-unavailable' ? undefined : 8000); });
+}
+window.addEventListener('beforeunload', function () { PRES.dead = true; presReset(); });
 /* ---------- menús: principal, un jugador, Co-Op y crear servidor ---------- */
 var maxSel = 4, pendCode = '';
-var DIFFTXT = { normal: 'Oleadas estándar: la experiencia de siempre.', hardcore: 'El doble de infectados en cada oleada y se mueven el doble de rápido.' };
+var DIFFTXT = {
+  normal: 'Oleadas estándar: la experiencia de siempre.',
+  hardcore: 'El doble de infectados en cada oleada y se mueven el doble de rápido. Atacan 15% más rápido.',
+  extreme: 'Triple de infectados por oleada, zombis x2,5 más rápidos, hasta el triple vivos a la vez (tope 150), apariciones 20% más seguidas, 60% menos botín (los brutos siempre sueltan), puntos y dinero -20%, Armería +35%, atacan 20% más rápido.',
+  nightmare: 'Cuádruple de infectados por oleada, zombis x3 más rápidos, hasta el cuádruple vivos a la vez (tope 200), apariciones 10% más seguidas, 35% menos botín (los brutos siempre sueltan), puntos y dinero -35%, Armería +50% y te movés 25% más lento y atacan 25% más rápido.'
+};
 function each(sel, f) { Array.prototype.forEach.call(document.querySelectorAll(sel), f); }
 function showMenuScreen(id) { ['menu', 'solo', 'coop', 'create', 'config', 'cfgGfx', 'cfgKeys', 'cfgCtl'].forEach(function (s) { show(s, s === id); }); if (id === 'menu') refreshMenuBest(); }
 function refreshMenuBest() {
-  try { $('mbN').textContent = parseInt(localStorage.getItem('nocheZombiBest') || '0', 10) || 0; $('mbH').textContent = parseInt(localStorage.getItem('nocheZombiBestHC') || '0', 10) || 0; } catch (e) {}
+  try { [['mbN', 'normal'], ['mbH', 'hardcore'], ['mbX', 'extreme'], ['mbP', 'nightmare']].forEach(function (p) { $(p[0]).textContent = parseInt(localStorage.getItem(DF[p[1]].bk) || '0', 10) || 0; }); } catch (e) {}
 }
 function setDiff(d) {
-  DIFF = d === 'hardcore' ? 'hardcore' : 'normal'; loadBest();
+  DIFF = DF[d] ? d : 'normal'; loadBest();
   each('[data-d]', function (b) { b.classList.toggle('on', b.dataset.d === DIFF); });
   each('.diffDesc', function (q) { q.textContent = DIFFTXT[DIFF]; });
 }
@@ -2552,24 +2782,31 @@ setDiff('normal'); setVis(false); setMax(4);
 })();
 
 var GFX = [
+  ['cam', 'Deformaciones de cámara', 'Desenfoque radial al correr, desenfoque por temblores (golpes y explosiones) y respiración y pulso: la cámara nunca está del todo quieta.'],
+  ['eye', 'Adaptación del ojo', 'La vista se adapta a la luz y a la oscuridad, los colores se apagan sin luz, las explosiones te encandilan y la visión se nubla y enrojece al recibir daño. Incluye bloom y tono fílmico.'],
   ['shadows', 'Sombras', 'Sombras bajo los zombis.'],
+  ['dyn', 'Dynamic Shadows', 'Sombras proyectadas por la luna sobre todo el entorno (más pesado).'],
+  ['light', 'Iluminación mejorada', 'Mejora cómo emiten luz las fuentes reales: halos en el farol y la armería, linterna con haz suave, brillo en ojos, bonus y fogonazos. No agrega luces al mapa.'],
   ['fogNear', 'Disminuir distancia de niebla', 'La niebla se cierra y se ve menos lejos.'],
+  ['bloom', 'Bloom (resplandor)', 'Las luces y los ojos brillan y sangran sobre lo que los rodea.'],
+  ['film', 'Tono fílmico', 'Curva de contraste y color tipo cine (ACES).'],
+  ['grade', 'Color Grading', 'Sombras frías y luces cálidas, más contraste y color.'],
+  ['chroma', 'Chromatic Aberration', 'Separa los canales de color hacia los bordes de la lente.'],
   ['vig', 'Vignette', 'Oscurece los bordes de la pantalla.'],
   ['grain', 'Grano de película', 'Agrega film grain.'],
-  ['moreP', 'Más partículas', 'Duplica sangre, destellos y chispas.'],
-  ['grade', 'Color Grading', 'Más contraste y un tono cinematográfico.'],
-  ['chroma', 'Chromatic Aberration', 'Separa levemente los canales de color.'],
-  ['dyn', 'Dynamic Shadows', 'Sombras proyectadas por la luna (más pesado).']
+  ['moreP', 'Más partículas', 'Duplica sangre, destellos y chispas.']
 ];
 function applyCfg() {
   BLOB_MAT.visible = CFG.shadows;
   scene.fog.density = CFG.fogNear ? FOG_NEAR : FOG_FAR;
   moonLight.castShadow = CFG.dyn;
-  $('vigFx').hidden = !CFG.vig; $('grain').hidden = !CFG.grain;
+  var css = !ppWanted() || PP.failed;   // si el post-proceso falla, se usan versiones CSS de respaldo
+  $('vigFx').hidden = !(CFG.vig && css); $('grain').hidden = !(CFG.grain && css);
   var fl = [];
-  if (CFG.grade) fl.push('contrast(1.12) saturate(1.25) sepia(0.18) hue-rotate(-10deg) brightness(1.04)');
-  if (CFG.chroma) fl.push('url(#chroma)');
+  if (css && CFG.grade) fl.push('contrast(1.12) saturate(1.25) sepia(0.18) hue-rotate(-10deg) brightness(1.04)');
+  if (css && CFG.chroma) fl.push('url(#chroma)');
   canvas.style.filter = fl.join(' ');
+  setLightFx(CFG.light);
   PNA = CFG.moreP ? 600 : 300; if (pCursor >= PNA) pCursor = 0;
 }
 function saveCfg() { try { localStorage.setItem('nocheZombiCfg', JSON.stringify(CFG)); } catch (e) {} }
@@ -2615,7 +2852,12 @@ function refreshLegend() {
   $('shopTip').textContent = touchMode ? 'Armería (tocá)' : keyName(BIND.shop) + ' · Armería';
 }
 $('btnConfig').addEventListener('click', function () { showMenuScreen('config'); });
-$('btnCfgBack').addEventListener('click', function () { showMenuScreen('menu'); });
+var cfgFrom = 'menu';
+function cfgOpen() { return ['config', 'cfgGfx', 'cfgCtl', 'cfgKeys'].some(function (id) { return !$(id).hidden; }); }
+$('btnCfgBack').addEventListener('click', function () {
+  if (cfgFrom === 'pause') { cfgFrom = 'menu'; showMenuScreen(''); show('pause', true); } else showMenuScreen('menu');
+});
+$('btnPauseCfg').addEventListener('click', function () { cfgFrom = 'pause'; show('pause', false); showMenuScreen('config'); });
 $('btnCfgGfx').addEventListener('click', function () { renderGfx(); showMenuScreen('cfgGfx'); });
 $('btnCfgKeys').addEventListener('click', function () { rebind = null; renderKeys(); showMenuScreen('cfgKeys'); });
 $('btnGfxBack').addEventListener('click', function () { showMenuScreen('config'); });
@@ -2632,7 +2874,7 @@ function renderScore() {
   NET.eachRemote(function (r) { rows.push({ n: r.name, host: NET.role === 'client' && r.id === 0, sc: r.score || 0, ca: r.cash || 0, pi: r.ping || 0, col: r.col, me: false }); });
   rows.sort(function (a, b) { return b.sc - a.sc; });
   var box = $('score'); box.textContent = '';
-  var h = document.createElement('h3'); h.textContent = 'Dificultad: ' + (DIFF === 'hardcore' ? 'Hardcore' : 'Normal'); box.appendChild(h);
+  var h = document.createElement('h3'); h.textContent = 'Dificultad: ' + (DF[DIFF].name); box.appendChild(h);
   function row(cls, cells, dot) {
     var d = document.createElement('div'); d.className = 'sr ' + cls;
     cells.forEach(function (c, i) {
@@ -2729,6 +2971,15 @@ var MDEF = {
   share:  { name: 'Bonus Share',          price: 20000, col: 0xc07bff, info: 'Tus bonus llegan a todos' },
   revall: { name: 'Resucitar Compañeros', price: 8000,  col: 0x93c26b, info: 'Revive a todos los caídos' }
 };
+// Precios por dificultad. Difícil es la base (juntar ~16.000$ lleva hasta la oleada 11); Normal ≈ x0,55, Hardcore ≈ x1,4 y Pesadilla ≈ x2 (simulación de ingresos por oleada)
+var MPR = {
+  ammo:   { normal: 9000,  hardcore: 16000, extreme: 22500, nightmare: 32000 },
+  speed:  { normal: 11000, hardcore: 20000, extreme: 28000, nightmare: 40000 },
+  iron:   { normal: 14000, hardcore: 25000, extreme: 35000, nightmare: 50000 },
+  share:  { normal: 11000, hardcore: 20000, extreme: 28000, nightmare: 40000 },
+  revall: { normal: 4500,  hardcore: 8000,  extreme: 11000, nightmare: 16000 }
+};
+function mprice(k) { var t = MPR[k]; return (t && t[DIFF]) || MDEF[k].price; }
 function money(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '$'; }
 function lw(cx, cz, ry, lx, lz) { return [cx + lx * Math.cos(ry) + lz * Math.sin(ry), cz - lx * Math.sin(ry) + lz * Math.cos(ry)]; }
 function genMachines() {
@@ -2754,12 +3005,14 @@ function genMachines() {
 }
 var machGrp = null, machObs = [], MTEX = {};
 function clearMachines() {
+  LFX = LFX.filter(function (o) { return !o.mach; }); LSRC_M.length = 0;
   if (machGrp) { scene.remove(machGrp); machGrp = null; }
   machObs.forEach(function (o) { var k = obstacles.indexOf(o); if (k >= 0) obstacles.splice(k, 1); });
   machObs = [];
 }
 function machTex(k) {
-  if (MTEX[k]) return MTEX[k];
+  var ck = k + DIFF;
+  if (MTEX[ck]) return MTEX[ck];
   var d = MDEF[k], c = document.createElement('canvas'); c.width = 256; c.height = 384;
   var x = c.getContext('2d'), col = '#' + ('000000' + d.col.toString(16)).slice(-6);
   x.fillStyle = '#10171a'; x.fillRect(0, 0, 256, 384);
@@ -2769,10 +3022,11 @@ function machTex(k) {
   var words = d.name.split(' '), y = 70;
   words.forEach(function (w) { x.fillText(w, 128, y); y += 46; });
   x.font = '600 19px Courier New, monospace'; x.fillStyle = '#e9e5d4'; x.fillText(d.info, 128, 250);
-  x.font = '700 44px Courier New, monospace'; x.fillStyle = col; x.fillText(money(d.price), 128, 330);
-  return (MTEX[k] = new THREE.CanvasTexture(c));
+  x.font = '700 44px Courier New, monospace'; x.fillStyle = col; x.fillText(money(mprice(k)), 128, 330);
+  return (MTEX[ck] = new THREE.CanvasTexture(c));
 }
 function buildMachines(L) {
+  setTimeout(function () { if (machGrp) castAll(machGrp); }, 0);
   clearMachines();
   if (!L || !L.length) return;
   machGrp = new THREE.Group(); scene.add(machGrp);
@@ -2807,8 +3061,9 @@ function buyMachine(k) {
   var d = MDEF[k];
   if (hasUp(k)) { showPop('Ya la tenés'); return; }
   if (k === 'revall' && !anyDead()) { showPop('No hay caídos'); return; }
-  if (G.cash < d.price) { showPop('Te faltan ' + money(d.price - G.cash)); return; }
-  G.cash -= d.price; sfxPickup();
+  var pc = mprice(k);
+  if (G.cash < pc) { showPop('Te faltan ' + money(pc - G.cash)); return; }
+  G.cash -= pc; sfxPickup();
   if (k === 'ammo') { P.up.ammo = true; P.reloading = 0; applyWeapon(P.w); P.ammo = MAG; }
   else if (k === 'speed') P.up.speed = true;
   else if (k === 'iron') { P.up.iron = true; P.maxHp = 200; P.hp = Math.min(200, P.hp * 2); }
@@ -2840,7 +3095,7 @@ function updateUse(dt) {
   } else {
     P.rvT = 0;
     var m = nearMachine();
-    if (m) { var d = MDEF[m.k]; txt = hasUp(m.k) ? d.name + ' · Ya la tenés' : keyName(BIND.use) + ' · ' + d.name + ' · ' + money(d.price); }
+    if (m) { var d = MDEF[m.k]; txt = hasUp(m.k) ? d.name + ' · Ya la tenés' : keyName(BIND.use) + ' · ' + d.name + ' · ' + money(mprice(m.k)); }
   }
   var vis = !!txt; if (tip.hidden === vis) tip.hidden = !vis;
   if (vis) { setText('useTip', txt); tip.style.setProperty('--p', pct + '%'); }
@@ -2861,7 +3116,7 @@ rainMesh.frustumCulled = false; rainMesh.visible = false; scene.add(rainMesh);
 function updateRain(dt) {
   rainK += ((RAIN ? 1 : 0) - rainK) * Math.min(1, dt * 1.5);
   var on = rainK > 0.02;
-  scene.fog.density = (CFG.fogNear ? FOG_NEAR : FOG_FAR) * (1 + 0.5 * rainK);
+  scene.fog.density = (CFG.fogNear ? FOG_NEAR : FOG_FAR) * (1 + 0.5 * rainK + 0.35 * windK);
   if (rainMesh.visible !== on) rainMesh.visible = on;
   if (!on) { rainLX = camera.position.x; rainLZ = camera.position.z; return; }
   var cx = camera.position.x, cz = camera.position.z, ddx = cx - rainLX, ddz = cz - rainLZ; rainLX = cx; rainLZ = cz;
@@ -2880,20 +3135,147 @@ function updateRain(dt) {
   if (RAIN && mode === 'play' && rainT <= 0) { rainT = 0.4; noiseHit(5200, 3800, 0.03, 0.4, 'highpass'); }
 }
 
+// tormenta de viento: esferas translúcidas que cruzan el aire alrededor de la cámara, más niebla y ráfagas de sonido (solo ambiente, no afecta al combate)
+var WIND = false, windK = 0, windDir = 0, windWas = false, windT = 0, windS = [], windGrp = new THREE.Group(), windMat = new THREE.MeshBasicMaterial({ color: 0xd5dfd8, transparent: true, opacity: 0, depthWrite: false });
+(function () {
+  var geo = new THREE.SphereGeometry(1, 10, 8);
+  for (var i = 0; i < 34; i++) {
+    var m = new THREE.Mesh(geo, windMat), sc = rand(0.5, 1.8);
+    m.scale.set(sc * rand(1, 1.6), sc, sc); m.raycast = function () {};
+    windGrp.add(m);
+    windS.push({ m: m, x: rand(-30, 30), z: rand(-30, 30), y: rand(0.4, 6.5), v: rand(16, 30), ph: rand(0, TAU) });
+  }
+  windGrp.visible = false; windGrp.frustumCulled = false; scene.add(windGrp);
+})();
+function updateWind(dt) {
+  windK += ((WIND ? 1 : 0) - windK) * Math.min(1, dt * 1.2);
+  var on = windK > 0.02, i, s, cx = camera.position.x, cz = camera.position.z;
+  if (WIND && !windWas) { windDir = rand(0, TAU); for (i = 0; i < windS.length; i++) { windS[i].x = cx + rand(-30, 30); windS[i].z = cz + rand(-30, 30); } }
+  windWas = WIND;
+  if (windGrp.visible !== on) windGrp.visible = on;
+  if (!on) return;
+  windMat.opacity = 0.17 * windK;
+  var dx = Math.cos(windDir), dz = Math.sin(windDir);
+  for (i = 0; i < windS.length; i++) {
+    s = windS[i];
+    s.x += dx * s.v * dt; s.z += dz * s.v * dt;
+    if (Math.hypot(s.x - cx, s.z - cz) > 32) {   // sale por un lado y reentra por el lado de donde viene el viento
+      var a = rand(-30, 30); s.x = cx - dx * 30 - dz * a; s.z = cz - dz * 30 + dx * a;
+    }
+    s.m.position.set(s.x, s.y + Math.sin(clock * 2.3 + s.ph) * 0.5, s.z);
+  }
+  windT -= dt;
+  if (mode === 'play' && windT <= 0) { windT = 0.35; noiseHit(700 + Math.sin(clock * 0.7) * 300, 300, 0.07 * windK, 0.6, 'lowpass'); }
+}
+
 // casillas y ajustes de controles
 ['upgSolo', 'upgCr'].forEach(function (id) {
   $(id).addEventListener('change', function () { UPG = this.checked; $('upgSolo').checked = UPG; $('upgCr').checked = UPG; });
 });
 (function () {
-  try { var c = JSON.parse(localStorage.getItem('nocheZombiCtl') || '{}'); if (typeof c.sens === 'number') CTL.sens = clamp(c.sens, 0.2, 3); if (typeof c.bob === 'boolean') CTL.bob = c.bob; } catch (e) {}
+  try { var c = JSON.parse(localStorage.getItem('nocheZombiCtl') || '{}'); if (typeof c.sens === 'number') CTL.sens = clamp(c.sens, 0.2, 3); if (c.bv === 2 && typeof c.bob === 'boolean') CTL.bob = c.bob; if (typeof c.fov === 'number') CTL.fov = clamp(c.fov, 60, 110); } catch (e) {}
   var r = $('sensRng'), b = $('bobChk');
   r.value = CTL.sens; b.checked = CTL.bob; $('sensVal').textContent = CTL.sens.toFixed(2) + '×';
-  function save() { try { localStorage.setItem('nocheZombiCtl', JSON.stringify(CTL)); } catch (e) {} }
+  function save() { try { localStorage.setItem('nocheZombiCtl', JSON.stringify({ sens: CTL.sens, bob: CTL.bob, fov: CTL.fov, bv: 2 })); } catch (e) {} }
+  var fr = $('fovRng'); fr.value = CTL.fov; $('fovVal').textContent = CTL.fov + '°';
+  fr.addEventListener('input', function () { CTL.fov = +fr.value; $('fovVal').textContent = CTL.fov + '°'; save(); });
   r.addEventListener('input', function () { CTL.sens = +r.value; $('sensVal').textContent = CTL.sens.toFixed(2) + '×'; save(); });
   b.addEventListener('change', function () { CTL.bob = b.checked; save(); });
 })();
 $('btnCfgCtl').addEventListener('click', function () { showMenuScreen('cfgCtl'); });
 $('btnCtlBack').addEventListener('click', function () { showMenuScreen('config'); });
+
+/* ---------- post-proceso: bloom, tono fílmico, grading, aberración, viñeta y grano (cada efecto se activa por separado) ---------- */
+var PP = { sc: null, cam: null, quad: null, rt: null, bA: null, bB: null, mBright: null, mBlur: null, mFinal: null, failed: false, size: new THREE.Vector2() };
+function ppWanted() { return CFG.bloom || CFG.film || CFG.grade || CFG.chroma || CFG.vig || CFG.grain || CFG.cam || CFG.eye; }
+function ppInit() {
+  if (PP.sc || PP.failed) return;
+  try {
+    var vs = 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
+    function mat(fs, u) { return new THREE.ShaderMaterial({ uniforms: u, vertexShader: vs, fragmentShader: fs, depthTest: false, depthWrite: false }); }
+    PP.mBright = mat(
+      'uniform sampler2D tD; uniform vec2 texel; varying vec2 vUv;' +
+      'void main(){ vec3 c = texture2D(tD, vUv + texel * vec2(-1.0,-1.0)).rgb + texture2D(tD, vUv + texel * vec2(1.0,-1.0)).rgb + texture2D(tD, vUv + texel * vec2(-1.0,1.0)).rgb + texture2D(tD, vUv + texel * vec2(1.0,1.0)).rgb; c *= 0.25;' +
+      'float l = dot(c, vec3(0.2126, 0.7152, 0.0722)); float k = smoothstep(0.28, 0.85, l); gl_FragColor = vec4(c * k * 1.4, 1.0); }',
+      { tD: { value: null }, texel: { value: new THREE.Vector2(1, 1) } });
+    PP.mBlur = mat(
+      'uniform sampler2D tD; uniform vec2 dir; varying vec2 vUv;' +
+      'void main(){ vec2 o1 = dir * 1.3846153846, o2 = dir * 3.2307692308; vec3 s = texture2D(tD, vUv).rgb * 0.2270270270;' +
+      's += (texture2D(tD, vUv + o1).rgb + texture2D(tD, vUv - o1).rgb) * 0.3162162162; s += (texture2D(tD, vUv + o2).rgb + texture2D(tD, vUv - o2).rgb) * 0.0702702703; gl_FragColor = vec4(s, 1.0); }',
+      { tD: { value: null }, dir: { value: new THREE.Vector2(1, 0) } });
+    PP.mFinal = mat(
+      'uniform sampler2D tD; uniform sampler2D tB; uniform float time; uniform vec2 res;' +
+      'uniform float uBloom; uniform float uFilm; uniform float uGrade; uniform float uCA; uniform float uVig; uniform float uGrain; uniform float uReal; uniform float uExp; uniform float uMB; uniform float uHurt; uniform float uFlash; varying vec2 vUv;' +
+      'vec3 aces(vec3 x){ return clamp((x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0); }' +
+      'void main(){ vec2 c = vUv - 0.5; float r2 = dot(c, c); vec2 off = c * r2 * 0.016 * uCA;' +
+      'vec3 col = vec3(texture2D(tD, vUv + off).r, texture2D(tD, vUv).g, texture2D(tD, vUv - off).b);' +
+      'if (uMB > 0.002) { vec3 acc = col; for (int i = 1; i < 6; i++) { float f = float(i) / 5.0; acc += texture2D(tD, vUv - c * uMB * f).rgb; } col = acc / 6.0; }' +
+      'col += texture2D(tB, vUv).rgb * 1.15 * uBloom;' +
+      'if (uReal > 0.5) { float lr = dot(col, vec3(0.2126, 0.7152, 0.0722)); col *= uExp; col = mix(vec3(lr) * vec3(0.80, 0.93, 1.12) * uExp, col, smoothstep(0.015, 0.2, lr)); col += uFlash * vec3(1.0, 0.92, 0.75) * 0.65; }' +
+      'col = mix(col, aces(col * 1.22), 0.85 * uFilm);' +
+      'float l = dot(col, vec3(0.2126, 0.7152, 0.0722));' +
+      'vec3 g = mix(col * vec3(0.90, 1.0, 1.08), col * vec3(1.08, 1.0, 0.90), smoothstep(0.22, 0.8, l));' +
+      'g = mix(vec3(dot(g, vec3(0.2126, 0.7152, 0.0722))), g, 1.18); g = (g - 0.5) * 1.1 + 0.5;' +
+      'col = mix(col, max(g, 0.0), uGrade);' +
+      'col *= 1.0 - uVig * 0.62 * smoothstep(0.28, 0.85, length(c));' +
+      'float n = fract(sin(dot(vUv * res + time, vec2(12.9898, 78.233))) * 43758.5453); col += uGrain * (n - 0.5) * 0.06;' +
+      'if (uReal > 0.5) { float l2 = dot(col, vec3(0.2126, 0.7152, 0.0722)); col = mix(col, vec3(l2) * vec3(1.0, 0.7, 0.7), uHurt * 0.6); col *= 1.0 - uHurt * 0.55 * smoothstep(0.12, 0.8, length(c)); float gn = fract(sin(dot(vUv * res + time * 1.7, vec2(39.3468, 11.135))) * 24634.6345); col += (gn - 0.5) * 0.07 * (1.0 - clamp(l2 * 2.5, 0.0, 1.0)); }' +
+      'gl_FragColor = vec4(col, 1.0); }',
+      { tD: { value: null }, tB: { value: null }, time: { value: 0 }, res: { value: new THREE.Vector2(1, 1) },
+        uBloom: { value: 0 }, uFilm: { value: 0 }, uGrade: { value: 0 }, uCA: { value: 0 }, uVig: { value: 0 }, uGrain: { value: 0 },
+        uReal: { value: 0 }, uExp: { value: 1 }, uMB: { value: 0 }, uHurt: { value: 0 }, uFlash: { value: 0 } });
+    PP.cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    PP.sc = new THREE.Scene();
+    PP.quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), PP.mBright); PP.quad.frustumCulled = false; PP.sc.add(PP.quad);
+    var o = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat };
+    try { PP.rt = new THREE.WebGLMultisampleRenderTarget(4, 4, o); PP.rt.samples = 4; } catch (e) { PP.rt = new THREE.WebGLRenderTarget(4, 4, o); }
+    var ob = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat, depthBuffer: false };
+    PP.bA = new THREE.WebGLRenderTarget(4, 4, ob); PP.bB = new THREE.WebGLRenderTarget(4, 4, ob);
+    ppResize();
+  } catch (e) { PP.failed = true; PP.sc = null; applyCfg(); }
+}
+function ppResize() {
+  if (typeof PP === 'undefined' || !PP || !PP.sc) return;
+  renderer.getDrawingBufferSize(PP.size);
+  var w = Math.max(2, PP.size.x | 0), h = Math.max(2, PP.size.y | 0), bw = Math.max(2, w >> 2), bh = Math.max(2, h >> 2);
+  PP.rt.setSize(w, h); PP.bA.setSize(bw, bh); PP.bB.setSize(bw, bh);
+  PP.mBright.uniforms.texel.value.set(1.5 / w, 1.5 / h);
+  PP.mFinal.uniforms.res.value.set(w, h);
+}
+function ppPass(m, target) { PP.quad.material = m; renderer.setRenderTarget(target); renderer.render(PP.sc, PP.cam); }
+var RFX = { flash: 0, exp: 1.2, t: 0 };
+function realFx(u) {   // estado de la "vista humana" que alimenta el shader
+  var dt = clamp(clock - RFX.t, 0, 0.1); RFX.t = clock;
+  var playing = mode === 'play' && !P.dead;
+  u.uMB.value = CFG.cam && playing ? clamp((P.speed - 6) / 4, 0, 1) * 0.07 + P.shake * 0.02 : 0;   // Deformaciones de cámara
+  if (!CFG.eye) { u.uReal.value = 0; return; }                                                      // Adaptación del ojo
+  RFX.flash = Math.max(0, RFX.flash - dt * 1.3);
+  var dl = Math.hypot(camera.position.x, camera.position.z), kk = clamp(1 - dl / 38, 0, 1);
+  var tgt = 1.32 - 0.42 * kk - (P.flashT > 0 ? 0.2 : 0);   // en la oscuridad la vista se abre; cerca del farol o al disparar se cierra
+  RFX.exp += (tgt - RFX.exp) * Math.min(1, dt * (tgt < RFX.exp ? 6 : 1.2));
+  var hu = playing ? clamp(P.hurt, 0, 1) * 0.9 : 0;
+  if (playing && P.hp <= P.maxHp * 0.3) hu = Math.max(hu, 0.35 + 0.15 * Math.sin(clock * 6.5));
+  u.uReal.value = 1; u.uExp.value = RFX.exp; u.uFlash.value = RFX.flash; u.uHurt.value = hu;
+}
+function renderFrame() {
+  if (!ppWanted() || PP.failed) { renderer.render(scene, camera); return; }
+  ppInit();
+  if (!PP.sc) { renderer.render(scene, camera); return; }
+  renderer.setRenderTarget(PP.rt); renderer.render(scene, camera);
+  var u = PP.mFinal.uniforms;
+  if (CFG.bloom || CFG.eye) {
+    PP.mBright.uniforms.tD.value = PP.rt.texture; ppPass(PP.mBright, PP.bA);
+    var tx = 1 / PP.bA.width, ty = 1 / PP.bA.height;
+    for (var i = 0; i < 2; i++) {
+      PP.mBlur.uniforms.tD.value = PP.bA.texture; PP.mBlur.uniforms.dir.value.set(tx, 0); ppPass(PP.mBlur, PP.bB);
+      PP.mBlur.uniforms.tD.value = PP.bB.texture; PP.mBlur.uniforms.dir.value.set(0, ty); ppPass(PP.mBlur, PP.bA);
+    }
+  }
+  u.tD.value = PP.rt.texture; u.tB.value = PP.bA.texture; u.time.value = (clock * 37.0) % 1000;
+  u.uBloom.value = (CFG.bloom || CFG.eye) ? 1 : 0; u.uFilm.value = (CFG.film || CFG.eye) ? 1 : 0; u.uGrade.value = CFG.grade ? 1 : 0; realFx(u);
+  u.uCA.value = CFG.chroma ? 1 : 0; u.uVig.value = CFG.vig ? 1 : 0; u.uGrain.value = CFG.grain ? 1 : 0;
+  ppPass(PP.mFinal, null);
+}
 
 /* ---------- bucle principal ---------- */
 var lastT = performance.now(), clock = 0;
@@ -2924,9 +3306,9 @@ function frame(now) {
   if ($('score').hidden === showSc) $('score').hidden = !showSc;
   if (!$('pause').hidden) updatePauseInfo(false);
   updateCorpses(dt);
-  updateRain(dt);
+  updateRain(dt); updateWind(dt);
   updateParticles(dt);
-  renderer.render(scene, camera);
+  renderFrame();
 }
 
 // fondo del menú: unos infectados quietos entre la niebla
@@ -2939,8 +3321,54 @@ function menuScene() {
   P.x = 0; P.z = 9; P.yaw = 0;
   updateHud();
 }
+// emisión de luz mejorada: haz de linterna suave, halos solo en emisores reales y fogonazo. No agrega luces al mapa.
+var beam = null, beamSl = [], mflare = null;
+(function () {
+  var N = 9, tg = Math.tan(0.44);   // el haz se compone de discos con degradado, sin bordes duros ni anillos
+  beam = new THREE.Group(); beam.position.set(0.15, -0.1, 0); beam.visible = false;
+  for (var i = 0; i < N; i++) {
+    var d = 3 + i * 3.4, sz = d * tg * 2.3;
+    var m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: GLOWTEX, color: 0xfff1d6, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
+    m.position.z = -d; m.scale.set(sz, sz, 1); m.renderOrder = 4; m.raycast = function () {};
+    m.userData.a = 0.032 * (1 - i / (N + 2));   // más tenue con la distancia
+    beam.add(m); beamSl.push(m);
+  }
+  camera.add(beam);
+  mflare = addGlow(flashMesh, 0, 0, 0, 0xffc070, 0.5, 0, true);
+})();
+function setLightFx(on) {
+  LFX.forEach(function (o) { o.sp.visible = on; if (o.pl) o.pl.visible = on; });
+  if (beam) beam.visible = on;
+  lanternLight.distance = on ? 38 : 28;
+  if (on) { torch.color.setHex(0xfff0d8); torch.intensity = 2.9; torch.angle = 0.5; torch.penumbra = 1; torch.decay = 1.5; torch.distance = 60; }
+  else { torch.color.setHex(0xfff0d0); torch.intensity = 2.3; torch.angle = 0.42; torch.penumbra = 0.55; torch.decay = 1.1; torch.distance = 50; lanternLight.color.setHex(0xff9a45); }
+}
+function updateLightFx(dt, t) {
+  if (!CFG.light) return;
+  var i, o, sc;
+  for (i = 0; i < LFX.length; i++) {
+    o = LFX[i];
+    if (o.fl) { sc = o.base * (1 + Math.sin(t * 9 + o.ph) * 0.05 + Math.sin(t * 23 + o.ph) * 0.03); o.sp.scale.set(sc, sc, 1); o.sp.material.opacity = 0.72 + Math.sin(t * 7 + o.ph) * 0.08; }
+  }
+  var fk = Math.sin(t * 9) * 0.5 + Math.sin(t * 23) * 0.3;   // el farol parpadea también en color (más naranja cuando baja)
+  lanternLight.color.setRGB(1, 0.62 + fk * 0.04, 0.27 + fk * 0.02);
+  var scoped = W.zoom > 2 && P.adsK > 0.6, show = !scoped && !P.dead && !specActive() && P.torchOn;
+  if (beam.visible !== show) beam.visible = show;
+  if (show) {
+    var kk = (1 - clamp(-P.pitch * 1.6, 0, 0.85)) * (1 + Math.sin(t * 11) * 0.04);   // al mirar al suelo el haz se apaga para no marcar cortes
+    for (i = 0; i < beamSl.length; i++) beamSl[i].material.opacity = beamSl[i].userData.a * kk;
+  }
+  torch.intensity = 2.9 * (1 + Math.sin(t * 13) * 0.015);
+}
+
+// todo el entorno sólido proyecta sombra (los materiales Basic —luces, carteles, brillos— no)
+function castAll(root) {
+  root.traverse(function (o) { if (o.isMesh && o !== ground && o.material && !o.material.isMeshBasicMaterial) o.castShadow = true; });
+}
+scene.children.forEach(function (o) { if (o !== camera) castAll(o); });
 applyCfg();
 menuScene();
+try { presStart(); } catch (e) {}
 requestAnimationFrame(frame);
 })();
 </script>
