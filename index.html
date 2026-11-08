@@ -191,7 +191,8 @@ button.alt.on:hover:not(:disabled){background:#ffc460}
 #roomList{max-height:230px;overflow-y:auto;-webkit-user-select:text;user-select:text;font-size:18px;color:var(--bone-dim)}
 #buffs{position:absolute;left:50%;top:70px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none}
 .buff{font-family:var(--display);font-size:15px;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;background:rgba(6,11,12,.72);box-shadow:0 0 0 1px var(--line);white-space:nowrap}
-.buff.dmg{color:#ff7a50}.buff.spd{color:#59d8ff}.buff.inf{color:#c99bff}
+.buff.dmg{color:#ff7a50}.buff.spd{color:#59d8ff}.buff.inf{color:#c99bff}.buff.rof{color:#ffd23f}.buff.imm{color:#7df9ff}
+#hpBar.imm{box-shadow:0 0 14px 2px rgba(125,249,255,.75)}
 input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
 #score{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92vw,640px);background:rgba(6,11,12,.55);box-shadow:0 0 0 1px var(--line);pointer-events:none;padding:12px 18px 14px}
 #score h3{margin:0 0 8px;font-family:var(--display);font-weight:400;letter-spacing:.16em;text-transform:uppercase;font-size:20px;color:var(--lamp);text-align:center}
@@ -472,6 +473,7 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
       <div class="row2">
         <button class="go" id="btnCfgGfx" type="button">Gráficos</button>
         <button class="go" id="btnCfgCtl" type="button">Controles</button>
+        <button class="go" id="btnCfgSnd" type="button">Sonido</button>
         <button class="go" id="btnCfgKeys" type="button">Mapeo de teclas</button>
       </div>
       <div class="row2"><button class="alt" id="btnCfgBack" type="button">Volver</button></div>
@@ -502,6 +504,20 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
       <label class="chk"><input type="checkbox" id="bobChk"> Balanceo de cámara al correr</label>
       <p class="note">El balanceo agrega vaivén y leve inclinación al caminar y correr. Viene activado.</p>
       <div class="row2"><button class="alt" id="btnCtlBack" type="button">Volver</button></div>
+    </div></div>
+  </section>
+
+  <section class="screen" id="cfgSnd" hidden>
+    <div class="memo"><div class="tape"></div><div class="in">
+      <span class="kicker">Configuración</span>
+      <h1 style="font-size:clamp(32px,8vw,52px)">So<em>nido</em></h1>
+      <label class="chk"><input type="checkbox" id="musChk" checked> Música</label>
+      <p class="note">Suma música al menú, a las lluvias, a las tormentas de viento y a la huida en helicóptero del modo Historia. Los sonidos ambientales y los efectos no cambian. Viene activada.</p>
+      <div class="field">
+        <span class="lbl">Volumen de la música · <b id="musVal">70%</b></span>
+        <input type="range" class="rng" id="musRng" min="0" max="100" step="5" value="70" aria-label="Volumen de la música">
+      </div>
+      <div class="row2"><button class="alt" id="btnSndBack" type="button">Volver</button></div>
     </div></div>
   </section>
 
@@ -958,8 +974,10 @@ function initAudio() {
     lfo.connect(lg); lg.connect(wg.gain);
     src.connect(lp); lp.connect(wg); wg.connect(master);
     src.start(); lfo.start();
+    musInit();
   } catch (e) { actx = null; }
 }
+['pointerdown', 'keydown'].forEach(function (ev) { window.addEventListener(ev, function () { initAudio(); }, true); });   // el audio (y la música del menú) arranca con el primer gesto
 function toggleMute() {
   muted = !muted;
   if (master) master.gain.value = muted ? 0 : 0.55;
@@ -1025,6 +1043,230 @@ function sfxGroan(dist, big, pan) {
   if (actx.createStereoPanner) { var p = actx.createStereoPanner(); p.pan.value = pan; g.connect(p); out = p; }
   out.connect(master);
   o.start(now); lfo.start(now); o.stop(now + dur + 0.2); lfo.stop(now + dur + 0.2);
+}
+
+/* ---------- soundtrack: música procedural (se suma a los sonidos ambientales, no los reemplaza; se desactiva en Configuración > Sonido) ---------- */
+var MUS = { on: true, vol: 0.7 };
+(function () {
+  try { var m = JSON.parse(localStorage.getItem('nocheZombiMus') || '{}'); if (typeof m.on === 'boolean') MUS.on = m.on; if (typeof m.vol === 'number') MUS.vol = clamp(m.vol, 0, 1); } catch (e) {}
+})();
+function saveMus() { try { localStorage.setItem('nocheZombiMus', JSON.stringify(MUS)); } catch (e) {} }
+var musBus = null, mus = { cur: '', tr: null, step: 0, nextT: 0, timer: null };
+function mf(n) { return 440 * Math.pow(2, (n - 69) / 12); }
+function musInit() {
+  if (!actx || musBus) return;
+  musBus = actx.createGain(); musBus.gain.value = MUS.on ? MUS.vol * 0.6 : 0; musBus.connect(master);   // la música pasa por el master: la tecla de silencio también la corta
+  mus.timer = setInterval(musSched, 80);
+}
+function musApplyVol() { if (musBus) musBus.gain.setTargetAtTime(MUS.on ? MUS.vol * 0.6 : 0, actx.currentTime, 0.08); }
+
+// instrumentos
+function mNote(tr, type, f, t, dur, vol, o) {
+  o = o || {};
+  var a = o.a === undefined ? 0.01 : o.a, r = o.r === undefined ? 0.25 : o.r;
+  var osc = actx.createOscillator(); osc.type = type; osc.frequency.setValueAtTime(f, t);
+  if (o.det) osc.detune.value = o.det;
+  if (o.glide) osc.frequency.exponentialRampToValueAtTime(o.glide, t + dur);
+  var g = actx.createGain(), node = osc;
+  g.gain.setValueAtTime(0.0001, t);
+  if (o.pluck) { g.gain.linearRampToValueAtTime(vol, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); r = 0.05; }
+  else { a = Math.min(a, dur); g.gain.linearRampToValueAtTime(vol, t + a); g.gain.setValueAtTime(vol, t + dur); g.gain.exponentialRampToValueAtTime(0.0001, t + dur + r); }
+  if (o.lp) {
+    var fl = actx.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.setValueAtTime(o.lp, t);
+    if (o.lpTo) fl.frequency.exponentialRampToValueAtTime(o.lpTo, t + dur);
+    osc.connect(fl); node = fl;
+  }
+  node.connect(g);
+  var out = g;
+  if (o.pan !== undefined && actx.createStereoPanner) { var pn = actx.createStereoPanner(); pn.pan.value = o.pan; g.connect(pn); out = pn; }
+  out.connect(tr.out);
+  if (o.send) { var sg = actx.createGain(); sg.gain.value = o.send; out.connect(sg); sg.connect(tr.send); }
+  osc.start(t); osc.stop(t + dur + r + 0.05);
+}
+function mNoise(tr, t, dur, vol, type, f0, f1, o) {
+  o = o || {};
+  var s = actx.createBufferSource(); s.buffer = noiseBuf;
+  var f = actx.createBiquadFilter(); f.type = type; f.frequency.setValueAtTime(f0, t); if (o.Q) f.Q.value = o.Q;
+  f.frequency.exponentialRampToValueAtTime(f1, t + dur);
+  var g = actx.createGain(); g.gain.setValueAtTime(0.0001, t);
+  if (o.swell) { g.gain.linearRampToValueAtTime(vol, t + dur * 0.5); g.gain.linearRampToValueAtTime(0.0001, t + dur); }
+  else { g.gain.linearRampToValueAtTime(vol, t + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); }
+  s.connect(f); f.connect(g); g.connect(tr.out);
+  if (o.send) { var sg = actx.createGain(); sg.gain.value = o.send; g.connect(sg); sg.connect(tr.send); }
+  s.start(t, Math.random() * 0.8); s.stop(t + dur + 0.05);
+}
+function mKick(tr, t, vol, low) {
+  var o = actx.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(low ? 90 : 150, t); o.frequency.exponentialRampToValueAtTime(low ? 32 : 44, t + (low ? 0.4 : 0.13));
+  var g = actx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(vol, t + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + (low ? 0.55 : 0.2));
+  o.connect(g); g.connect(tr.out); o.start(t); o.stop(t + (low ? 0.6 : 0.25));
+  mNoise(tr, t, 0.03, vol * 0.35, 'lowpass', 2200, 400);
+}
+function mSnare(tr, t, vol) { mNoise(tr, t, 0.16, vol, 'bandpass', 1900, 1100, { Q: 0.8 }); mNote(tr, 'triangle', 210, t, 0.07, vol * 0.5, { pluck: true }); }
+function mHat(tr, t, vol, open) { mNoise(tr, t, open ? 0.2 : 0.035, vol, 'highpass', 7000, 9000); }
+function mBell(tr, f, t, vol) {   // campana grave con parciales inarmónicos
+  [[1, 1], [2.01, 0.5], [2.76, 0.32], [5.4, 0.14]].forEach(function (p) { mNote(tr, 'sine', f * p[0], t, 5.5 - p[0] * 0.5, vol * p[1], { pluck: true, send: 0.5 }); });
+}
+
+// pistas: sd = duración de un paso (s), len = pasos, play(tr, paso, t)
+var TRACKS = {
+  // Menú · "Cuarentena": acordes oscuros en La menor, campanas lejanas y mucho eco
+  menu: {
+    sd: 0.46875, len: 64, loop: true, vol: 0.95, fi: 3.5, dl: 0.703, fb: 0.4,
+    CH: [{ r: 33, v: [57, 60, 64] }, { r: 29, v: [53, 57, 60] }, { r: 38, v: [53, 57, 62] }, { r: 40, v: [52, 56, 59, 62] }],
+    MEL: { 4: 76, 7: 72, 10: 69, 13: 71, 20: 72, 23: 69, 26: 65, 29: 67, 36: 74, 39: 69, 42: 65, 45: 62, 52: 71, 55: 68, 58: 64, 61: 74 },
+    play: function (tr, s, t) {
+      var T = TRACKS.menu, c = T.CH[s >> 4], i;
+      if (s % 16 === 0) {
+        var d = 15 * T.sd;
+        for (i = 0; i < c.v.length; i++) {
+          mNote(tr, 'sawtooth', mf(c.v[i]), t, d, 0.03, { a: 1.8, r: 2.4, lp: 650, det: -8, send: 0.4 });
+          mNote(tr, 'sawtooth', mf(c.v[i]), t, d, 0.03, { a: 1.8, r: 2.4, lp: 650, det: 8, send: 0.4 });
+          mNote(tr, 'triangle', mf(c.v[i] + 12), t, d, 0.018, { a: 2.2, r: 2.4, send: 0.5 });
+        }
+        mNote(tr, 'sine', mf(c.r), t, d, 0.17, { a: 0.9, r: 2 });
+        mNote(tr, 'triangle', mf(c.r + 12), t, d, 0.05, { a: 1.5, r: 2, lp: 500 });
+      }
+      if (s === 0 || s === 32) mBell(tr, 220, t, 0.07);
+      if (T.MEL[s]) { mNote(tr, 'sine', mf(T.MEL[s]), t, 2.2, 0.09, { pluck: true, send: 0.75 }); mNote(tr, 'triangle', mf(T.MEL[s] + 12), t, 1.2, 0.025, { pluck: true, send: 0.75 }); }
+    }
+  },
+  // Lluvia · "Lluvia sobre las tumbas": arpegios suaves de re menor, como una caja de música lejana
+  rain: {
+    sd: 0.4167, len: 64, loop: true, vol: 0.85, fi: 4, dl: 0.5, fb: 0.46,
+    CH: [{ r: 38, n: [50, 57, 62, 65, 69] }, { r: 34, n: [46, 53, 58, 62, 65] }, { r: 31, n: [43, 50, 55, 58, 62] }, { r: 33, n: [45, 52, 57, 61, 64] }],
+    PAT: [0, 2, 3, 4, 3, 2, 3, 1, 0, 2, 3, 4, 3, 2, 4, 3],
+    MEL: [[2, 74], [10, 72]], MEL2: [[2, 72], [10, 70]], MEL3: [[2, 70], [10, 67]], MEL4: [[2, 69], [10, 73]],
+    play: function (tr, s, t) {
+      var T = TRACKS.rain, seg = s >> 4, st = s & 15, c = T.CH[seg], n = c.n[T.PAT[st]], i;
+      mNote(tr, 'triangle', mf(n + 12), t, 1.7, (st % 8 === 0 ? 0.075 : 0.05), { pluck: true, lp: 2800, send: 0.55, pan: ((st % 4) - 1.5) * 0.25 });
+      mNote(tr, 'sine', mf(n + 24), t, 0.9, 0.012, { pluck: true, send: 0.6 });
+      if (st === 0) {
+        var d = 15 * T.sd;
+        mNote(tr, 'sine', mf(c.r), t, d, 0.11, { a: 1.2, r: 2 });
+        for (i = 1; i < 4; i++) mNote(tr, 'sine', mf(c.n[i]), t, d, 0.03, { a: 2.2, r: 2.6, lp: 900, send: 0.5 });
+      }
+      var ml = [T.MEL, T.MEL2, T.MEL3, T.MEL4][seg];
+      for (i = 0; i < ml.length; i++) if (ml[i][0] === st) mNote(tr, 'sine', mf(ml[i][1]), t, 2.8, 0.05, { a: 0.3, r: 1.6, lp: 1800, send: 0.85 });
+    }
+  },
+  // Tormenta de viento (arena) · "Simún": zumbido grave disonante, oleadas de aire y golpes sordos
+  wind: {
+    sd: 0.5, len: 64, loop: true, vol: 0.8, fi: 3, dl: 0.6, fb: 0.5,
+    play: function (tr, s, t) {
+      var T = TRACKS.wind;
+      if (s % 32 === 0) {
+        [40, 47, 53].forEach(function (n, i) { mNote(tr, 'sawtooth', mf(n), t, 14, 0.045 - i * 0.008, { a: 3, r: 3, lp: 260, lpTo: 560, det: i * 5 }); });
+        var cl = s === 0 ? [64, 65, 71] : [59, 60, 66];
+        cl.forEach(function (n) { mNote(tr, 'sawtooth', mf(n), t + 0.5, 6, 0.02, { a: 3.4, r: 3.2, lp: 1000, send: 0.5, det: -6 }); });
+      }
+      if (s % 16 === 0) mNoise(tr, t, 7, 0.1, 'bandpass', 260, 1500, { Q: 2.5, swell: true, send: 0.3 });
+      if (s % 16 === 8) mNoise(tr, t, 6, 0.07, 'bandpass', 1400, 300, { Q: 3, swell: true, send: 0.3 });
+      if (s % 16 === 0) mKick(tr, t, 0.26, true);
+      if (s % 16 === 6) mKick(tr, t, 0.15, true);
+      if (s >= 40 && s % 2 === 0) mNote(tr, 'sawtooth', mf(40), t, 0.22, 0.03 + (s - 40) * 0.002, { lp: 520, a: 0.01, r: 0.1 });
+      if (s === 24 || s === 56) mNoise(tr, t, 1.4, 0.03, 'highpass', 3500, 9000, { swell: true, send: 0.5 });
+    }
+  },
+  // Escape · "Evacuación": percusión urgente, graves en corcheas, metales y un tema heroico en mi menor. Dura 12 s (la cinemática), con golpe final
+  escape: {
+    sd: 0.107143, len: 112, loop: false, vol: 1, fi: 0.05, dl: 0.32, fb: 0.3,
+    R: [40, 40, 36, 43, 38, 36], V: [[52, 59, 64, 67], [52, 59, 64, 67], [48, 55, 60, 64], [55, 59, 62, 67], [50, 57, 62, 66], [48, 55, 60, 64]],
+    LEAD: {
+      1: [[0, 76, 6], [6, 74, 2], [8, 71, 4], [12, 74, 4]], 2: [[0, 72, 6], [6, 71, 2], [8, 67, 4], [12, 71, 4]],
+      3: [[0, 74, 6], [6, 71, 2], [8, 67, 4], [12, 79, 4]], 4: [[0, 78, 8], [8, 74, 4], [12, 81, 4]]
+    },
+    play: function (tr, s, t) {
+      var T = TRACKS.escape, bar = s >> 4, st = s & 15, sd = T.sd, i, v, root = T.R[bar], vo = T.V[bar];
+      if (bar === 0) {   // intro: redoble creciente y subida
+        if (s === 0) {
+          mNote(tr, 'sawtooth', 164.8, t, 16 * sd, 0.06, { a: 1.2, r: 0.1, glide: 659, lp: 2200 });
+          mNote(tr, 'sine', 41.2, t, 16 * sd, 0.2, { a: 0.3, r: 0.3 });
+          mNoise(tr, t, 16 * sd, 0.1, 'highpass', 600, 8000, { swell: true });
+        }
+        if ([0, 4, 8, 10, 12, 13, 14, 15].indexOf(st) >= 0) mSnare(tr, t, 0.1 + st * 0.012);
+        return;
+      }
+      if (bar <= 4) {   // groove principal
+        if (st === 0 || st === 6 || st === 8) mKick(tr, t, st === 6 ? 0.32 : 0.5);
+        if (st === 4 || st === 12) mSnare(tr, t, 0.3);
+        if (st === 15) mSnare(tr, t, 0.07);
+        if (st % 2 === 0) mHat(tr, t, st === 14 ? 0.08 : 0.06, st === 14); else mHat(tr, t, 0.025, false);
+        if (st % 2 === 0) {   // bajo en corcheas
+          var oct = (st === 6 || st === 14) ? 12 : 0;
+          mNote(tr, 'sawtooth', mf(root + oct), t, 0.19, 0.15, { lp: 520, r: 0.06 });
+          mNote(tr, 'sine', mf(root + oct), t, 0.19, 0.12, { r: 0.06 });
+        }
+        var stab = { 0: 5, 6: 2.5, 8: 5, 14: 2 }[st];
+        if (stab) for (i = 0; i < vo.length; i++) mNote(tr, 'sawtooth', mf(vo[i]), t, stab * sd, 0.045, { a: 0.006, r: 0.14, lp: 2600, send: 0.2 });
+        if (st === 0) for (i = 0; i < vo.length; i++) mNote(tr, 'triangle', mf(vo[i] + 12), t, 14 * sd, 0.025, { a: 0.25, r: 0.4, send: 0.3 });
+        var ld = T.LEAD[bar];
+        if (ld) for (i = 0; i < ld.length; i++) if (ld[i][0] === st) {
+          mNote(tr, 'sawtooth', mf(ld[i][1]), t, ld[i][2] * sd, 0.085, { a: 0.012, r: 0.2, lp: 3400, send: 0.45 });
+          mNote(tr, 'square', mf(ld[i][1] - 12), t, ld[i][2] * sd, 0.03, { a: 0.012, r: 0.2, lp: 1800 });
+        }
+        return;
+      }
+      if (bar === 5) {   // subida final: doble bombo, redoble en semicorcheas y chillido de metales
+        if (st % 4 === 0) mKick(tr, t, 0.45);
+        mSnare(tr, t, 0.06 + st * 0.016);
+        mNote(tr, 'sawtooth', mf(40), t, 0.1, 0.13, { lp: 480, r: 0.04 });
+        if (st === 0 || st === 4) for (i = 0; i < 4; i++) mNote(tr, 'sawtooth', mf(T.V[5][i]), t, 3.5 * sd, 0.045, { a: 0.006, r: 0.12, lp: 2600, send: 0.2 });
+        if (st === 8 || st === 12) for (i = 0; i < 4; i++) mNote(tr, 'sawtooth', mf(T.V[4][i]), t, 3.5 * sd, 0.05, { a: 0.006, r: 0.12, lp: 3000, send: 0.2 });
+        if (st === 0) {
+          mNote(tr, 'sawtooth', mf(76), t, 16 * sd, 0.08, { a: 0.1, r: 0.05, glide: mf(88), lp: 3600, send: 0.3 });
+          mNoise(tr, t, 16 * sd, 0.12, 'highpass', 800, 9000, { swell: true });
+        }
+        return;
+      }
+      if (s === 96) {   // golpe final: acorde completo, platillo y bombo, con cola larga
+        mKick(tr, t, 0.7); mSnare(tr, t, 0.35);
+        mNoise(tr, t, 3.6, 0.3, 'highpass', 3500, 6500, { send: 0.3 });
+        mNote(tr, 'sine', mf(28), t, 4, 0.34, { a: 0.01, r: 3 });
+        mNote(tr, 'sawtooth', mf(40), t, 3.2, 0.1, { a: 0.01, r: 3, lp: 700 });
+        [52, 59, 64, 67, 71, 76].forEach(function (n) { mNote(tr, 'sawtooth', mf(n), t, 3, 0.05, { a: 0.01, r: 3.4, lp: 3000, send: 0.35 }); });
+        mNote(tr, 'sawtooth', mf(76), t, 3.2, 0.09, { a: 0.012, r: 3.2, lp: 3600, send: 0.5 });
+        mNote(tr, 'triangle', mf(64), t, 3.4, 0.05, { a: 0.012, r: 3.2, send: 0.5 });
+      }
+    }
+  }
+};
+function musSwitch(name) {
+  if (!actx || !musBus) return;
+  var now = actx.currentTime, old = mus.tr;
+  if (old) {
+    var fo = name === 'escape' ? 0.35 : 1.8;
+    old.out.gain.cancelScheduledValues(now); old.out.gain.setValueAtTime(old.out.gain.value, now); old.out.gain.linearRampToValueAtTime(0, now + fo);
+    setTimeout(function () { try { old.out.disconnect(); old.send.disconnect(); old.delay.disconnect(); } catch (e) {} }, fo * 1000 + 600);
+  }
+  mus.cur = name; mus.tr = null;
+  if (!name) return;
+  var T = TRACKS[name], g = actx.createGain(), sg = actx.createGain(), dl = actx.createDelay(2), fbg = actx.createGain(), fl = actx.createBiquadFilter();
+  g.gain.setValueAtTime(0.0001, now); g.gain.linearRampToValueAtTime(T.vol, now + T.fi); g.connect(musBus);
+  dl.delayTime.value = T.dl; fbg.gain.value = T.fb; fl.type = 'lowpass'; fl.frequency.value = 2400;
+  sg.connect(dl); dl.connect(fl); fl.connect(fbg); fbg.connect(dl); dl.connect(g);
+  mus.tr = { out: g, send: sg, delay: dl }; mus.step = 0; mus.nextT = now + 0.08;
+}
+function musSched() {   // programa las notas con unos 0,4 s de anticipación
+  var tr = mus.tr; if (!actx || !tr || actx.state === 'suspended') return;
+  var T = TRACKS[mus.cur]; if (!T) return;
+  if (mus.nextT < actx.currentTime - 0.6) mus.nextT = actx.currentTime + 0.05;   // la pestaña estuvo en segundo plano
+  while (mus.nextT < actx.currentTime + 0.4) {
+    if (mus.step >= T.len) { if (T.loop) mus.step = 0; else { mus.tr = tr; return; } }
+    T.play(tr, mus.step, mus.nextT);
+    mus.step++; mus.nextT += T.sd;
+  }
+}
+function musicWant() {
+  if (!MUS.on) return '';
+  if (mode === 'cine' || mode === 'win') return 'escape';
+  if (mode === 'menu') return 'menu';
+  if (mode === 'play' || mode === 'paused') return WIND ? 'wind' : RAIN ? 'rain' : '';
+  return '';
+}
+function musicTick() {
+  if (!actx || !musBus) return;
+  var w = musicWant();
+  if (w !== mus.cur) musSwitch(w);
 }
 
 /* ---------- partículas (sangre y chispas) ---------- */
@@ -1561,6 +1803,18 @@ var PK = {};
   special('spd', 0x4fd0ff, new THREE.TetrahedronGeometry(0.32));
   special('inf', 0xc07bff, new THREE.IcosahedronGeometry(0.27));
   special('nuke', 0xfff6c0, new THREE.DodecahedronGeometry(0.32));
+  special('rof', 0xffd23f, new THREE.ConeGeometry(0.24, 0.5, 6));        // Ráfaga de Tiro
+  special('imm', 0x7df9ff, new THREE.SphereGeometry(0.27, 12, 10));      // Inmortalidad
+  (function () {   // Granada (bonus común)
+    var g = new THREE.Group(), body = new THREE.MeshPhongMaterial({ color: 0x5a6b3a, emissive: 0x151c0b, shininess: 20 }), metal = new THREE.MeshPhongMaterial({ color: 0x9a9a92, shininess: 40 });
+    var b = new THREE.Mesh(new THREE.SphereGeometry(0.2, 12, 10), body); b.scale.y = 1.15; g.add(b);
+    var cap = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.09, 8), metal); cap.position.y = 0.25; g.add(cap);
+    var lev = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.03, 0.05), metal); lev.position.set(0.08, 0.31, 0); g.add(lev);
+    var ring = new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.012, 6, 12), metal); ring.position.set(-0.07, 0.3, 0); g.add(ring);
+    var beam = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 3.2, 6, 1, true), new THREE.MeshBasicMaterial({ color: 0x8fae5a, transparent: true, opacity: 0.3, depthWrite: false, blending: THREE.AdditiveBlending }));
+    beam.position.y = 1.7; g.add(beam);
+    PK.gre = { g: g, beam: beam };
+  })();
   (function () {
     var g = canMesh();
     var beam = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 3.2, 6, 1, true), new THREE.MeshBasicMaterial({ color: 0xf6c453, transparent: true, opacity: 0.3, depthWrite: false, blending: THREE.AdditiveBlending }));
@@ -1568,19 +1822,27 @@ var PK = {};
     PK.can = { g: g, beam: beam };
   })();
 })();
-var PKINDS = ['ammo', 'med', 'dmg', 'spd', 'inf', 'nuke', 'cash', 'can'], PKCOL = { ammo: '#f0b24a', med: '#e9e5d4', dmg: '#ff5a30', spd: '#4fd0ff', inf: '#c07bff', nuke: '#ffffff', cash: '#6fd36f', can: '#f6c453' };
+var PKINDS = ['ammo', 'med', 'dmg', 'spd', 'inf', 'nuke', 'cash', 'can', 'rof', 'imm', 'gre'], PKCOL = { ammo: '#f0b24a', med: '#e9e5d4', dmg: '#ff5a30', spd: '#4fd0ff', inf: '#c07bff', nuke: '#ffffff', cash: '#6fd36f', can: '#f6c453', rof: '#ffd23f', imm: '#7df9ff', gre: '#8fae5a' };   // el orden se sincroniza por red: solo se agrega al final
 function dropMul() { return DF[DIFF].drop; }      // -75% en Difícil, -45% en Normal
-function pickKind() {   // normales: peso 1; especiales: peso 0.75; Aniquilación: 0,4%
-  if (Math.random() < 0.004) return 'nuke';
-  var w = { ammo: 1, med: 1, cash: 1, dmg: 0.75, spd: 0.75, inf: 0.75 }, tot = 5.25, r = Math.random() * tot, k;
+function pickKind() {   // Aniquilación 3% · Inmortalidad 25% · Granada 25% · el 47% restante se reparte entre los demás (comunes peso 1, especiales 0,75)
+  var r0 = Math.random();
+  if (r0 < 0.03) return 'nuke';
+  if (r0 < 0.28) return 'imm';
+  if (r0 < 0.53) return 'gre';
+  var w = { ammo: 1, med: 1, cash: 1, dmg: 0.75, spd: 0.75, inf: 0.75, rof: 0.75 }, tot = 6, r = Math.random() * tot, k;
   for (k in w) { if (r < w[k]) return k; r -= w[k]; }
   return 'ammo';
 }
+function bmul() { return P.up.dbl ? (P.up2.dbl ? 4 : 2) : 1; }   // Doble Bonus: duraciones x2 (x4 mejorada)
 function grantBuff(kind) {
   if (kind === 'nuke') { showBanner('¡Aniquilación!', 'Todos los infectados caen'); sfxWave(); return; }
-  if (kind === 'dmg') { P.tDmg = 15; showBanner('Doble daño', '15 segundos'); }
-  else if (kind === 'spd') { P.tSpd = 20; showBanner('Doble velocidad', '20 segundos'); }
-  else if (kind === 'inf') { P.tInf = 10; P.reloading = 0; showBanner('Munición infinita', '10 segundos'); }
+  var m = bmul();
+  if (kind === 'dmg') { P.tDmg = 15 * m; showBanner('Doble daño', 15 * m + ' segundos'); }
+  else if (kind === 'spd') { P.tSpd = 20 * m; showBanner('Doble velocidad', 20 * m + ' segundos'); }
+  else if (kind === 'inf') { P.tInf = 10 * m; P.reloading = 0; showBanner('Munición infinita', 10 * m + ' segundos'); }
+  else if (kind === 'rof') { P.tRof = 10 * m; showBanner('Ráfaga de tiro', 'Disparás el doble de rápido · ' + 10 * m + ' segundos'); }
+  else if (kind === 'imm') { P.tImm = 8 * m; showBanner('Inmortalidad', 'Nada te puede dañar · ' + 8 * m + ' segundos'); }
+  else if (kind === 'gre') { P.nades = Math.min(8, P.nades + 1); showPop('+1 granada'); }
   sfxPickup();
 }
 function dropPickup(x, z, kind) {
@@ -1598,12 +1860,13 @@ function updatePickups(dt) {
     pk.g.position.y = 0.45 + Math.sin(pk.t * 3) * 0.07;
     pk.g.visible = pk.life > 5 || Math.floor(pk.life * 6) % 2 === 0;
     if (NET.role === 'client') {
-      if (!pk.req && !P.dead && Math.hypot(pk.x - P.x, pk.z - P.z) < 1.7 && ((pk.kind === 'med' && P.hp < P.maxHp) || (pk.kind === 'ammo' && P.reserve < MAXRES) || (pk.kind !== 'med' && pk.kind !== 'ammo' && !(pk.kind === 'can' && P.can)))) { pk.req = 1; netSend({ t: 'take', id: pk.id }); }
+      if (!pk.req && !P.dead && Math.hypot(pk.x - P.x, pk.z - P.z) < 1.7 && ((pk.kind === 'med' && P.hp < P.maxHp) || (pk.kind === 'ammo' && P.reserve < MAXRES) || (pk.kind !== 'med' && pk.kind !== 'ammo' && !(pk.kind === 'can' && P.can) && !(pk.kind === 'gre' && P.nades >= 8)))) { pk.req = 1; netSend({ t: 'take', id: pk.id }); }
     } else if (!P.dead && Math.hypot(pk.x - P.x, pk.z - P.z) < 1.7) {
       if (pk.kind === 'med' && P.hp < P.maxHp) { P.hp = Math.min(P.maxHp, P.hp + 25); took = true; showPop('+25 salud'); }
       else if (pk.kind === 'ammo' && P.reserve < MAXRES) { P.reserve = Math.min(MAXRES, P.reserve + 36); took = true; showPop('+36 balas'); }
       else if (pk.kind === 'can') { if (!P.can) { takeCan(); took = true; } }
       else if (pk.kind === 'cash') { G.cash += 50; took = true; showPop('+50$'); }
+      else if (pk.kind === 'gre') { if (P.nades < 8) { P.nades++; took = true; showPop('+1 granada'); } }
       else if (pk.kind !== 'med' && pk.kind !== 'ammo') { shareBuff(pk.kind, 0); took = true; }
       if (took) sfxPickup();
     }
@@ -1646,7 +1909,7 @@ function startReload() {
 
 function sfxPunch() { noiseHit(1400, 300, 0.45, 0.12, 'lowpass'); tone('sine', 120, 55, 0.4, 0.09); }
 function punch() {
-  P.fireCd = W.cd; P.shots++; SHOTN++;
+  P.fireCd = W.cd * (P.tRof > 0 ? 0.5 : 1); P.shots++; SHOTN++;
   var hd = P.pHand; P.pHand = 1 - P.pHand; P.pk[hd] = 1;
   sfxPunch(); fxSend('s');
   var dmul = P.tDmg > 0 ? 2 : 1;
@@ -1678,7 +1941,7 @@ function fire() {
   if (P.ammo <= 0 && P.tInf <= 0) { sfxEmpty(); P.fireCd = 0.3; startReload(); return; }
   if (P.tInf <= 0) P.ammo--;
   P.shots++; SHOTN++;
-  P.fireCd = W.cd; P.kick = 1; P.flashT = 0.05;
+  P.fireCd = W.cd * (P.tRof > 0 ? 0.5 : 1); P.kick = 1; P.flashT = 0.05;
   P.heat = Math.min(1, P.heat + 0.16 * W.auto);
   var dd = P.tDmg > 0, dmul = dd ? 2 : 1;
   muzzleLight.color.setHex(dd ? 0xff5a30 : 0xffb55a); flashMesh.material.color.setHex(dd ? 0xff6a3a : 0xffd68a);
@@ -1765,7 +2028,7 @@ function killZombie(zb, head, by) {
 }
 
 function hurtPlayer(dmg) {
-  if (mode !== 'play' || P.dead) return;
+  if (mode !== 'play' || P.dead || P.tImm > 0) return;
   P.hp -= dmg; P.hurt = 1; P.shake = Math.min(1, P.shake + 0.6);
   sfxHurt();
   if (P.hp <= 0) { P.hp = 0; playerDown(); }
@@ -1809,7 +2072,7 @@ function updateWaves(dt) {
 /* ---------- actualización del jugador ---------- */
 function updatePlayer(dt) {
   if (P.dead) { P.speed = 0; return; }
-  P.tDmg = Math.max(0, P.tDmg - dt); P.tSpd = Math.max(0, P.tSpd - dt); P.tInf = Math.max(0, P.tInf - dt);
+  P.tDmg = Math.max(0, P.tDmg - dt); P.tSpd = Math.max(0, P.tSpd - dt); P.tInf = Math.max(0, P.tInf - dt); P.tRof = Math.max(0, P.tRof - dt); P.tImm = Math.max(0, P.tImm - dt);
   // apuntar con flechas (siempre disponible)
   if (kd('aimL')) P.yaw += 2.1 * dt * CTL.sens;
   if (kd('aimR')) P.yaw -= 2.1 * dt * CTL.sens;
@@ -1821,7 +2084,7 @@ function updatePlayer(dt) {
   var mag = Math.hypot(fwd, str);
   if (mag > 1) { fwd /= mag; str /= mag; mag = 1; }
   var sprint = kd('sprint') || (BIND.sprint === 'ShiftLeft' && keys.ShiftRight) || (touchMode && Math.hypot(stick.x, stick.y) > 0.92);
-  var speed = (sprint ? 8.4 : 5.4) * (1 - 0.4 * P.adsK) * (P.tSpd > 0 ? 1.5 : 1) * (P.up.speed ? 1.5 : 1) * DF[DIFF].walk;
+  var speed = (sprint ? 8.4 : 5.4) * (1 - 0.4 * P.adsK) * (P.tSpd > 0 ? 1.5 : 1) * (P.up.speed ? (P.up2.speed ? 3 : 1.5) : 1) * DF[DIFF].walk;
   var sinY = Math.sin(P.yaw), cosY = Math.cos(P.yaw);
   var vx = (-sinY * fwd + cosY * str) * speed;
   var vz = (-cosY * fwd - sinY * str) * speed;
@@ -1939,13 +2202,14 @@ function updateHud() {
   $('hpFill').style.transform = 'scaleX(' + clamp(vHp / vMax, 0, 1).toFixed(3) + ')';
   $('hpBar').classList.toggle('low', vHp <= vMax * 0.3);
   $('hpBar').classList.toggle('gold', vIron);
+  $('hpBar').classList.toggle('imm', !SV && P.tImm > 0);
   setText('amMag', vW.melee ? '—' : vInf > 0 ? '∞' : vAmmo);
   setText('amRes', vW.melee ? '' : vInf > 0 ? '/ ∞' : '/ ' + vRes);
   var emp = !vW.melee && vAmmo === 0 && vInf <= 0;
   $('amMag').classList.toggle('empty', emp);
   $('amMag').classList.toggle('gold', vAup && !emp); $('amRes').classList.toggle('gold', vAup);
   var bD = SV ? SV.bd : Math.ceil(P.tDmg), bS = SV ? SV.bs : Math.ceil(P.tSpd), bI = SV ? SV.bi : Math.ceil(P.tInf);
-  var bt = (bD > 0 ? '<span class="buff dmg">Doble daño ' + bD + 's</span>' : '') + (bS > 0 ? '<span class="buff spd">Doble velocidad ' + bS + 's</span>' : '') + (bI > 0 ? '<span class="buff inf">Munición infinita ' + bI + 's</span>' : '');
+  var bt = (bD > 0 ? '<span class="buff dmg">Doble daño ' + bD + 's</span>' : '') + (bS > 0 ? '<span class="buff spd">Doble velocidad ' + bS + 's</span>' : '') + (bI > 0 ? '<span class="buff inf">Munición infinita ' + bI + 's</span>' : '') + (!SV && P.tRof > 0 ? '<span class="buff rof">Ráfaga de tiro ' + Math.ceil(P.tRof) + 's</span>' : '') + (!SV && P.tImm > 0 ? '<span class="buff imm">Inmortalidad ' + Math.ceil(P.tImm) + 's</span>' : '');
   if (hudCache.buffs !== bt) { hudCache.buffs = bt; $('buffs').innerHTML = bt; }
   setText('amLbl', vW.melee ? vW.name : vRel ? 'Recargando' : (vAmmo === 0 && vRes === 0 && vInf <= 0 ? 'Sin balas' : vW.name));
   $('relFill').style.width = SV ? (SV.rel ? '100%' : '0') : (P.reloading > 0 ? ((1 - P.reloading / RELT) * 100).toFixed(0) + '%' : '0');
@@ -2104,10 +2368,10 @@ var WEAPONS = {
 };
 var WORDER = ['rifle', 'shotgun', 'smg', 'sniper', 'fists'];
 var W = WEAPONS.rifle, RELT = 1.5;
-P.pscore = 0; P.col = 8; P.pHand = 0; P.pk = [0, 0]; P.dead = false; P.w = 'rifle'; P.owned = { rifle: 1, fists: 1 }; P.store = {}; G.cash = 0; P.tDmg = 0; P.tSpd = 0; P.tInf = 0; P.trT = 0; P.up = { ammo: false, speed: false, iron: false, share: false }; P.maxHp = 100; P.spec = -1; P.rvT = 0;
-function amul() { return P.up && P.up.ammo ? 2 : 1; }
+P.pscore = 0; P.col = 8; P.pHand = 0; P.pk = [0, 0]; P.dead = false; P.w = 'rifle'; P.owned = { rifle: 1, fists: 1 }; P.store = {}; G.cash = 0; P.tDmg = 0; P.tSpd = 0; P.tInf = 0; P.tRof = 0; P.tImm = 0; P.trT = 0; P.up = { ammo: false, speed: false, iron: false, share: false, dbl: false }; P.up2 = { ammo: false, speed: false, iron: false, dbl: false }; P.maxHp = 100; P.spec = -1; P.rvT = 0;
+function amul() { return P.up && P.up.ammo ? (P.up2 && P.up2.ammo ? 4 : 2) : 1; }
 function applyWeapon(id) { P.w = id; W = WEAPONS[id]; MAG = W.mag * amul(); MAXRES = W.max * amul(); RELT = W.rl; gun.scale.set(1, 1, W.len); }
-function resetWeapons() { P.can = false; P.up = { ammo: false, speed: false, iron: false, share: false }; P.maxHp = 100; P.tDmg = 0; P.tSpd = 0; P.tInf = 0; P.owned = { rifle: 1, fists: 1 }; P.store = {}; P.pk = [0, 0]; applyWeapon('rifle'); G.cash = 0; P.dead = false; P.nades = 2; P.nadeCd = 0; P.ads = false; P.adsK = 0; clearNades(); }
+function resetWeapons() { P.can = false; P.up = { ammo: false, speed: false, iron: false, share: false, dbl: false }; P.up2 = { ammo: false, speed: false, iron: false, dbl: false }; P.maxHp = 100; P.tDmg = 0; P.tSpd = 0; P.tInf = 0; P.tRof = 0; P.tImm = 0; P.owned = { rifle: 1, fists: 1 }; P.store = {}; P.pk = [0, 0]; applyWeapon('rifle'); G.cash = 0; P.dead = false; P.nades = 2; P.nadeCd = 0; P.ads = false; P.adsK = 0; clearNades(); }
 function switchWeapon(id) {
   if (mode !== 'play' || !P.owned[id] || id === P.w) return;
   if (P.can && P.w === 'can' && id !== 'can') return;   // con el bidón en mano solo se puede soltar o cargar en el helicóptero
@@ -2347,7 +2611,7 @@ function damageTarget(tg, dmg) {
 }
 function respawnMe() {   // reaparecer: 50 de vida, ningún bonus y una cantidad humilde de munición
   P.dead = false; P.hp = 50; P.hurt = 0; P.shake = 0;
-  P.tDmg = 0; P.tSpd = 0; P.tInf = 0; P.reloading = 0; P.rvT = 0; P.fuelT = 0; P.fireCd = 0.4;
+  P.tDmg = 0; P.tSpd = 0; P.tInf = 0; P.tRof = 0; P.tImm = 0; P.reloading = 0; P.rvT = 0; P.fuelT = 0; P.fireCd = 0.4;
   Object.keys(P.owned).forEach(function (id) {
     var w = WEAPONS[id]; if (!w || w.melee || !P.owned[id]) return;
     var mg = w.mag * amul();
@@ -2366,7 +2630,7 @@ function hostCheckOver() {
 }
 function playerDown() {
   if (NET.role === 'none') { endGame(); return; }
-  P.dead = true; P.streak = 0; P.iN = 0; P.tDmg = 0; P.tSpd = 0; P.tInf = 0; releaseCan(P.x + 0.4, P.z + 0.4);
+  P.dead = true; P.streak = 0; P.iN = 0; P.tDmg = 0; P.tSpd = 0; P.tInf = 0; P.tRof = 0; P.tImm = 0; releaseCan(P.x + 0.4, P.z + 0.4);
   if (shopOpen) { shopOpen = false; show('shop', false); }
   showBanner('Caíste', 'Un compañero puede revivirte, o esperá el Descanso'); P.spec = -1; specStep(1); P.rvT = 0;
   hostCheckOver();
@@ -2644,7 +2908,7 @@ function hostGot(id, m) {
     if (MODE === 'story' && hgGrp && !r.dead && Math.hypot(r.x - INLET[0], r.z - INLET[1]) < 4.4) hostFuelProg(id, 0.2);
   } else if (m.t === 'take') {
     for (i = 0; i < pickups.length; i++) if (pickups[i].id === m.id && Math.hypot(pickups[i].x - r.x, pickups[i].z - r.z) < 3.5) {
-      var pkk = pickups[i].kind; if (pkk === 'med' || pkk === 'ammo' || pkk === 'cash' || pkk === 'can') netSendTo(id, { t: 'got', k: pkk }); else shareBuff(pkk, id);
+      var pkk = pickups[i].kind; if (pkk === 'med' || pkk === 'ammo' || pkk === 'cash' || pkk === 'can' || pkk === 'gre') netSendTo(id, { t: 'got', k: pkk }); else shareBuff(pkk, id);
       scene.remove(pickups[i].g); pickups.splice(i, 1);
       break;
     }
@@ -2692,6 +2956,7 @@ function clientGot(m) {
     else if (m.k === 'ammo') { P.reserve = Math.min(MAXRES, P.reserve + 36); showPop('+36 balas'); sfxPickup(); }
     else if (m.k === 'cash') { G.cash += 50; showPop('+50$'); sfxPickup(); }
     else if (m.k === 'can') { takeCan(); }
+    else if (m.k === 'gre') { P.nades = Math.min(8, P.nades + 1); showPop('+1 granada'); sfxPickup(); }
     else grantBuff(m.k);
   }
   else if (m.t === 'cash') { G.cash += m.v; if (m.p !== undefined) P.pscore += +m.p || 0; if (!m.b) showPop(MODE === 'story' ? '+' + m.v + '$' : (m.x ? m.x + '  +' : m.l ? 'Largo alcance  +' : m.h ? 'Cabeza  +' : '+') + (m.p !== undefined ? m.p : m.v)); }
@@ -2962,7 +3227,7 @@ var DIFFTXT = {
   nightmare: 'Cuádruple de infectados por oleada, zombis x3 más rápidos, hasta el cuádruple vivos a la vez (tope 200), apariciones 10% más seguidas, 35% menos botín (los brutos siempre sueltan), puntos y dinero -35%, Armería +50% y te movés 25% más lento y atacan 25% más rápido.'
 };
 function each(sel, f) { Array.prototype.forEach.call(document.querySelectorAll(sel), f); }
-function showMenuScreen(id) { ['menu', 'solo', 'coop', 'create', 'config', 'cfgGfx', 'cfgKeys', 'cfgCtl'].forEach(function (s) { show(s, s === id); }); if (id === 'menu') refreshMenuBest(); }
+function showMenuScreen(id) { ['menu', 'solo', 'coop', 'create', 'config', 'cfgGfx', 'cfgKeys', 'cfgCtl', 'cfgSnd'].forEach(function (s) { show(s, s === id); }); if (id === 'menu') refreshMenuBest(); }
 function refreshMenuBest() {
   try { [['mbN', 'normal'], ['mbH', 'hardcore'], ['mbX', 'extreme'], ['mbP', 'nightmare']].forEach(function (p) { $(p[0]).textContent = parseInt(localStorage.getItem(DF[p[1]].bk) || '0', 10) || 0; }); } catch (e) {}
 }
@@ -3092,7 +3357,7 @@ function refreshLegend() {
 }
 $('btnConfig').addEventListener('click', function () { showMenuScreen('config'); });
 var cfgFrom = 'menu';
-function cfgOpen() { return ['config', 'cfgGfx', 'cfgCtl', 'cfgKeys'].some(function (id) { return !$(id).hidden; }); }
+function cfgOpen() { return ['config', 'cfgGfx', 'cfgCtl', 'cfgKeys', 'cfgSnd'].some(function (id) { return !$(id).hidden; }); }
 $('btnCfgBack').addEventListener('click', function () {
   if (cfgFrom === 'pause') { cfgFrom = 'menu'; showMenuScreen(''); show('pause', true); } else showMenuScreen('menu');
 });
@@ -3133,7 +3398,7 @@ $('btnQuit2').addEventListener('click', netLeave);
 /* ---------- espectador, revivir, máquinas de mejoras, lluvia y ajustes ---------- */
 var UPG = true, MACH = [], noDrop = false, rvProg = {}, rvTouch = false, rvId = null, rvSend = 0;
 var RV_NEED = 15, RV_RANGE = 2.4;
-function upBits() { return (P.up.ammo ? 1 : 0) | (P.up.speed ? 2 : 0) | (P.up.iron ? 4 : 0) | (P.up.share ? 8 : 0); }
+function upBits() { return (P.up.ammo ? 1 : 0) | (P.up.speed ? 2 : 0) | (P.up.iron ? 4 : 0) | (P.up.share ? 8 : 0) | (P.up2.ammo ? 16 : 0) | (P.up2.speed ? 32 : 0) | (P.up2.iron ? 64 : 0); }
 function blackenCorpse(zb) {
   zb.mats.forEach(function (m) { m.color.setHex(0x0a0a0a); });
   zb.head.children.forEach(function (e) { e.visible = false; });   // sin ojos brillantes
@@ -3144,7 +3409,7 @@ function specActive() { return P.dead && NET.role !== 'none' && mode === 'play';
 function specList() { var a = []; NET.eachRemote(function (r) { if (!r.dead) a.push(r); }); a.sort(function (x, y) { return x.id - y.id; }); return a; }
 function specView(r) {
   var ub = r.up | 0, bf = r.bf || [0, 0, 0];
-  return { W: WEAPONS[r.w] || WEAPONS.rifle, hp: Math.max(0, r.hp || 0), mhp: (ub & 4) ? 200 : 100, iron: !!(ub & 4), aup: !!(ub & 1), am: r.am | 0, rs: r.rs | 0, rel: !!r.rel, bd: bf[0] | 0, bs: bf[1] | 0, bi: bf[2] | 0 };
+  return { W: WEAPONS[r.w] || WEAPONS.rifle, hp: Math.max(0, r.hp || 0), mhp: (ub & 64) ? 400 : (ub & 4) ? 200 : 100, iron: !!(ub & 4), aup: !!(ub & 1), am: r.am | 0, rs: r.rs | 0, rel: !!r.rel, bd: bf[0] | 0, bs: bf[1] | 0, bi: bf[2] | 0 };
 }
 function specStep(d) {
   var a = specList(); if (!a.length) return;
@@ -3212,6 +3477,7 @@ var MDEF = {
   speed:  { name: 'Pies Ágiles',          price: 20000, col: 0x4fd0ff, info: 'Velocidad base x1.5' },
   iron:   { name: 'Sangre de Hierro',     price: 25000, col: 0xd0442f, info: 'Vida x2' },
   share:  { name: 'Bonus Share',          price: 20000, col: 0xc07bff, info: 'Tus bonus llegan a todos' },
+  dbl:    { name: 'Doble Bonus',          price: 20000, col: 0xd9a3ff, info: 'Bonus duran x2' },
   revall: { name: 'Resucitar Compañeros', price: 8000,  col: 0x93c26b, info: 'Revive a todos los caídos' }
 };
 // Precios por dificultad. Difícil es la base (juntar ~16.000$ lleva hasta la oleada 11); Normal ≈ x0,55, Hardcore ≈ x1,4 y Pesadilla ≈ x2 (simulación de ingresos por oleada)
@@ -3220,13 +3486,14 @@ var MPR = {
   speed:  { normal: 11000, hardcore: 20000, extreme: 28000, nightmare: 40000 },
   iron:   { normal: 14000, hardcore: 25000, extreme: 35000, nightmare: 50000 },
   share:  { normal: 11000, hardcore: 20000, extreme: 28000, nightmare: 40000 },
+  dbl:    { normal: 11000, hardcore: 20000, extreme: 28000, nightmare: 40000 },
   revall: { normal: 4500,  hardcore: 8000,  extreme: 11000, nightmare: 16000 }
 };
 function mprice(k) { var t = MPR[k]; return (t && t[DIFF]) || MDEF[k].price; }
 function money(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '$'; }
 function lw(cx, cz, ry, lx, lz) { return [cx + lx * Math.cos(ry) + lz * Math.sin(ry), cz - lx * Math.sin(ry) + lz * Math.cos(ry)]; }
 function genMachines() {
-  var ks = ['ammo', 'speed', 'iron', 'share'], i, j, t;
+  var ks = ['ammo', 'speed', 'iron', NET.role === 'none' ? 'dbl' : 'share'], i, j, t;   // Bonus Share solo existe en multijugador; en solitario lo reemplaza Doble Bonus
   for (i = 3; i > 0; i--) { j = Math.floor(Math.random() * (i + 1)); t = ks[i]; ks[i] = ks[j]; ks[j] = t; }   // los dúos se arman al azar
   var out = [], used = [], fb = [[34, -22], [-30, -34], [8, 44], [-40, 20]], fi = 0;
   function spot(clear, sep) {
@@ -3266,6 +3533,7 @@ function machTex(k) {
   words.forEach(function (w) { x.fillText(w, 128, y); y += 46; });
   x.font = '600 19px Courier New, monospace'; x.fillStyle = '#e9e5d4'; x.fillText(d.info, 128, 250);
   x.font = '700 44px Courier New, monospace'; x.fillStyle = col; x.fillText(money(mprice(k)), 128, 330);
+  if (canUp2(k)) { x.font = '600 15px Courier New, monospace'; x.fillStyle = '#e9e5d4'; x.fillText('Mejorable x2 por ' + money(mprice(k) * 4), 128, 362); }
   return (MTEX[ck] = new THREE.CanvasTexture(c));
 }
 function buildMachines(L) {
@@ -3300,9 +3568,21 @@ function nearMachine() {
   return best;
 }
 function hasUp(k) { return k !== 'revall' && !!P.up[k]; }
+function canUp2(k) { return k === 'ammo' || k === 'speed' || k === 'iron' || k === 'dbl'; }   // Bonus Share y Resucitar no tienen segundo nivel
+function upPrice(k) { return mprice(k) * 4; }
 function buyMachine(k) {
   var d = MDEF[k];
-  if (hasUp(k)) { showPop('Ya la tenés'); return; }
+  if (hasUp(k)) {   // segunda compra: nivel II por el cuádruple del precio, con el doble de efecto
+    if (!canUp2(k)) { showPop('Ya la tenés'); return; }
+    if (P.up2[k]) { showPop('Ya está al máximo'); return; }
+    var p2 = upPrice(k);
+    if (G.cash < p2) { showPop('Te faltan ' + money(p2 - G.cash)); return; }
+    G.cash -= p2; sfxPickup(); P.up2[k] = true;
+    if (k === 'ammo') { P.reloading = 0; applyWeapon(P.w); P.ammo = MAG; }
+    else if (k === 'iron') { P.maxHp = 400; P.hp = Math.min(400, P.hp * 2); }
+    showBanner(d.name + ' II', 'Mejora potenciada: el doble de efecto');
+    return;
+  }
   if (k === 'revall' && !anyDead()) { showPop('No hay caídos'); return; }
   var pc = mprice(k);
   if (G.cash < pc) { showPop('Te faltan ' + money(pc - G.cash)); return; }
@@ -3340,7 +3620,7 @@ function updateUse(dt) {
   } else {
     P.rvT = 0;
     var m = nearMachine();
-    if (m) { var d = MDEF[m.k]; txt = hasUp(m.k) ? d.name + ' · Ya la tenés' : keyName(BIND.use) + ' · ' + d.name + ' · ' + money(mprice(m.k)); }
+    if (m) { var d = MDEF[m.k]; txt = hasUp(m.k) ? (!canUp2(m.k) ? d.name + ' · Ya la tenés' : P.up2[m.k] ? d.name + ' II · Al máximo' : keyName(BIND.use) + ' · Mejorar ' + d.name + ' · ' + money(upPrice(m.k))) : keyName(BIND.use) + ' · ' + d.name + ' · ' + money(mprice(m.k)); }
   }
   var vis = !!txt; if (tip.hidden === vis) tip.hidden = !vis;
   if (vis) { setText('useTip', txt); tip.style.setProperty('--p', pct + '%'); }
@@ -3429,6 +3709,15 @@ function updateWind(dt) {
 })();
 $('btnCfgCtl').addEventListener('click', function () { showMenuScreen('cfgCtl'); });
 $('btnCtlBack').addEventListener('click', function () { showMenuScreen('config'); });
+(function () {   // Configuración > Sonido: música opcional
+  var chk = $('musChk'), rng = $('musRng');
+  function paint() { chk.checked = MUS.on; rng.value = Math.round(MUS.vol * 100); $('musVal').textContent = Math.round(MUS.vol * 100) + '%'; rng.disabled = !MUS.on; }
+  chk.addEventListener('change', function () { MUS.on = chk.checked; saveMus(); musApplyVol(); paint(); });
+  rng.addEventListener('input', function () { MUS.vol = clamp(+rng.value / 100, 0, 1); saveMus(); musApplyVol(); paint(); });
+  $('btnCfgSnd').addEventListener('click', function () { paint(); showMenuScreen('cfgSnd'); });
+  $('btnSndBack').addEventListener('click', function () { showMenuScreen('config'); });
+  paint();
+})();
 
 /* ---------- post-proceso: bloom, tono fílmico, grading, aberración, viñeta y grano (cada efecto se activa por separado) ---------- */
 var PP = { sc: null, cam: null, quad: null, rt: null, bA: null, bB: null, mBright: null, mBlur: null, mFinal: null, failed: false, size: new THREE.Vector2() };
@@ -3787,6 +4076,7 @@ function frame(now) {
   if (!$('pause').hidden) updatePauseInfo(false);
   updateCorpses(dt);
   updateRain(dt); updateWind(dt);
+  musicTick();
   updateParticles(dt);
   renderFrame();
 }
