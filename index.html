@@ -1079,7 +1079,7 @@ function mNote(tr, type, f, t, dur, vol, o) {
   node.connect(g);
   var out = g;
   if (o.pan !== undefined && actx.createStereoPanner) { var pn = actx.createStereoPanner(); pn.pan.value = o.pan; g.connect(pn); out = pn; }
-  out.connect(tr.out);
+  out.connect((o.dist && tr.dout) || tr.out);
   if (o.send) { var sg = actx.createGain(); sg.gain.value = o.send; out.connect(sg); sg.connect(tr.send); }
   osc.start(t); osc.stop(t + dur + r + 0.05);
 }
@@ -1107,29 +1107,189 @@ function mBell(tr, f, t, vol) {   // campana grave con parciales inarmónicos
   [[1, 1], [2.01, 0.5], [2.76, 0.32], [5.4, 0.14]].forEach(function (p) { mNote(tr, 'sine', f * p[0], t, 5.5 - p[0] * 0.5, vol * p[1], { pluck: true, send: 0.5 }); });
 }
 
+// generadores de pistas
+function mkLone(c) {   // temas solitarios: acordes lentos, notas sueltas y mucho eco
+  return {
+    sd: c.sd, len: c.len, loop: true, vol: c.vol || 0.9, fi: 4, dl: c.dl || 0.6, fb: c.fb || 0.45, c: c,
+    play: function (tr, s, t) {
+      var C = this.c, st = s & 15, ch = C.CH[(s >> 4) % C.CH.length], d = 15 * C.sd, i, m;
+      if (st === 0) {
+        for (i = 0; i < ch.v.length; i++) mNote(tr, C.pad, mf(ch.v[i]), t, d, C.pv || 0.03, { a: 2, r: 2.5, lp: C.lp || 600, det: i % 2 ? 7 : -7, send: 0.4 });
+        mNote(tr, 'sine', mf(ch.r), t, d, 0.16, { a: 1, r: 2 });
+        if (C.bell && C.bell.indexOf(s) >= 0) mBell(tr, mf(ch.r + 24), t, 0.06);
+      }
+      m = C.MEL[s];
+      if (m) {
+        if (C.long) mNote(tr, 'sine', mf(m), t, 3.2, 0.065, { a: 0.7, r: 2, lp: 1800, send: 0.85 });
+        else { mNote(tr, C.inst || 'sine', mf(m), t, 2, 0.08, { pluck: true, send: 0.75 }); mNote(tr, 'triangle', mf(m + 12), t, 1.1, 0.02, { pluck: true, send: 0.75 }); }
+      }
+      if (C.hb && st % 8 === 0) { mKick(tr, t, 0.13, true); mKick(tr, t + 0.3, 0.07, true); }
+      if (C.stat && st === 6) mNoise(tr, t, 2.4, 0.03, 'highpass', 4000, 8500, { swell: true, send: 0.4 });
+      if (C.air && st === 0) mNoise(tr, t, 7, 0.06, 'bandpass', 250, 1100, { Q: 2, swell: true, send: 0.3 });
+    }
+  };
+}
+var SH_DR = {   // baterías: k = bombo, s = caja
+  n: { k: [0, 6, 8, 11], s: [4, 12] },
+  d: { k: [0, 2, 4, 6, 8, 10, 12, 14], s: [4, 12] },
+  g: { k: [0, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15], s: [4, 12] },
+  h: { k: [0, 10], s: [8] },
+  f: { k: [0, 8], s: [0, 2, 4, 6, 8, 10, 12, 13, 14, 15] }
+};
+function mkShoot(c) {   // temas intensos de shooter: riffs saturados, doble bombo y detalles de fin del mundo
+  return {
+    sd: 15 / c.bpm, len: c.seq.length * 16, loop: true, vol: 1, fi: 0.4, dl: 60 / c.bpm * 0.75, fb: 0.3, dist: true, c: c,
+    play: function (tr, s, t) {
+      var C = this.c, sd = this.sd, bar = (s >> 4) % C.seq.length, st = s & 15, i, rs = C.rs ? C.rs[bar] : 0, off = C.riffs[C.seq[bar]][st], dm = SH_DR[C.drum[bar]], ld = C.lead && C.lead[bar];
+      if (off >= 0) {
+        var f = mf(C.root + rs + off), acc = st % 4 === 0, du = sd * (acc ? 1.7 : 0.85);
+        mNote(tr, 'sawtooth', f, t, du, 0.1, { lp: acc ? 1500 : 950, r: 0.04, dist: 1 });
+        mNote(tr, 'square', f, t, du, 0.045, { lp: 700, r: 0.04, dist: 1 });
+        mNote(tr, 'sine', f, t, du, 0.12, { r: 0.05 });
+        if (acc) mNote(tr, 'sawtooth', f * 2, t, du, 0.035, { lp: 1900, r: 0.04, dist: 1 });
+      }
+      if (dm.k.indexOf(st) >= 0) mKick(tr, t, C.drum[bar] === 'h' ? 0.5 : 0.36);
+      if (dm.s.indexOf(st) >= 0) mSnare(tr, t, C.drum[bar] === 'f' ? 0.1 + st * 0.02 : 0.3);
+      if (C.drum[bar] === 'h' ? st % 4 === 0 : st % 2 === 0) mHat(tr, t, 0.035, false);
+      if (st === 0 && bar % 4 === 0) mNoise(tr, t, 1.8, 0.09, 'highpass', 5000, 9000, { send: 0.3 });
+      if (C.drum[bar] === 'f' && st >= 14) mKick(tr, t, 0.4, true);
+      if (st === 0 && C.pw && C.pw.indexOf(bar) >= 0) [7, 12, 19].forEach(function (n) { mNote(tr, 'sawtooth', mf(C.root + rs + n), t, 14 * sd, 0.05, { a: 0.01, r: 0.3, lp: 2000, dist: 1, send: 0.2 }); });
+      if (ld) for (i = 0; i < ld.length; i++) if (ld[i][0] === st) {
+        mNote(tr, 'sawtooth', mf(ld[i][1]), t, ld[i][2] * sd, 0.075, { a: 0.01, r: 0.2, lp: 3200, send: 0.45 });
+        mNote(tr, 'square', mf(ld[i][1] - 12), t, ld[i][2] * sd, 0.03, { a: 0.01, r: 0.2, lp: 1700, send: 0.2 });
+      }
+      if (C.arp && bar >= C.arp[0] && st % 2 === 0) mNote(tr, C.arp[1], mf(C.root + 36 + rs + C.arp[2][(st >> 1) & 3]), t, sd * 3, 0.04, { pluck: true, lp: 3600, send: 0.45, pan: (st % 4 - 1) * 0.3 });
+      if (st === 0) {
+        if (C.drone && bar % 8 === 0) mNote(tr, 'sawtooth', mf(C.root + 12), t, 16 * sd * 7, 0.06, { a: 2, r: 2, lp: 280, send: 0.3 });
+        if (C.siren && bar % 8 === 4) { mNote(tr, 'sine', mf(C.root + 36), t, 2.4, 0.045, { a: 0.6, r: 0.8, glide: mf(C.root + 48), send: 0.8 }); mNoise(tr, t, 3, 0.07, 'highpass', 600, 7000, { swell: true, send: 0.4 }); }
+        if (C.bell && bar % 4 === 0) mBell(tr, mf(C.root + 24), t, 0.05);
+        if (C.rain) mNoise(tr, t, 16 * sd, 0.045, 'bandpass', 4500, 6500, { Q: 0.7, swell: true });
+        if (C.wind && bar % 2 === 0) mNoise(tr, t, 32 * sd, 0.1, 'bandpass', 300, 1700, { Q: 2.5, swell: true, send: 0.3 });
+      }
+      if (C.rain && st % 4 === 0) mNoise(tr, t, 0.25, 0.025, 'highpass', 6000, 9000);
+    }
+  };
+}
+
+function mkAction(c) {   // temas de acción (rondas 16-29): pulso rítmico, bajo en corcheas, metales brillantes y una melodía heroica
+  return {
+    sd: 15 / c.bpm, len: c.prog.length * 16, loop: true, vol: 1, fi: 0.8, dl: 60 / c.bpm * 0.75, fb: 0.28, c: c,
+    play: function (tr, s, t) {
+      var C = this.c, sd = this.sd, bar = (s >> 4) % C.prog.length, st = s & 15, ch = C.prog[bar], r = ch[0], th = ch[1] === 'm' ? 3 : 4, dr = C.dr, i, d;
+      var tone = [0, th, 7, 12, 12 + th, 19, 24];
+      if (st % 2 === 0) {
+        var oc = (st === 6 || st === 14) ? 12 : 0;
+        mNote(tr, 'sawtooth', mf(r + oc), t, sd * 1.7, 0.1, { lp: 700, r: 0.05 }); mNote(tr, 'sine', mf(r + oc), t, sd * 1.7, 0.1, { r: 0.05 });
+      }
+      (C.stab || [0, 6, 8, 14]).forEach(function (q) { if (q === st) [0, th, 7].forEach(function (n) { mNote(tr, 'sawtooth', mf(r + 12 + n), t, sd * 2.2, 0.03, { a: 0.006, r: 0.12, lp: 2400, send: 0.2 }); }); });
+      if (dr === 'four') { if (st % 4 === 0) mKick(tr, t, 0.38); if (st === 4 || st === 12) mSnare(tr, t, 0.26); if (st % 4 === 2) mHat(tr, t, 0.05, true); else if (st % 2 === 0) mHat(tr, t, 0.025, false); }
+      else { if ([0, 3, 8, 10].indexOf(st) >= 0) mKick(tr, t, 0.36); if (st === 4 || st === 12) mSnare(tr, t, 0.26); if (st % 2 === 0) mHat(tr, t, 0.035, false); }
+      if (st === 0 && bar % 4 === 0) mNoise(tr, t, 1.6, 0.07, 'highpass', 5000, 9000, { send: 0.3 });
+      var lp = C.lp && C.lp[bar];
+      if (lp !== undefined && lp >= 0) APH[lp].forEach(function (p) {
+        if (p[0] !== st) return;
+        var n = r + 24 + tone[p[1]];
+        mNote(tr, 'sawtooth', mf(n), t, p[2] * sd, 0.065, { a: 0.01, r: 0.18, lp: 3000, send: 0.4 }); mNote(tr, 'square', mf(n - 12), t, p[2] * sd, 0.025, { a: 0.01, r: 0.18, lp: 1500, send: 0.2 });
+      });
+      if (C.arp !== undefined && bar >= C.arp && st % 2 === 0) mNote(tr, 'triangle', mf(r + 36 + [0, th, 7, 12][(st >> 1) & 3]), t, sd * 3, 0.04, { pluck: true, lp: 3600, send: 0.45, pan: (st % 4 - 1) * 0.3 });
+      if (bar % 8 === 7 && st === 8) mNoise(tr, t, 8 * sd, 0.1, 'highpass', 800, 8000, { swell: true, send: 0.3 });
+      if (st === 0) {
+        if (C.rain) mNoise(tr, t, 16 * sd, 0.05, 'bandpass', 4500, 6500, { Q: 0.7, swell: true });
+        if (C.wind && bar % 2 === 0) mNoise(tr, t, 32 * sd, 0.09, 'bandpass', 300, 1600, { Q: 2.5, swell: true, send: 0.3 });
+      }
+      if (C.rain && st % 4 === 0) mNoise(tr, t, 0.25, 0.022, 'highpass', 6000, 9000);
+    }
+  };
+}
+var APH = [   // frases melódicas sobre las notas del acorde: [paso, grado, duración]
+  [[0, 3, 4], [4, 4, 2], [6, 3, 2], [8, 2, 4], [12, 1, 4]], [[0, 4, 4], [4, 5, 2], [6, 4, 2], [8, 3, 4], [12, 2, 4]], [[0, 3, 6], [8, 4, 4], [12, 3, 4]],
+  [[0, 2, 2], [2, 3, 2], [4, 4, 4], [8, 5, 4], [12, 4, 4]], [[0, 5, 4], [4, 4, 2], [6, 3, 2], [8, 4, 4], [12, 5, 4]], [[0, 4, 8], [8, 3, 8]]
+];
+
 // pistas: sd = duración de un paso (s), len = pasos, play(tr, paso, t)
 var TRACKS = {
-  // Menú · "Cuarentena": acordes oscuros en La menor, campanas lejanas y mucho eco
+  // Menú · "Refugio": un ritmo sereno en Re mixolidio, guitarra en arpegio y una melodía abierta
   menu: {
-    sd: 0.46875, len: 64, loop: true, vol: 0.95, fi: 3.5, dl: 0.703, fb: 0.4,
-    CH: [{ r: 33, v: [57, 60, 64] }, { r: 29, v: [53, 57, 60] }, { r: 38, v: [53, 57, 62] }, { r: 40, v: [52, 56, 59, 62] }],
-    MEL: { 4: 76, 7: 72, 10: 69, 13: 71, 20: 72, 23: 69, 26: 65, 29: 67, 36: 74, 39: 69, 42: 65, 45: 62, 52: 71, 55: 68, 58: 64, 61: 74 },
+    sd: 0.15625, len: 256, loop: true, vol: 0.95, fi: 2, dl: 0.46875, fb: 0.34,
+    CH: [{ r: 38, v: [57, 62, 66], n: 'D' }, { r: 36, v: [55, 60, 64], n: 'C' }, { r: 43, v: [55, 59, 62], n: 'G' }, { r: 38, v: [57, 62, 66], n: 'D' },
+         { r: 35, v: [59, 62, 66], n: 'Bm' }, { r: 43, v: [55, 59, 62], n: 'G' }, { r: 36, v: [55, 60, 64], n: 'C' }, { r: 33, v: [57, 61, 64], n: 'A' }],
+    LEAD: {
+      D: [[0, 78, 6], [8, 81, 4], [12, 78, 4], [16, 74, 8], [26, 76, 4]], C: [[0, 76, 6], [8, 79, 4], [12, 76, 4], [16, 72, 8], [26, 74, 4]],
+      G: [[0, 74, 6], [8, 79, 4], [12, 83, 4], [16, 79, 8], [26, 78, 4]], Bm: [[0, 78, 6], [8, 74, 4], [12, 78, 4], [16, 83, 8], [26, 81, 4]],
+      A: [[0, 81, 6], [8, 85, 4], [12, 83, 4], [16, 81, 8], [26, 78, 4]]
+    },
+    ARP: [0, 1, 2, 1, 2, 1, 0, 1],
     play: function (tr, s, t) {
-      var T = TRACKS.menu, c = T.CH[s >> 4], i;
-      if (s % 16 === 0) {
-        var d = 15 * T.sd;
-        for (i = 0; i < c.v.length; i++) {
-          mNote(tr, 'sawtooth', mf(c.v[i]), t, d, 0.03, { a: 1.8, r: 2.4, lp: 650, det: -8, send: 0.4 });
-          mNote(tr, 'sawtooth', mf(c.v[i]), t, d, 0.03, { a: 1.8, r: 2.4, lp: 650, det: 8, send: 0.4 });
-          mNote(tr, 'triangle', mf(c.v[i] + 12), t, d, 0.018, { a: 2.2, r: 2.4, send: 0.5 });
-        }
-        mNote(tr, 'sine', mf(c.r), t, d, 0.17, { a: 0.9, r: 2 });
-        mNote(tr, 'triangle', mf(c.r + 12), t, d, 0.05, { a: 1.5, r: 2, lp: 500 });
-      }
-      if (s === 0 || s === 32) mBell(tr, 220, t, 0.07);
-      if (T.MEL[s]) { mNote(tr, 'sine', mf(T.MEL[s]), t, 2.2, 0.09, { pluck: true, send: 0.75 }); mNote(tr, 'triangle', mf(T.MEL[s] + 12), t, 1.2, 0.025, { pluck: true, send: 0.75 }); }
+      var T = TRACKS.menu, ci = s >> 5, st = s & 31, ch = T.CH[ci], sd = T.sd, i, ld = T.LEAD[ch.n];
+      if (st === 0) for (i = 0; i < ch.v.length; i++) mNote(tr, 'triangle', mf(ch.v[i] - 12), t, 31 * sd, 0.03, { a: 0.8, r: 1, lp: 900, det: i % 2 ? 5 : -5, send: 0.35 });
+      if ([0, 8, 16, 22, 24].indexOf(st) >= 0) { mNote(tr, 'triangle', mf(ch.r), t, sd * 3, 0.17, { r: 0.1, lp: 600 }); mNote(tr, 'sine', mf(ch.r), t, sd * 3, 0.1, { r: 0.1 }); }
+      if (st % 8 === 0) mKick(tr, t, 0.22, true);
+      if (st % 16 === 8) mHat(tr, t, 0.06, false);
+      if (st % 4 === 2) mHat(tr, t, 0.02, false);
+      if (st % 2 === 0) mNote(tr, 'triangle', mf(ch.v[T.ARP[(st >> 1) & 7] % 3] + 12), t, 1.1, 0.055, { pluck: true, lp: 2800, send: 0.5, pan: ((st >> 1) % 3 - 1) * 0.35 });
+      if (ld) for (i = 0; i < ld.length; i++) if (ld[i][0] === st && (ci >= 2 || ld[i][0] < 16)) mNote(tr, 'sine', mf(ld[i][1]), t, ld[i][2] * sd, 0.07, { a: 0.08, r: 0.5, lp: 2200, send: 0.65 });
     }
   },
+  // Acción 1 · "Equipándose": mi menor, ritmo de ataque a 132 bpm
+  act1: mkAction({ bpm: 132, dr: 'four', arp: 8, lp: [-1, -1, -1, -1, 0, 1, 0, 2, 3, 4, 3, 5, 0, 1, 2, 5],
+    prog: [[40, 'm'], [36, 'M'], [43, 'M'], [38, 'M'], [40, 'm'], [36, 'M'], [38, 'M'], [38, 'M'], [40, 'm'], [36, 'M'], [43, 'M'], [38, 'M'], [36, 'M'], [38, 'M'], [40, 'm'], [35, 'M']] }),
+  // Acción 2 · "Línea de Fuego": la menor, 140 bpm
+  act2: mkAction({ bpm: 140, dr: 'drive', stab: [0, 3, 6, 10, 14], lp: [-1, -1, -1, -1, 1, 0, 1, 3, 4, 5, 4, 2, 0, 1, 5, 3],
+    prog: [[33, 'm'], [29, 'M'], [36, 'M'], [31, 'M'], [33, 'm'], [29, 'M'], [31, 'M'], [28, 'M'], [33, 'm'], [29, 'M'], [36, 'M'], [31, 'M'], [29, 'M'], [31, 'M'], [33, 'm'], [28, 'M']] }),
+  // Acción 3 · "Refuerzos": re menor, 128 bpm con arpegios
+  act3: mkAction({ bpm: 128, dr: 'four', arp: 4, lp: [-1, -1, -1, -1, 2, 0, 2, 4, 5, 1, 5, 0, 3, 4, 1, 5],
+    prog: [[38, 'm'], [34, 'M'], [41, 'M'], [36, 'M'], [38, 'm'], [34, 'M'], [36, 'M'], [33, 'M'], [38, 'm'], [34, 'M'], [41, 'M'], [36, 'M'], [34, 'M'], [36, 'M'], [38, 'm'], [33, 'M']] }),
+  // Lluvia de acción (rondas 16-29) · "Lluvia de Acero": sol menor bajo la lluvia
+  rain3: mkAction({ bpm: 120, dr: 'drive', rain: true, arp: 0, stab: [0, 6, 10], lp: [-1, -1, -1, -1, 0, 1, 0, 2, 3, 4, 3, 5, 0, 1, 2, 5],
+    prog: [[31, 'm'], [39, 'M'], [34, 'M'], [29, 'M'], [31, 'm'], [39, 'M'], [34, 'M'], [29, 'M'], [31, 'm'], [39, 'M'], [29, 'M'], [34, 'M'], [36, 'm'], [34, 'M'], [31, 'm'], [26, 'M']] }),
+  // Viento de acción (rondas 16-29) · "Tormenta de Arena": si menor con corrientes de aire
+  wind3: mkAction({ bpm: 136, dr: 'drive', wind: true, arp: 8, lp: [-1, -1, -1, -1, 1, 0, 1, 3, 4, 5, 4, 2, 0, 1, 5, 3],
+    prog: [[35, 'm'], [31, 'M'], [38, 'M'], [33, 'M'], [35, 'm'], [31, 'M'], [33, 'M'], [30, 'M'], [35, 'm'], [31, 'M'], [38, 'M'], [33, 'M'], [31, 'M'], [33, 'M'], [35, 'm'], [30, 'M']] }),
+  // Soledad 1 · "Cenizas": re menor, notas de piano muy espaciadas
+  lone1: mkLone({ sd: 0.5, len: 96, pad: 'sawtooth', lp: 520, bell: [0, 48],
+    CH: [{ r: 26, v: [53, 57, 62] }, { r: 22, v: [53, 58, 62] }, { r: 31, v: [55, 58, 62] }, { r: 33, v: [52, 57, 61] }, { r: 26, v: [53, 57, 62] }, { r: 29, v: [53, 57, 60] }],
+    MEL: { 3: 74, 6: 72, 10: 69, 19: 70, 22: 65, 27: 67, 35: 67, 38: 70, 43: 69, 51: 68, 54: 64, 59: 61, 67: 74, 70: 77, 75: 72, 83: 65, 86: 69, 91: 62 } }),
+  // Soledad 2 · "Radio muerta": mi frigio, estática lejana y una caja de música que no se apaga
+  lone2: mkLone({ sd: 0.5, len: 96, pad: 'triangle', pv: 0.05, lp: 900, stat: true, inst: 'triangle', dl: 0.75, fb: 0.5,
+    CH: [{ r: 28, v: [52, 55, 59] }, { r: 29, v: [53, 57, 60] }, { r: 28, v: [52, 55, 59] }, { r: 33, v: [52, 57, 60] }, { r: 31, v: [50, 55, 59] }, { r: 28, v: [52, 56, 59] }],
+    MEL: { 2: 88, 5: 83, 8: 79, 11: 83, 18: 89, 21: 84, 24: 81, 27: 84, 34: 88, 37: 91, 40: 88, 43: 83, 50: 86, 53: 84, 56: 81, 59: 77, 66: 83, 69: 79, 72: 76, 75: 79, 82: 88, 85: 83, 88: 80, 91: 83 } }),
+  // Soledad 3 · "Último faro": fa# menor, un latido lejano y viento entre las quintas
+  lone3: mkLone({ sd: 0.5, len: 96, pad: 'sine', pv: 0.06, lp: 800, hb: true, air: true, long: true, bell: [48],
+    CH: [{ r: 30, v: [57, 61, 64] }, { r: 26, v: [57, 62, 66] }, { r: 28, v: [56, 59, 64] }, { r: 25, v: [56, 61, 64] }, { r: 30, v: [57, 61, 64] }, { r: 33, v: [57, 61, 64] }],
+    MEL: { 4: 78, 14: 76, 20: 74, 30: 73, 36: 76, 46: 78, 52: 81, 62: 78, 68: 76, 78: 73, 84: 74, 92: 69 } }),
+  // Intenso 1 · "Sangre y Ceniza": mi frigio a 168 bpm
+  shoot1: mkShoot({ bpm: 168, root: 28, siren: true, drone: true, bell: true, pw: [0, 4, 8, 12],
+    riffs: { a: [0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, -1, 3, 3, 1, 0], b: [0, 0, 0, -1, 0, 0, 0, -1, 6, 6, 5, 5, 3, 3, 1, 1], c: [0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 7, 7] },
+    seq: ['a', 'a', 'b', 'a', 'a', 'a', 'c', 'b', 'a', 'a', 'b', 'a', 'c', 'c', 'b', 'b'],
+    drum: ['n', 'n', 'g', 'n', 'd', 'd', 'n', 'f', 'n', 'g', 'g', 'n', 'd', 'd', 'd', 'f'],
+    lead: { 8: [[0, 76, 3], [4, 77, 2], [6, 76, 2], [8, 79, 4], [12, 77, 2], [14, 76, 2]], 9: [[0, 76, 3], [4, 83, 2], [6, 81, 2], [8, 79, 4], [12, 77, 4]], 10: [[0, 79, 3], [4, 77, 2], [6, 76, 2], [8, 74, 4], [12, 76, 4]], 11: [[0, 76, 8], [8, 77, 4], [12, 76, 4]],
+      12: [[0, 88, 3], [4, 89, 2], [6, 88, 2], [8, 86, 4], [12, 84, 4]], 13: [[0, 88, 3], [4, 91, 2], [6, 89, 2], [8, 88, 4], [12, 86, 4]], 14: [[0, 84, 4], [4, 83, 4], [8, 81, 4], [12, 79, 4]], 15: [[0, 76, 16]] } }),
+  // Intenso 2 · "Cementerio Eléctrico": galope en re menor a 176 bpm con arpegios tremolo
+  shoot2: mkShoot({ bpm: 176, root: 26, siren: true, bell: true, pw: [0, 4, 8, 12], arp: [8, 'sawtooth', [0, 3, 7, 3]],
+    riffs: { a: [0, -1, 0, 0, 0, -1, 0, 0, 0, -1, 0, 0, 0, -1, 0, 0], b: [0, -1, 0, 0, 0, -1, 0, 0, 5, -1, 5, 5, 3, -1, 3, 3], c: [0, -1, 0, 0, 12, -1, 12, 12, 0, -1, 0, 0, 10, -1, 10, 10] },
+    seq: ['a', 'a', 'a', 'b', 'a', 'a', 'b', 'c', 'a', 'a', 'a', 'b', 'a', 'a', 'b', 'c'],
+    rs: [0, 0, 3, -2, 0, 0, -4, -5, 0, 0, 3, -2, 0, 0, -4, -5],
+    drum: ['g', 'g', 'g', 'n', 'g', 'g', 'g', 'f', 'g', 'g', 'g', 'n', 'g', 'g', 'g', 'f'] }),
+  // Intenso 3 · "Marcha de los Caídos": do# frigio dominante, medio tiempo pesado y cornetas
+  shoot3: mkShoot({ bpm: 150, root: 25, drone: true, siren: true, bell: true, pw: [0, 8],
+    riffs: { a: [0, 0, -1, 0, 0, -1, 0, 0, 3, -1, 0, 0, -1, 6, 5, -1], b: [0, -1, 0, 0, -1, 0, 0, 1, 0, -1, 0, 0, -1, 3, 3, 1], c: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 6, 6] },
+    seq: ['a', 'a', 'b', 'a', 'a', 'b', 'c', 'c', 'a', 'a', 'b', 'a', 'b', 'b', 'c', 'c'],
+    drum: ['n', 'n', 'n', 'n', 'h', 'h', 'n', 'f', 'n', 'n', 'h', 'h', 'n', 'n', 'h', 'f'],
+    lead: { 4: [[0, 73, 6], [8, 77, 4], [12, 76, 4]], 5: [[0, 74, 6], [8, 73, 4], [12, 77, 4]], 6: [[0, 80, 4], [4, 77, 4], [8, 76, 4], [12, 74, 4]], 7: [[0, 73, 16]],
+      12: [[0, 85, 6], [8, 89, 4], [12, 88, 4]], 13: [[0, 86, 6], [8, 85, 4], [12, 89, 4]], 14: [[0, 92, 4], [4, 89, 4], [8, 88, 4], [12, 86, 4]], 15: [[0, 85, 16]] } }),
+  // Lluvia intensa (ronda 16+) · "Tormenta de Plomo": la lluvia cae sobre un riff de la menor
+  rain2: mkShoot({ bpm: 160, root: 33, rain: true, bell: true, drone: true, pw: [0, 8], arp: [8, 'triangle', [0, 3, 7, 12]],
+    riffs: { a: [0, 0, -1, 0, 0, -1, 0, 0, 0, 0, -1, 0, 3, -1, 5, 7], b: [0, -1, 0, 0, -1, 0, 0, 0, 10, -1, 10, 10, -1, 8, 7, -1] },
+    seq: ['a', 'a', 'b', 'a', 'a', 'b', 'a', 'b', 'a', 'a', 'b', 'a', 'b', 'b', 'a', 'b'],
+    drum: ['n', 'g', 'n', 'g', 'n', 'g', 'd', 'f', 'n', 'g', 'n', 'g', 'd', 'd', 'g', 'f'],
+    lead: { 8: [[0, 81, 3], [4, 84, 2], [6, 83, 2], [8, 81, 4], [12, 79, 4]], 9: [[0, 81, 3], [4, 88, 2], [6, 86, 2], [8, 84, 4], [12, 83, 4]], 10: [[0, 84, 6], [8, 83, 4], [12, 81, 4]], 11: [[0, 81, 16]] } }),
+  // Viento intenso (ronda 16+) · "Simún de Guerra": tritono, doble bombo y un temporal de arena
+  wind2: mkShoot({ bpm: 148, root: 30, wind: true, siren: true, drone: true, bell: true, pw: [0, 4, 8, 12],
+    riffs: { a: [0, 0, 0, 0, -1, 0, 0, 6, 0, 0, 0, 0, -1, 0, 5, 6], b: [0, -1, 0, -1, 0, -1, 0, -1, 6, -1, 6, -1, 5, -1, 3, -1], c: [0, 0, -1, 0, 0, -1, 0, 0, 1, 1, -1, 1, 1, -1, 1, 1] },
+    seq: ['a', 'a', 'b', 'a', 'a', 'c', 'b', 'b', 'a', 'a', 'b', 'a', 'c', 'c', 'b', 'b'],
+    drum: ['n', 'd', 'n', 'd', 'g', 'g', 'd', 'f', 'n', 'd', 'g', 'd', 'g', 'g', 'd', 'f'],
+    lead: { 8: [[0, 78, 8], [8, 77, 4], [12, 78, 4]], 9: [[0, 78, 6], [8, 81, 4], [12, 80, 4]], 10: [[0, 84, 4], [4, 83, 4], [8, 81, 4], [12, 78, 4]], 11: [[0, 78, 16]],
+      12: [[0, 90, 8], [8, 89, 4], [12, 90, 4]], 13: [[0, 90, 6], [8, 93, 4], [12, 92, 4]], 14: [[0, 96, 4], [4, 95, 4], [8, 93, 4], [12, 90, 4]], 15: [[0, 90, 16]] } }),
   // Lluvia · "Lluvia sobre las tumbas": arpegios suaves de re menor, como una caja de música lejana
   rain: {
     sd: 0.4167, len: 64, loop: true, vol: 0.85, fi: 4, dl: 0.5, fb: 0.46,
@@ -1236,7 +1396,7 @@ function musSwitch(name) {
   if (old) {
     var fo = name === 'escape' ? 0.35 : 1.8;
     old.out.gain.cancelScheduledValues(now); old.out.gain.setValueAtTime(old.out.gain.value, now); old.out.gain.linearRampToValueAtTime(0, now + fo);
-    setTimeout(function () { try { old.out.disconnect(); old.send.disconnect(); old.delay.disconnect(); } catch (e) {} }, fo * 1000 + 600);
+    setTimeout(function () { try { old.out.disconnect(); old.send.disconnect(); old.delay.disconnect(); if (old.dout) { old.dout.disconnect(); old.dx[0].disconnect(); old.dx[1].disconnect(); } } catch (e) {} }, fo * 1000 + 600);
   }
   mus.cur = name; mus.tr = null;
   if (!name) return;
@@ -1244,7 +1404,13 @@ function musSwitch(name) {
   g.gain.setValueAtTime(0.0001, now); g.gain.linearRampToValueAtTime(T.vol, now + T.fi); g.connect(musBus);
   dl.delayTime.value = T.dl; fbg.gain.value = T.fb; fl.type = 'lowpass'; fl.frequency.value = 2400;
   sg.connect(dl); dl.connect(fl); fl.connect(fbg); fbg.connect(dl); dl.connect(g);
-  mus.tr = { out: g, send: sg, delay: dl }; mus.step = 0; mus.nextT = now + 0.08;
+  mus.tr = { out: g, send: sg, delay: dl }; mus.step = 0;
+  if (T.dist) {   // guitarras saturadas: pasan por un waveshaper antes de mezclarse
+    var dg = actx.createGain(), ws = actx.createWaveShaper(), pg = actx.createGain(), cv = new Float32Array(512), q;
+    for (q = 0; q < 512; q++) { var xx = q / 256 - 1; cv[q] = Math.tanh(xx * 4.5); }
+    ws.curve = cv; dg.gain.value = 1.6; pg.gain.value = 0.42; dg.connect(ws); ws.connect(pg); pg.connect(g);
+    mus.tr.dout = dg; mus.tr.dx = [ws, pg];
+  } mus.nextT = now + 0.08;
 }
 function musSched() {   // programa las notas con unos 0,4 s de anticipación
   var tr = mus.tr; if (!actx || !tr || actx.state === 'suspended') return;
@@ -1256,11 +1422,15 @@ function musSched() {   // programa las notas con unos 0,4 s de anticipación
     mus.step++; mus.nextT += T.sd;
   }
 }
+var MUSIDS = ['', 'lone1', 'lone2', 'lone3', 'act1', 'act2', 'act3', 'shoot1', 'shoot2', 'shoot3'];
 function musicWant() {
   if (!MUS.on) return '';
   if (mode === 'cine' || mode === 'win') return 'escape';
   if (mode === 'menu') return 'menu';
-  if (mode === 'play' || mode === 'paused') return WIND ? 'wind' : RAIN ? 'rain' : '';
+  if (mode === 'play' || mode === 'paused') {
+    var hi = G.wave >= 30 ? 2 : G.wave > 15 ? 1 : 0;   // 1-15 solitaria · 16-29 acción · 30+ intensa
+    return WIND ? ['wind', 'wind3', 'wind2'][hi] : RAIN ? ['rain', 'rain3', 'rain2'][hi] : MUSIDS[G.mus | 0] || '';
+  }
   return '';
 }
 function musicTick() {
@@ -1824,11 +1994,11 @@ var PK = {};
 })();
 var PKINDS = ['ammo', 'med', 'dmg', 'spd', 'inf', 'nuke', 'cash', 'can', 'rof', 'imm', 'gre'], PKCOL = { ammo: '#f0b24a', med: '#e9e5d4', dmg: '#ff5a30', spd: '#4fd0ff', inf: '#c07bff', nuke: '#ffffff', cash: '#6fd36f', can: '#f6c453', rof: '#ffd23f', imm: '#7df9ff', gre: '#8fae5a' };   // el orden se sincroniza por red: solo se agrega al final
 function dropMul() { return DF[DIFF].drop; }      // -75% en Difícil, -45% en Normal
-function pickKind() {   // Aniquilación 3% · Inmortalidad 25% · Granada 25% · el 47% restante se reparte entre los demás (comunes peso 1, especiales 0,75)
+function pickKind() {   // Aniquilación 2% · Inmortalidad 4% · Granada 8% · el 86% restante se reparte entre los demás (comunes peso 1, especiales 0,75)
   var r0 = Math.random();
-  if (r0 < 0.03) return 'nuke';
-  if (r0 < 0.28) return 'imm';
-  if (r0 < 0.53) return 'gre';
+  if (r0 < 0.02) return 'nuke';
+  if (r0 < 0.06) return 'imm';
+  if (r0 < 0.14) return 'gre';
   var w = { ammo: 1, med: 1, cash: 1, dmg: 0.75, spd: 0.75, inf: 0.75, rof: 0.75 }, tot = 6, r = Math.random() * tot, k;
   for (k in w) { if (r < w[k]) return k; r -= w[k]; }
   return 'ammo';
@@ -1850,7 +2020,7 @@ function dropPickup(x, z, kind) {
   g.position.set(x, 0.45, z); g.scale.setScalar(1.5);
   scene.add(g);
   var halo = addGlow(g, 0, 0.3, 0, PKCOL[kind], 1.6, 0, false).sp;
-  pickups.push({ kind: kind, g: g, halo: halo, x: x, z: z, t: rand(0, TAU), life: kind === 'can' ? 1e9 : 32, id: ++NET.kid });
+  pickups.push({ kind: kind, g: g, halo: halo, x: x, z: z, t: rand(0, TAU), life: kind === 'can' ? 1e9 : DIFF === 'nightmare' ? 5 : 16, max: DIFF === 'nightmare' ? 5 : 16, id: ++NET.kid });
 }
 function updatePickups(dt) {
   for (var i = pickups.length - 1; i >= 0; i--) {
@@ -1858,7 +2028,7 @@ function updatePickups(dt) {
     pk.t += dt; pk.life -= dt; if (pk.halo.visible !== CFG.light) pk.halo.visible = CFG.light;
     pk.g.rotation.y = pk.t * 1.6;
     pk.g.position.y = 0.45 + Math.sin(pk.t * 3) * 0.07;
-    pk.g.visible = pk.life > 5 || Math.floor(pk.life * 6) % 2 === 0;
+    pk.g.visible = pk.life > Math.min(5, (pk.max || 16) * 0.35) || Math.floor(pk.life * 6) % 2 === 0;
     if (NET.role === 'client') {
       if (!pk.req && !P.dead && Math.hypot(pk.x - P.x, pk.z - P.z) < 1.7 && ((pk.kind === 'med' && P.hp < P.maxHp) || (pk.kind === 'ammo' && P.reserve < MAXRES) || (pk.kind !== 'med' && pk.kind !== 'ammo' && !(pk.kind === 'can' && P.can) && !(pk.kind === 'gre' && P.nades >= 8)))) { pk.req = 1; netSend({ t: 'take', id: pk.id }); }
     } else if (!P.dead && Math.hypot(pk.x - P.x, pk.z - P.z) < 1.7) {
@@ -2024,7 +2194,7 @@ function killZombie(zb, head, by) {
   if (by) { var kr = NET.rp[by]; if (kr) kr.score = (kr.score || 0) + pts; netSendTo(by, { t: 'cash', v: aw.c, p: pts, h: head ? 1 : 0, l: lng ? 1 : 0, x: cb.tx }); }
   else { G.cash += aw.c; P.pscore += pts; showPop(MODE === 'story' ? '+' + aw.c + '$' : (cb.tx ? cb.tx + '  +' : lng ? 'Largo alcance  +' : head ? 'Cabeza  +' : '+') + pts); }
   burst(new THREE.Vector3(zb.x, 1.2 * zb.sc, zb.z), 16, 0x6b1a1a, 4.6);
-  if (!noDrop && Math.random() < (zb.type === 'brute' ? 1 : 0.2 * dropMul())) dropPickup(zb.x, zb.z, pickKind());
+  if (!noDrop && Math.random() < (zb.type === 'brute' ? 0.15 : 0.03)) dropPickup(zb.x, zb.z, pickKind());
 }
 
 function hurtPlayer(dmg) {
@@ -2039,7 +2209,9 @@ function waveSize(n) { return Math.round((7 + n * 4) * (1 + 0.6 * (NET.count() -
 function startWave(n) {
   revive();
   G.wave = n; G.toSpawn = waveSize(n); G.spawnTimer = 1.5; G.cleared = false;
-  var pR = MODE === 'story' ? 0.10 : 0.04, pW = MODE === 'story' ? 0.05 : 0.03, wr = Math.random(); RAIN = wr < pR; WIND = !RAIN && wr < pR + pW;   // Endless: 4% lluvia, 3% viento · Historia: 10% y 5%
+  var st = MODE === 'story', pR = st ? (n >= 30 ? 0.20 : n > 15 ? 0.18 : 0.10) : 0.04, pW = st ? pR : 0.03, wr = Math.random(), mr = Math.random();   // Historia: lluvia y viento 10% cada uno · 18% desde la ronda 16 · 20% desde la 30 · Endless: 4% y 3%
+  RAIN = wr < pR; WIND = !RAIN && wr < pR + pW;
+  G.mus = n >= 30 ? 7 + Math.floor(Math.random() * 3) : n > 15 ? 4 + Math.floor(Math.random() * 3) : mr < 0.4 ? 0 : mr < 0.6 ? 1 : mr < 0.8 ? 2 : 3;   // 1-15: 40% silencio y 20% cada tema solitario
   showBanner('Oleada ' + n, (DIFF !== 'normal' ? DF[DIFF].name + ' · ' : '') + waveSize(n) + ' infectados en camino' + (RAIN ? ' · Empieza a llover' : WIND ? ' · Se levanta una tormenta de viento' : ''));
   sfxWave();
 }
@@ -2052,10 +2224,10 @@ function updateWaves(dt) {
       G.spawnTimer = Math.max(0.35, 1.5 - G.wave * 0.1) * DF[DIFF].gap;
     }
   } else if (zombies.length === 0 && !G.cleared) {
-    G.cleared = true; G.inter = 10; G.revived = false;
+    G.cleared = true; G.inter = MODE === 'story' && G.wave <= 15 ? 15 : 10; G.revived = false;
     var wb = award(120 * G.wave);
     G.score += wb.p; P.pscore += wb.p; NET.eachRemote(function (r) { r.score = (r.score || 0) + wb.p; }); G.cash += wb.c; P.nades = Math.min(8, P.nades + 1); netBroadcast({ t: 'cash', v: wb.c, p: wb.p, b: 1 });
-    showBanner('Oleada ' + G.wave + ' superada', '+' + wb.p + ' puntos · Descanso de 10 s');
+    showBanner('Oleada ' + G.wave + ' superada', '+' + wb.p + ' puntos · Descanso de ' + G.inter + ' s');
     for (var k = 0; k < 2; k++) {
       if (Math.random() >= dropMul()) continue;
       var a = rand(0, TAU), r = rand(5, 12);
@@ -2395,6 +2567,25 @@ var SHOP = { x: -11, z: 2 }, shopOpen = false, nearShop = false, shopCash = -1;
   box(4.6, 0.3, 5.4, 0.2, 3.15, 0, dark);
   box(1, 1.1, 5, 1.7, 0.55, 0, dark); box(1.15, 0.1, 5.15, 1.7, 1.15, 0, wood);
   for (var i = 0; i < 4; i++) box(0.15, 0.12, 1.1, -1.4, 1.0 + i * 0.4, (i % 2 ? 0.8 : -0.8), dark);
+  // detalles de la Armería: cajas de munición en los estantes, armas colgadas, cajones, barril y sacos de arena
+  var ammoM = new THREE.MeshPhongMaterial({ color: 0x3d4a2e, shininess: 4 }), brassM = new THREE.MeshPhongMaterial({ color: 0xb08a2e, shininess: 40 }), steelM = new THREE.MeshPhongMaterial({ color: 0x2a2f33, shininess: 30 });
+  var crateM = new THREE.MeshPhongMaterial({ color: 0x6a5238, shininess: 3 }), bagM = new THREE.MeshPhongMaterial({ color: 0x7a6a48, shininess: 1 }), drumM = new THREE.MeshPhongMaterial({ color: 0x4a2a1c, shininess: 10 });
+  for (i = 0; i < 4; i++) [-0.28, 0.28].forEach(function (dz, j) {
+    var zz = (i % 2 ? 0.8 : -0.8) + dz, yy = 1.06 + i * 0.4 + 0.07;
+    box(0.2, 0.14, 0.34, -1.4, yy, zz, (i + j) % 2 ? ammoM : crateM); box(0.21, 0.03, 0.12, -1.4, yy + 0.08, zz, brassM);
+  });
+  function gunOnWall(zw, y, len, sd, m) {   // arma colgada de la pared: cañón, culata y cargador
+    box(len, 0.06, 0.06, -0.2, y, zw, steelM); box(0.34, 0.11, 0.07, -0.2 - len / 2 - 0.1, y - 0.02, zw, wood); box(0.08, 0.16, 0.05, -0.3, y - 0.1, zw, steelM);
+    box(0.05, 0.05, 0.1, 0.1, y - 0.04, zw + sd * 0.07, dark); box(0.05, 0.05, 0.1, -0.7, y - 0.04, zw + sd * 0.07, dark);
+  }
+  gunOnWall(-2.3, 2.15, 1.0, 1); gunOnWall(-2.3, 1.7, 0.8, 1); gunOnWall(2.3, 2.0, 1.0, -1);
+  box(0.7, 0.5, 0.7, -0.4, 0.25, 1.7, crateM); box(0.6, 0.45, 0.6, -0.45, 0.72, 1.74, crateM).rotation.y = 0.4; box(0.72, 0.06, 0.72, -0.4, 0.53, 1.7, dark);
+  var drumG = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.8, 12), drumM); drumG.position.set(0.5, 0.4, -1.75); g.add(drumG);
+  var drumB = new THREE.Mesh(new THREE.CylinderGeometry(0.29, 0.29, 0.08, 12), new THREE.MeshPhongMaterial({ color: 0xc9962a, shininess: 10 })); drumB.position.set(0.5, 0.45, -1.75); g.add(drumB);
+  [1, -1].forEach(function (sg) {   // dos sacos en el suelo y uno encima, apoyado sobre ambos
+    box(0.8, 0.24, 0.46, 2.35, 0.12, sg * 2.95, bagM).rotation.y = 0.06; box(0.8, 0.24, 0.46, 2.3, 0.12, sg * 3.42, bagM).rotation.y = -0.08;
+    box(0.78, 0.22, 0.46, 2.33, 0.35, sg * 3.18, bagM).rotation.y = 0.1;
+  });
   var c = document.createElement('canvas'); c.width = 512; c.height = 128;
   var x = c.getContext('2d'); x.fillStyle = '#1b1410'; x.fillRect(0, 0, 512, 128);
   x.strokeStyle = '#f0b24a'; x.lineWidth = 8; x.strokeRect(6, 6, 500, 116);
@@ -2730,7 +2921,7 @@ function hostSnapshot() {
       if (!all) { dq = Math.hypot(q.x - r.x, q.z - r.z); if (dq > CULL_R || (!full && dq > NEAR_R)) continue; }
       z.push(q.id * 4 + (q.type === 'walker' ? 0 : q.type === 'runner' ? 1 : 2), q10(q.x), q10(q.z), q20(q.yaw));
     }
-    var m = { t: 's', w: G.wave, l: left, sc: G.score, k: G.kills, z: z, pp: ps, rs: rs, rn: RAIN ? 1 : WIND ? 2 : 0, fu: FUEL };
+    var m = { t: 's', w: G.wave, l: left, sc: G.score, k: G.kills, z: z, pp: ps, rs: rs, rn: (RAIN ? 1 : WIND ? 2 : 0) | ((G.mus | 0) << 2), fu: FUEL };
     if (!all && !full) m.nf = 1;
     if (all) { if (!spb) spb = buildSp(); if (spb.length) m.sp = spb; }   // los caídos reciben munición y bonus de los vivos
     if (info) m.pi = info;
@@ -2746,7 +2937,7 @@ function clientSnapshot(m) {
     G.wave = m.w; showBanner('Oleada ' + m.w, 'Resistan juntos'); sfxWave(); P.nades = Math.min(8, P.nades + 1);
     if (P.dead) respawnMe();
   }
-  G.score = m.sc; G.kills = m.k; NET.left = m.l; NET.rest = +m.rs || 0; RAIN = m.rn === 1; WIND = m.rn === 2;
+  G.score = m.sc; G.kills = m.k; NET.left = m.l; NET.rest = +m.rs || 0; RAIN = (m.rn & 3) === 1; WIND = (m.rn & 3) === 2; G.mus = m.rn >> 2;
   if ((m.fu | 0) > FUEL) showBanner('Combustible ' + (m.fu | 0) + ' / ' + FUEL_NEED, ''); FUEL = m.fu | 0;
   var byId = {}, seen = {}, i, zb, zl = m.z || [];
   zombies.forEach(function (q) { byId[q.id] = q; });
@@ -3223,8 +3414,8 @@ var maxSel = 4, pendCode = '';
 var DIFFTXT = {
   normal: 'Oleadas estándar: la experiencia de siempre.',
   hardcore: 'El doble de infectados en cada oleada y se mueven el doble de rápido. Atacan 15% más rápido.',
-  extreme: 'Triple de infectados por oleada, zombis x2,5 más rápidos, hasta el triple vivos a la vez (tope 150), apariciones 20% más seguidas, 60% menos botín (los brutos siempre sueltan), puntos y dinero -20%, Armería +35%, atacan 20% más rápido.',
-  nightmare: 'Cuádruple de infectados por oleada, zombis x3 más rápidos, hasta el cuádruple vivos a la vez (tope 200), apariciones 10% más seguidas, 35% menos botín (los brutos siempre sueltan), puntos y dinero -35%, Armería +50% y te movés 25% más lento y atacan 25% más rápido.'
+  extreme: 'Triple de infectados por oleada, zombis x2,5 más rápidos, hasta el triple vivos a la vez (tope 150), apariciones 20% más seguidas, 60% menos botín al terminar las oleadas, puntos y dinero -20%, Armería +35%, atacan 20% más rápido.',
+  nightmare: 'Cuádruple de infectados por oleada, zombis x3 más rápidos, hasta el cuádruple vivos a la vez (tope 200), apariciones 10% más seguidas, 35% menos botín al terminar las oleadas, puntos y dinero -35%, Armería +50% y te movés 25% más lento y atacan 25% más rápido.'
 };
 function each(sel, f) { Array.prototype.forEach.call(document.querySelectorAll(sel), f); }
 function showMenuScreen(id) { ['menu', 'solo', 'coop', 'create', 'config', 'cfgGfx', 'cfgKeys', 'cfgCtl', 'cfgSnd'].forEach(function (s) { show(s, s === id); }); if (id === 'menu') refreshMenuBest(); }
@@ -3552,6 +3743,14 @@ function buildMachines(L) {
         var post = new THREE.Mesh(new THREE.BoxGeometry(0.18, 3, 0.18), wood); post.position.set(pp[0], 1.5, pp[1]); g.add(post);
         var w = lw(it.x, it.z, it.ry, pp[0], pp[1]); ob(w[0], w[1], 0.22, 3);
       });
+      // un poco de vida: una caja de suministros y un barril oxidado bajo el techo
+      var crM = new THREE.MeshPhongMaterial({ color: 0x5b4630, shininess: 3 }), rustM = new THREE.MeshPhongMaterial({ color: 0x6b3b24, shininess: 12 });
+      var crate = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.6, 0.7), crM); crate.position.set(1.8, 0.3, -0.85); crate.rotation.y = 0.3; g.add(crate);
+      var cs = new THREE.Mesh(new THREE.BoxGeometry(0.73, 0.62, 0.1), roofM); cs.position.copy(crate.position); cs.rotation.y = 0.3; g.add(cs);
+      var bar = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.9, 12), rustM); bar.position.set(-1.9, 0.45, -0.8); g.add(bar);
+      [0.2, 0.7].forEach(function (yy) { var rg = new THREE.Mesh(new THREE.CylinderGeometry(0.315, 0.315, 0.06, 12), roofM); rg.position.set(-1.9, yy, -0.8); g.add(rg); });
+      var cw = lw(it.x, it.z, it.ry, 1.8, -0.85); ob(cw[0], cw[1], 0.45, 0.6);
+      var bw = lw(it.x, it.z, it.ry, -1.9, -0.8); ob(bw[0], bw[1], 0.32, 0.9);
     } else if (it.t === 'm' && MDEF[it.k]) {
       var d = MDEF[it.k];
       var cab = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2.1, 0.8), body); cab.position.y = 1.05; g.add(cab);
@@ -3664,18 +3863,18 @@ function updateRain(dt) {
 var WIND = false, windK = 0, windDir = 0, windWas = false, windT = 0, windS = [], windGrp = new THREE.Group(), windMat = new THREE.MeshBasicMaterial({ color: 0xd5dfd8, transparent: true, opacity: 0, depthWrite: false });
 (function () {
   var geo = new THREE.SphereGeometry(1, 10, 8);
-  for (var i = 0; i < 34; i++) {
-    var m = new THREE.Mesh(geo, windMat), sc = rand(0.5, 1.8);
-    m.scale.set(sc * rand(1, 1.6), sc, sc); m.raycast = function () {};
+  for (var i = 0; i < 90; i++) {
+    var m = new THREE.Mesh(geo, windMat), sc = rand(0.6, 2);
+    m.scale.set(sc * rand(1, 1.3), sc, sc); m.raycast = function () {};
     windGrp.add(m);
-    windS.push({ m: m, x: rand(-30, 30), z: rand(-30, 30), y: rand(0.4, 6.5), v: rand(16, 30), ph: rand(0, TAU) });
+    windS.push({ m: m, x: rand(-70, 70), z: rand(-70, 70), y: rand(0.4, 6.5), v: rand(16, 30), ph: rand(0, TAU) });
   }
   windGrp.visible = false; windGrp.frustumCulled = false; scene.add(windGrp);
 })();
 function updateWind(dt) {
   windK += ((WIND ? 1 : 0) - windK) * Math.min(1, dt * 1.2);
   var on = windK > 0.02, i, s, cx = camera.position.x, cz = camera.position.z;
-  if (WIND && !windWas) { windDir = rand(0, TAU); for (i = 0; i < windS.length; i++) { windS[i].x = cx + rand(-30, 30); windS[i].z = cz + rand(-30, 30); } }
+  if (WIND && !windWas) { windDir = rand(0, TAU); for (i = 0; i < windS.length; i++) { windS[i].x = cx + rand(-70, 70); windS[i].z = cz + rand(-70, 70); } }
   windWas = WIND;
   if (windGrp.visible !== on) windGrp.visible = on;
   if (!on) return;
@@ -3684,10 +3883,9 @@ function updateWind(dt) {
   for (i = 0; i < windS.length; i++) {
     s = windS[i];
     s.x += dx * s.v * dt; s.z += dz * s.v * dt;
-    if (Math.hypot(s.x - cx, s.z - cz) > 32) {   // sale por un lado y reentra por el lado de donde viene el viento
-      var a = rand(-30, 30); s.x = cx - dx * 30 - dz * a; s.z = cz - dz * 30 + dx * a;
-    }
-    s.m.position.set(s.x, s.y + Math.sin(clock * 2.3 + s.ph) * 0.5, s.z);
+    var rx = s.x - cx, rz = s.z - cz, al = rx * dx + rz * dz, la = -rx * dz + rz * dx;   // campo ancho: 80 m a lo largo del viento y 150 m a lo ancho
+    if (al > 40 || Math.abs(la) > 75) { al = al > 40 ? -40 : rand(-40, 40); la = Math.abs(la) > 75 ? -Math.sign(la) * 74 : rand(-75, 75); s.x = cx + dx * al - dz * la; s.z = cz + dz * al + dx * la; }
+    s.m.rotation.y = -windDir; s.m.position.set(s.x, s.y + Math.sin(clock * 2.3 + s.ph) * 0.5, s.z);
   }
   windT -= dt;
   if (mode === 'play' && windT <= 0) { windT = 0.35; noiseHit(700 + Math.sin(clock * 0.7) * 300, 300, 0.07 * windK, 0.6, 'lowpass'); }
@@ -3813,7 +4011,7 @@ function renderFrame() {
 
 /* ---------- modos: Endless e Historia ---------- */
 var MODE = 'endless', FUEL = 0, FUEL_NEED = 7, FUEL_T = 20, fuelProg = {}, fuelSend = 0, fuelPct = 100, CINE = null;
-var FPR = { normal: 13000, hardcore: 30000, extreme: 45500, nightmare: 68500 };   // precio del bidón por dificultad (30.000$ en Difícil), balanceado como las máquinas
+var FPR = { normal: 1, hardcore: 30000, extreme: 45500, nightmare: 68500 };   // precio del bidón por dificultad (30.000$ en Difícil), balanceado como las máquinas
 var HG = { x: -38, z: -36 }, HGRY = Math.atan2(38, 36), INLET = [0, 0], hgGrp = null, hgObs = [], heli = null;
 var MODETXT = {
   endless: 'Las hordas nunca terminan. Tu objetivo es superar tu récord personal.',
