@@ -189,10 +189,27 @@ button.alt.on:hover:not(:disabled){background:#ffc460}
 .stepper b{font-size:38px;line-height:1;min-width:1.4ch;text-align:center;font-variant-numeric:tabular-nums}
 .bigcode{font-family:var(--display);font-size:clamp(34px,10vw,54px);letter-spacing:.2em;color:var(--lamp);-webkit-user-select:text;user-select:text}
 #roomList{max-height:230px;overflow-y:auto;-webkit-user-select:text;user-select:text;font-size:18px;color:var(--bone-dim)}
-#buffs{position:absolute;left:50%;top:70px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none}
+#buffs{position:absolute;left:50%;top:104px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none}
 .buff{font-family:var(--display);font-size:15px;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;background:rgba(6,11,12,.72);box-shadow:0 0 0 1px var(--line);white-space:nowrap}
 .buff.dmg{color:#ff7a50}.buff.spd{color:#59d8ff}.buff.inf{color:#c99bff}.buff.rof{color:#ffd23f}.buff.imm{color:#7df9ff}
 #hpBar.imm{box-shadow:0 0 14px 2px rgba(125,249,255,.75)}
+/* visor de slots (estilo Hello Neighbor): aparece unos segundos al elegir un slot y se desvanece */
+#slotbar{position:absolute;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;gap:6px;pointer-events:none;opacity:0;transition:opacity .3s}
+#slotbar.on{opacity:1}
+#slotbar .sl{position:relative;width:74px;height:56px;background:rgba(6,11,12,.7);box-shadow:0 0 0 1px var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--bone-dim)}
+#slotbar .sl i{position:absolute;left:5px;top:3px;font:600 11px var(--display);font-style:normal;letter-spacing:.06em}
+#slotbar .sl svg{width:46px;height:22px;fill:currentColor}
+#slotbar .sl small{font-size:11px;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+#slotbar .sl.empty{opacity:.35}
+#slotbar .sl.can{color:#f6c453}
+#slotbar .sl.act{color:var(--lamp);background:rgba(22,16,6,.85);box-shadow:0 0 0 2px var(--lamp),0 0 14px rgba(240,178,74,.35)}
+#slotbar .sl.act.can{color:#f6c453;box-shadow:0 0 0 2px #f6c453,0 0 14px rgba(246,196,83,.4)}
+@media (max-width:760px){#slotbar{bottom:calc(104px + env(safe-area-inset-bottom,0px))}#slotbar .sl{width:58px;height:48px}#slotbar .sl svg{width:36px;height:18px}}
+/* mejoras compradas de las máquinas */
+#upgs{position:absolute;left:max(16px,env(safe-area-inset-left,0px));top:92px;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+#upgs .upg{display:flex;align-items:center;gap:5px;color:var(--c)}
+#upgs .upg svg{width:32px;height:32px;padding:5px;fill:currentColor;background:rgba(6,11,12,.72);box-shadow:inset 0 0 0 1px var(--c)}
+#upgs .upg b{font-family:var(--display);font-size:20px;letter-spacing:.04em;text-shadow:0 0 6px rgba(0,0,0,.8)}
 input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
 #score{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92vw,640px);background:rgba(6,11,12,.55);box-shadow:0 0 0 1px var(--line);pointer-events:none;padding:12px 18px 14px}
 #score h3{margin:0 0 8px;font-family:var(--display);font-weight:400;letter-spacing:.16em;text-transform:uppercase;font-size:20px;color:var(--lamp);text-align:center}
@@ -242,11 +259,131 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
 .fd b{color:var(--c,#e9e5d4);font-weight:700}
 .fd.out{opacity:0;transform:translateX(14px)}
 @keyframes fdIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
-#vote{position:absolute;left:50%;top:27%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;font-family:var(--display);letter-spacing:.08em;text-transform:uppercase;background:rgba(6,11,12,.78);padding:12px 22px;box-shadow:0 0 0 1px var(--line);pointer-events:none;max-width:min(92vw,460px)}
+#vote{position:absolute;left:50%;top:92px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;font-family:var(--display);letter-spacing:.08em;text-transform:uppercase;background:rgba(6,11,12,.78);padding:12px 22px;box-shadow:0 0 0 1px var(--line);pointer-events:none;max-width:min(92vw,460px)}
 #vote b{font-size:24px;color:var(--lamp);letter-spacing:.16em}
 #vote span{font-size:16px}
 #vote small{font-family:var(--num);font-size:13px;letter-spacing:.08em;color:var(--bone-dim);text-transform:none}
 #vote button{pointer-events:auto;padding:6px 14px}
+
+/* ---------- pulido general de menús ---------- */
+.screen{background:radial-gradient(ellipse at 50% 40%,rgba(3,7,8,.5),rgba(3,7,8,.82))}
+.memo{background:linear-gradient(180deg,#101b1e,#0b1315);box-shadow:0 0 0 1px var(--line),0 1px 0 rgba(255,255,255,.04) inset,0 30px 80px rgba(0,0,0,.7);animation:memoIn .32s cubic-bezier(.2,.8,.2,1)}
+@keyframes memoIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.tape{height:6px}
+.kicker{display:flex;align-items:center;gap:10px}
+.kicker:before{content:"";width:26px;height:2px;background:var(--lamp)}
+button.go,button.alt{transition:background .15s,transform .1s,box-shadow .15s}
+button.go:hover{transform:translateY(-1px)}
+@media (prefers-reduced-motion:reduce){.memo,.mm>*{animation:none}}
+/* ---------- menú principal ---------- */
+#menu{padding:0;align-items:stretch;background:linear-gradient(90deg,rgba(3,7,8,.9) 0%,rgba(3,7,8,.62) 48%,rgba(3,7,8,.3) 100%)}
+.mm{width:100%;max-width:1440px;margin:0 auto;min-height:100%;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(300px,.75fr);grid-template-rows:1fr auto;gap:28px clamp(28px,6vw,96px);padding:clamp(18px,4.5vh,64px) clamp(20px,5vw,72px) clamp(16px,3vh,40px)}
+.mm>*{animation:memoIn .5s cubic-bezier(.2,.8,.2,1) both}.mm-ctl{animation-delay:.08s}.mm-rec{animation-delay:.16s}
+.mm-main{display:flex;flex-direction:column;justify-content:center;gap:clamp(14px,2.4vh,24px);min-width:0}
+.mm h1{font-size:clamp(48px,min(9.5vw,15vh),138px);line-height:.88;text-shadow:0 6px 40px rgba(0,0,0,.7)}
+.mm h1 em{display:block;text-shadow:0 0 38px rgba(208,68,47,.35)}
+.mm-ctx{font-size:clamp(17px,1.6vw,21px)!important;max-width:48ch!important;border-left:2px solid var(--line);padding-left:14px}
+.mm-btns{display:flex;flex-direction:column;gap:10px;width:min(100%,400px);margin-top:6px}
+.mbtn{display:flex;align-items:center;justify-content:space-between;font-family:var(--display);font-size:20px;letter-spacing:.14em;text-transform:uppercase;color:var(--bone);background:rgba(13,22,24,.82);border:0;border-left:4px solid var(--line);padding:15px 20px;cursor:pointer;box-shadow:0 0 0 1px var(--line);transition:transform .15s,background .15s,border-color .15s,color .15s}
+.mbtn i{font-style:normal;font-size:28px;line-height:.6;opacity:.5;transition:transform .15s,opacity .15s}
+.mbtn:hover{background:#18272b;border-left-color:var(--lamp);transform:translateX(6px)}
+.mbtn:hover i{opacity:1;transform:translateX(4px)}
+.mbtn.primary{color:#160d05;background:var(--lamp);border-left-color:#8a5d17;box-shadow:0 4px 0 #8a5d17}
+.mbtn.primary:hover{background:#ffc460;border-left-color:#8a5d17}
+.mbtn:active{transform:translateX(6px) translateY(2px)}
+.mbtn:focus-visible{outline:3px solid var(--bone);outline-offset:3px}
+.mm h2{margin:0 0 12px;font-family:var(--display);font-weight:400;font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:var(--lamp);display:flex;align-items:center;gap:10px}
+.mm h2:after{content:"";flex:1;height:1px;background:var(--line)}
+.mm-ctl{align-self:center;background:rgba(10,17,19,.8);box-shadow:0 0 0 1px var(--line),0 20px 60px rgba(0,0,0,.5);padding:16px 20px;backdrop-filter:blur(6px)}
+.mm-ctl h3{margin:14px 0 6px;font-family:var(--display);font-weight:400;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--bone-dim)}
+.kl{display:grid;gap:2px}
+.kl div{display:grid;grid-template-columns:108px 1fr;align-items:center;gap:10px;font-size:17px;padding:1px 0;border-bottom:1px solid rgba(38,55,61,.5)}
+.kl kbd{justify-self:start}
+.mm-ctl .note{margin-top:12px!important;line-height:1.3}
+.mm-rec{grid-column:1/-1}
+.mm-rec .tags{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.mm-rec .tag{background:rgba(10,17,19,.8);box-shadow:0 0 0 1px var(--line);padding:10px 14px;border-top:2px solid var(--line)}
+.mm-rec .tag:nth-child(1){border-top-color:var(--toxic)}.mm-rec .tag:nth-child(2){border-top-color:var(--lamp)}.mm-rec .tag:nth-child(3){border-top-color:#e8793a}.mm-rec .tag:nth-child(4){border-top-color:var(--blood)}
+.mm-rec .tag b{font-size:28px}.mm-rec .tag{padding:8px 14px}
+@media (max-width:900px){
+  .mm{grid-template-columns:1fr;grid-template-rows:auto;gap:22px;padding-top:28px}
+  .mm-main{justify-content:flex-start}
+  .mm-ctl{align-self:stretch}
+  .mm-btns{width:100%}
+}
+
+/* ---------- GUI nueva: menús secundarios como panel lateral ---------- */
+body:not(.gui-old) .screen:not(#menu){justify-content:flex-start;align-items:stretch;padding:0;background:linear-gradient(90deg,rgba(3,7,8,.93) 0%,rgba(3,7,8,.74) 42%,rgba(3,7,8,.28) 100%)}
+body:not(.gui-old) .screen:not(#menu) .memo{width:min(100%,600px);margin:0;min-height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:flex-start;background:linear-gradient(90deg,rgba(8,14,16,.97),rgba(8,14,16,.84));box-shadow:1px 0 0 var(--line),30px 0 80px rgba(0,0,0,.5);backdrop-filter:blur(8px);animation:drawerIn .35s cubic-bezier(.2,.8,.2,1)}
+@keyframes drawerIn{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
+body:not(.gui-old) .memo .tape{display:none}
+body:not(.gui-old) .memo .in{margin-block:auto;padding:clamp(16px,4vh,48px) clamp(20px,4vw,52px);gap:clamp(8px,1.6vh,14px)}
+body:not(.gui-old) .memo h1{font-size:clamp(32px,min(6.4vw,9vh),56px)!important;line-height:.92;text-shadow:0 6px 40px rgba(0,0,0,.7)}
+body:not(.gui-old) #config button.go{color:var(--bone);background:rgba(13,22,24,.82);border-left-color:var(--line);box-shadow:0 0 0 1px var(--line)}body:not(.gui-old) #config button.go:hover{background:#18272b;border-left-color:var(--lamp)}
+body:not(.gui-old) .memo .kicker{margin-bottom:-4px}
+body:not(.gui-old) .memo .row2{flex-direction:column;align-items:stretch;gap:10px}
+body:not(.gui-old) .memo button.go,body:not(.gui-old) .memo .in>button.alt,body:not(.gui-old) .memo .row2>button.alt{display:flex;align-items:center;justify-content:space-between;align-self:stretch!important;font-size:19px;letter-spacing:.14em;padding:14px 20px;border-left:4px solid var(--line);text-align:left}
+body:not(.gui-old) .memo button.go{border-left-color:#8a5d17}
+body:not(.gui-old) .memo button.go:after,body:not(.gui-old) .memo .in>button.alt:after,body:not(.gui-old) .memo .row2>button.alt:after{content:"\203A";font-size:26px;line-height:.6;opacity:.55;transition:transform .15s,opacity .15s}
+body:not(.gui-old) .memo button.go:hover:after,body:not(.gui-old) .memo .in>button.alt:hover:after,body:not(.gui-old) .memo .row2>button.alt:hover:after{opacity:1;transform:translateX(4px)}
+body:not(.gui-old) .memo .in>button.alt:hover,body:not(.gui-old) .memo .row2>button.alt:hover:not(:disabled){border-left-color:var(--lamp);transform:translateX(6px)}
+body:not(.gui-old) .memo button.go:hover{transform:translateX(6px)}
+body:not(.gui-old) .memo .seg button.alt{flex:1;justify-content:center;border-bottom:2px solid transparent}
+body:not(.gui-old) .memo .field{background:rgba(13,22,24,.6);padding:10px 14px;box-shadow:0 0 0 1px var(--line);border-left:3px solid var(--line)}
+body:not(.gui-old) .memo .chk{background:rgba(13,22,24,.6);padding:9px 14px;box-shadow:0 0 0 1px var(--line);align-self:stretch}
+body:not(.gui-old) .memo .stats>div{background:rgba(13,22,24,.7);box-shadow:0 0 0 1px var(--line)}
+body:not(.gui-old) .memo input.code{width:100%;box-sizing:border-box}
+@media (max-width:700px){body:not(.gui-old) .screen:not(#menu) .memo{width:100%}}
+/* Co-Op y Creador: dos columnas */
+body:not(.gui-old) .screen:not(#menu) .memo.wide{width:min(100%,1080px)}
+body:not(.gui-old) .screen:has(.memo.wide){justify-content:center;background:radial-gradient(ellipse at 50% 45%,rgba(3,7,8,.78),rgba(3,7,8,.94))}
+body:not(.gui-old) .screen:not(#menu) .memo.wide{width:min(100%,1180px);margin:0 auto;background:none;box-shadow:none;backdrop-filter:none}
+body:not(.gui-old) .memo.wide .in{padding-inline:clamp(16px,4vw,40px)}
+/* ventanas centradas (todas salvo menú principal y configuración) */
+body:not(.gui-old) .screen:not(#menu){align-items:flex-start}
+body:not(.gui-old) .screen:not(#menu) .memo.wide{margin:0 auto}
+body:not(.gui-old) #solo,body:not(.gui-old) #pause,body:not(.gui-old) #win,body:not(.gui-old) #over,body:not(.gui-old) #lobby,body:not(.gui-old) #shop{justify-content:center;background:radial-gradient(ellipse at 50% 45%,rgba(3,7,8,.7),rgba(3,7,8,.92))}
+body:not(.gui-old) #solo .memo,body:not(.gui-old) #pause .memo,body:not(.gui-old) #win .memo,body:not(.gui-old) #over .memo,body:not(.gui-old) #lobby .memo,body:not(.gui-old) #shop .memo{width:min(100%,600px)!important;min-height:0!important;margin:auto!important;background:linear-gradient(180deg,rgba(14,24,27,.97),rgba(9,16,18,.97))!important;box-shadow:0 0 0 1px var(--line),0 30px 80px rgba(0,0,0,.65)!important;border-top:3px solid var(--lamp);animation:memoIn .32s cubic-bezier(.2,.8,.2,1)}
+body:not(.gui-old) #solo .memo .in,body:not(.gui-old) #pause .memo .in,body:not(.gui-old) #win .memo .in,body:not(.gui-old) #over .memo .in,body:not(.gui-old) #lobby .memo .in,body:not(.gui-old) #shop .memo .in{padding:clamp(20px,4vh,40px) clamp(20px,4vw,40px);margin-block:0}
+body:not(.gui-old) #solo .memo .kicker,body:not(.gui-old) #pause .memo .kicker,body:not(.gui-old) #win .memo .kicker,body:not(.gui-old) #over .memo .kicker,body:not(.gui-old) #lobby .memo .kicker,body:not(.gui-old) #shop .memo .kicker{justify-content:center}
+body:not(.gui-old) #solo .memo h1,body:not(.gui-old) #pause .memo h1,body:not(.gui-old) #win .memo h1,body:not(.gui-old) #over .memo h1,body:not(.gui-old) #lobby .memo h1,body:not(.gui-old) #shop .memo h1{text-align:center}
+body:not(.gui-old) #solo .memo .row2.foot,body:not(.gui-old) #pause .memo .row2.foot,body:not(.gui-old) #win .memo .row2.foot,body:not(.gui-old) #over .memo .row2.foot,body:not(.gui-old) #lobby .memo .row2.foot,body:not(.gui-old) #shop .memo .row2.foot{flex-direction:row}
+
+body:not(.gui-old) .memo.wide .hd{align-items:center;text-align:center}
+body:not(.gui-old) .memo.wide .hd .kicker{justify-content:center}
+body:not(.gui-old) .memo.wide .hd .kicker{margin-bottom:6px}
+body:not(.gui-old) .memo.wide .hd h1 em{display:inline}
+body:not(.gui-old) .memo.wide .split{align-items:stretch;grid-template-columns:1fr 1fr}
+body:not(.gui-old) .memo.wide .row2.foot{max-width:640px;width:100%;margin-inline:auto}
+body:not(.gui-old) .memo.wide .grp-col .grp{flex:0 0 auto}
+body:not(.gui-old) .memo.wide #crMsg,body:not(.gui-old) .memo.wide #netMsg{text-align:center;margin-inline:auto}
+body:not(.gui-old) #create .grp{gap:16px}
+body:not(.gui-old) #create .grp .field{flex:1;justify-content:center}
+body:not(.gui-old) #coop .split>.grp #roomList{flex:1;max-height:none;min-height:240px}
+.memo .grp{display:flex;flex-direction:column;gap:10px;min-width:0}
+.memo .grp-col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.memo .grp-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.memo .grp h2{margin:0;font-family:var(--display);font-weight:400;font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:var(--lamp)}
+.memo .inl{display:flex;gap:8px}.memo .inl input{flex:1;min-width:0}
+button.alt.mini{padding:6px 12px;font-size:20px;line-height:1}
+.memo .hd{display:flex;flex-direction:column;gap:8px}
+body:not(.gui-old) .memo .split{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(16px,3vw,40px);align-items:start}
+body:not(.gui-old) .memo .grp{background:rgba(13,22,24,.6);box-shadow:0 0 0 1px var(--line);padding:14px 16px;border-top:2px solid var(--lamp)}
+body:not(.gui-old) .memo .grp-col .grp:nth-child(1){border-top-color:var(--toxic)}
+body:not(.gui-old) .memo .grp-col .grp:nth-child(2){border-top-color:#e8793a}
+body:not(.gui-old) .memo .grp .field,body:not(.gui-old) .memo .grp .chk{background:none;box-shadow:none;border-left:0;padding:0}
+body:not(.gui-old) .memo .grp .chk{padding:4px 0}
+body:not(.gui-old) .memo .grp #roomList{max-height:38vh;overflow-y:auto}
+body:not(.gui-old) .memo .row2.foot{flex-direction:row}
+body:not(.gui-old) .memo .row2.foot>button{flex:1}
+body:not(.gui-old) .memo .grp .inl button.alt{padding:11px 18px}
+@media (max-width:820px){body:not(.gui-old) .memo .split{grid-template-columns:1fr}body:not(.gui-old) .memo .row2.foot{flex-direction:column-reverse}}
+@media (prefers-reduced-motion:reduce){.memo{animation:none!important}}
+/* ---------- GUI clásica (alternativa desde Configuración) ---------- */
+body.gui-old .mm{display:none}
+body:not(.gui-old) #mmOld{display:none}
+body.gui-old #menu{padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));align-items:center;background:rgba(3,7,8,.66)}
+body.gui-old .screen{background:rgba(3,7,8,.66)}
 </style>
 
 <div id="stage">
@@ -280,6 +417,8 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
     <div id="feed"></div>
     <div id="vote" hidden><b>Sala de espera</b><span id="voteTxt"></span><button class="alt" id="voteBtn" type="button">Votar para empezar</button><small id="voteKey"></small></div>
     <div id="buffs"></div>
+    <div id="upgs"></div>
+    <div id="slotbar"></div>
     <div id="score" hidden></div>
     <div id="shopTip" hidden></div>
     <div id="useTip" hidden></div>
@@ -312,7 +451,65 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
   </div>
 
   <section class="screen" id="menu">
-    <div class="memo">
+    <div class="mm">
+      <div class="mm-main">
+        <span class="kicker">Aviso de cuarentena · Sector 7</span>
+        <h1>Noche <em>Zombi</em></h1>
+        <p class="mm-ctx">El cementerio quedó aislado. Tenés un fusil, un cargador y una linterna. Aguantá cada oleada, juntá municiones y botiquines, y no dejes que te rodeen.</p>
+        <nav class="mm-btns" aria-label="Menú principal">
+          <button class="mbtn primary" id="btnSolo" type="button"><span>Un jugador</span><i>›</i></button>
+          <button class="mbtn" id="btnCoop" type="button"><span>Co-Op</span><i>›</i></button>
+          <button class="mbtn" id="btnConfig" type="button"><span>Configuración</span><i>›</i></button>
+        </nav>
+      </div>
+      <aside class="mm-ctl" aria-label="Controles">
+        <h2>Controles</h2>
+        <div class="desk">
+          <h3>Movimiento</h3>
+          <div class="kl">
+            <div><kbd data-k="move">W A S D</kbd><span>moverse</span></div>
+            <div><kbd data-k="sprint">Shift</kbd><span>correr</span></div>
+            <div><kbd>Mouse</kbd><span>apuntar</span></div>
+          </div>
+          <h3>Combate</h3>
+          <div class="kl">
+            <div><kbd>Clic</kbd><span>disparar</span></div>
+            <div><kbd>Clic der.</kbd><span>apuntar</span></div>
+            <div><kbd data-k="reload">R</kbd><span>recargar</span></div>
+            <div><kbd data-k="nade">G</kbd><span>granada</span></div>
+            <div><kbd data-k="weap">1-5</kbd><span>armas</span></div>
+          </div>
+          <h3>Interacción</h3>
+          <div class="kl">
+            <div><kbd data-k="shop">E</kbd><span>armería</span></div>
+            <div><kbd data-k="use">Q</kbd><span>interactuar</span></div>
+            <div><kbd data-k="torch">F</kbd><span>linterna</span></div>
+            <div><kbd data-k="score">Tab</kbd><span>jugadores</span></div>
+            <div><kbd data-k="chat">Enter</kbd><span>chat (Co-Op)</span></div>
+            <div><kbd data-k="mute">M</kbd><span>sonido</span></div>
+          </div>
+        </div>
+        <div class="mob">
+          <div class="kl">
+            <div><kbd>Palanca</kbd><span>moverse</span></div>
+            <div><kbd>Arrastrar</kbd><span>apuntar</span></div>
+            <div><kbd>Fuego</kbd><span>disparar</span></div>
+            <div><kbd>Recar.</kbd><span>recargar</span></div>
+          </div>
+        </div>
+        <p class="note desk">Un tiro a la cabeza hace mucho más daño. Si el navegador no captura el mouse, apuntá con las flechas y disparás con <b data-k="fire">Espacio</b>.</p>
+      </aside>
+      <footer class="mm-rec">
+        <h2>Récords</h2>
+        <div class="tags" id="menuBest">
+          <div class="tag"><span class="lbl">Normal</span><b id="mbN">0</b></div>
+          <div class="tag"><span class="lbl">Difícil</span><b id="mbH">0</b></div>
+          <div class="tag"><span class="lbl">Hardcore</span><b id="mbX">0</b></div>
+          <div class="tag"><span class="lbl">Pesadilla</span><b id="mbP">0</b></div>
+        </div>
+      </footer>
+    </div>
+    <div class="memo" id="mmOld">
       <div class="tape"></div>
       <div class="in">
         <span class="kicker">Aviso de cuarentena · Sector 7</span>
@@ -341,16 +538,16 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
           <div><kbd>Recar.</kbd> recargar</div>
         </div>
         <p class="note desk">Un tiro a la cabeza hace mucho más daño. Si el navegador no captura el mouse, apuntá con las flechas y disparás con <b data-k="fire">Espacio</b>.</p>
-        <div class="tags" id="menuBest">
-          <div class="tag"><span class="lbl">Récord Normal</span><b id="mbN">0</b></div>
-          <div class="tag"><span class="lbl">Récord Difícil</span><b id="mbH">0</b></div>
-          <div class="tag"><span class="lbl">Récord Hardcore</span><b id="mbX">0</b></div>
-          <div class="tag"><span class="lbl">Récord Pesadilla</span><b id="mbP">0</b></div>
+        <div class="tags">
+          <div class="tag"><span class="lbl">Récord Normal</span><b data-best="normal">0</b></div>
+          <div class="tag"><span class="lbl">Récord Difícil</span><b data-best="hardcore">0</b></div>
+          <div class="tag"><span class="lbl">Récord Hardcore</span><b data-best="extreme">0</b></div>
+          <div class="tag"><span class="lbl">Récord Pesadilla</span><b data-best="nightmare">0</b></div>
         </div>
         <div class="row2">
-          <button class="go" id="btnSolo" type="button">Un jugador</button>
-          <button class="go" id="btnCoop" type="button">Co-Op</button>
-          <button class="go" id="btnConfig" type="button">Configuración</button>
+          <button class="go" id="btnSoloO" type="button">Un jugador</button>
+          <button class="go" id="btnCoopO" type="button">Co-Op</button>
+          <button class="go" id="btnConfigO" type="button">Configuración</button>
         </div>
       </div>
     </div>
@@ -388,83 +585,107 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
   </section>
 
   <section class="screen" id="coop" hidden>
-    <div class="memo"><div class="tape"></div><div class="in">
-      <span class="kicker">Co-Op</span>
-      <h1 style="font-size:clamp(32px,8vw,52px)">Lista de <em>servidores</em></h1>
-      <p class="note" id="onlineBox"><i></i><span><b id="onlineN">—</b> jugadores en línea</span></p>
-      <div id="roomList"></div>
-      <div class="row2"><button class="alt" id="btnRoomsRefresh" type="button">Actualizar lista</button></div>
-      <div class="row2">
-        <button class="go" id="btnCreate" type="button">Crear servidor</button>
+    <div class="memo wide"><div class="tape"></div><div class="in">
+      <div class="hd">
+        <span class="kicker">Co-Op</span>
+        <h1 style="font-size:clamp(32px,8vw,52px)">Lista de <em>servidores</em></h1>
+        <p class="note" id="onlineBox"><i></i><span><b id="onlineN">—</b> jugadores en línea</span></p>
       </div>
-      <div class="row2">
-        <input class="code" id="joinCode" maxlength="5" placeholder="CÓDIGO" autocomplete="off" aria-label="Código de servidor">
-        <button class="alt" id="btnJoin" type="button">Unirse con código</button>
-      </div>
-      <p class="note" id="netMsg">Elegí un servidor de la lista o creá el tuyo. Conexión directa entre jugadores.</p>
-      <div class="profile">
-        <span class="lbl" style="font-family:var(--display);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--bone-dim)">Tu jugador</span>
-        <input class="code nick" id="nick" maxlength="12" placeholder="Username" autocomplete="off" aria-label="Username">
-        <div class="colsel">
-          <button class="alt" id="colBtn" type="button"><i id="colCur"></i>Color del torso</button>
-          <div id="colGrid" hidden></div>
+      <div class="split">
+        <div class="grp">
+          <div class="grp-h"><h2>Servidores públicos</h2><button class="alt mini" id="btnRoomsRefresh" type="button" title="Actualizar lista" aria-label="Actualizar lista">↻</button></div>
+          <div id="roomList"></div>
+        </div>
+        <div class="grp-col">
+          <div class="grp">
+            <div class="grp-h"><h2>Tu jugador</h2></div>
+            <input class="code nick" id="nick" maxlength="12" placeholder="Username" autocomplete="off" aria-label="Username">
+            <div class="colsel">
+              <button class="alt" id="colBtn" type="button"><i id="colCur"></i>Color del torso</button>
+              <div id="colGrid" hidden></div>
+            </div>
+          </div>
+          <div class="grp">
+            <div class="grp-h"><h2>Unirse con código</h2></div>
+            <div class="inl">
+              <input class="code" id="joinCode" maxlength="5" placeholder="CÓDIGO" autocomplete="off" aria-label="Código de servidor">
+              <button class="alt" id="btnJoin" type="button">Unirse</button>
+            </div>
+          </div>
+          <div class="grp">
+            <div class="grp-h"><h2>Tu propio servidor</h2></div>
+            <button class="go" id="btnCreate" type="button">Crear servidor</button>
+          </div>
         </div>
       </div>
-      <div class="row2"><button class="alt" id="btnCoopBack" type="button">Volver</button></div>
+      <p class="note" id="netMsg">Elegí un servidor de la lista o creá el tuyo. Conexión directa entre jugadores.</p>
+      <div class="row2 foot"><button class="alt" id="btnCoopBack" type="button">Volver</button></div>
     </div></div>
   </section>
 
+
   <section class="screen" id="create" hidden>
-    <div class="memo"><div class="tape"></div><div class="in">
-      <span class="kicker">Co-Op · Nuevo servidor</span>
-      <h1 style="font-size:clamp(32px,8vw,52px)">Crear <em>servidor</em></h1>
-      <div class="field">
-        <span class="lbl">Modo</span>
-        <div class="seg">
-          <button class="alt on" type="button" data-m="endless">Endless</button>
-          <button class="alt" type="button" data-m="story">Historia</button>
+    <div class="memo wide"><div class="tape"></div><div class="in">
+      <div class="hd">
+        <span class="kicker">Co-Op · Nuevo servidor</span>
+        <h1 style="font-size:clamp(32px,8vw,52px)">Crear <em>servidor</em></h1>
+      </div>
+      <div class="split">
+        <div class="grp">
+          <div class="grp-h"><h2>Partida</h2></div>
+          <div class="field">
+            <span class="lbl">Modo</span>
+            <div class="seg">
+              <button class="alt on" type="button" data-m="endless">Endless</button>
+              <button class="alt" type="button" data-m="story">Historia</button>
+            </div>
+            <p class="note modeDesc" style="margin-top:2px"></p>
+          </div>
+          <div class="field">
+            <span class="lbl">Dificultad</span>
+            <div class="seg">
+              <button class="alt on" type="button" data-d="normal">Normal</button>
+              <button class="alt" type="button" data-d="hardcore">Difícil</button>
+              <button class="alt" type="button" data-d="extreme">Hardcore</button>
+              <button class="alt" type="button" data-d="nightmare">Pesadilla</button>
+            </div>
+            <p class="note diffDesc" style="margin-top:2px"></p>
+          </div>
+          <label class="chk"><input type="checkbox" id="keepCr"> Mantener cuerpos</label>
+          <label class="chk"><input type="checkbox" id="upgCr" checked> Máquinas de mejoras</label>
         </div>
-        <p class="note modeDesc" style="margin-top:2px"></p>
-      </div>
-      <div class="field">
-        <span class="lbl">Dificultad</span>
-        <div class="seg">
-          <button class="alt on" type="button" data-d="normal">Normal</button>
-          <button class="alt" type="button" data-d="hardcore">Difícil</button>
-          <button class="alt" type="button" data-d="extreme">Hardcore</button>
-          <button class="alt" type="button" data-d="nightmare">Pesadilla</button>
-        </div>
-        <p class="note diffDesc" style="margin-top:2px"></p>
-      </div>
-      <div class="field">
-        <span class="lbl">Visibilidad</span>
-        <div class="seg">
-          <button class="alt on" type="button" data-v="priv">Privado</button>
-          <button class="alt" type="button" data-v="pub">Público</button>
-        </div>
-        <p class="note" id="crDesc" style="margin-top:2px"></p>
-      </div>
-      <div class="field">
-        <span class="lbl">Código del servidor</span>
-        <div class="bigcode" id="crCode">-----</div>
-      </div>
-      <div class="field">
-        <span class="lbl">Jugadores (2 – 8)</span>
-        <div class="stepper">
-          <button class="alt" id="crMinus" type="button" aria-label="Menos jugadores">−</button>
-          <b id="crMax">4</b>
-          <button class="alt" id="crPlus" type="button" aria-label="Más jugadores">+</button>
+        <div class="grp">
+          <div class="grp-h"><h2>Sala</h2></div>
+          <div class="field">
+            <span class="lbl">Visibilidad</span>
+            <div class="seg">
+              <button class="alt on" type="button" data-v="priv">Privado</button>
+              <button class="alt" type="button" data-v="pub">Público</button>
+            </div>
+            <p class="note" id="crDesc" style="margin-top:2px"></p>
+          </div>
+          <div class="field">
+            <span class="lbl">Jugadores (2 – 8)</span>
+            <div class="stepper">
+              <button class="alt" id="crMinus" type="button" aria-label="Menos jugadores">−</button>
+              <b id="crMax">4</b>
+              <button class="alt" id="crPlus" type="button" aria-label="Más jugadores">+</button>
+            </div>
+          </div>
+          <div class="field">
+            <span class="lbl">Código del servidor</span>
+            <div class="bigcode" id="crCode">-----</div>
+          </div>
         </div>
       </div>
-      <label class="chk"><input type="checkbox" id="keepCr"> Mantener cuerpos</label>
-      <label class="chk"><input type="checkbox" id="upgCr" checked> Máquinas de mejoras</label>
       <p class="note" id="crMsg"></p>
-      <div class="row2">
-        <button class="go" id="btnCreateGo" type="button">Crear servidor</button>
+      <div class="row2 foot">
         <button class="alt" id="btnCreateBack" type="button">Volver</button>
+        <button class="go" id="btnCreateGo" type="button">Crear servidor</button>
       </div>
     </div></div>
   </section>
+
 
   <section class="screen" id="config" hidden>
     <div class="memo"><div class="tape"></div><div class="in">
@@ -476,6 +697,8 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
         <button class="go" id="btnCfgSnd" type="button">Sonido</button>
         <button class="go" id="btnCfgKeys" type="button">Mapeo de teclas</button>
       </div>
+      <div class="row2"><button class="alt" id="btnGuiSw" type="button">Interfaz: Nueva</button></div>
+      <p class="note" id="guiNote">Alterná entre la interfaz nueva (paneles laterales) y la clásica (cuadros centrados).</p>
       <div class="row2"><button class="alt" id="btnCfgBack" type="button">Volver</button></div>
     </div></div>
   </section>
@@ -513,6 +736,7 @@ input.nick{width:16ch;letter-spacing:.05em;text-transform:none;font-size:18px}
       <h1 style="font-size:clamp(32px,8vw,52px)">So<em>nido</em></h1>
       <label class="chk"><input type="checkbox" id="musChk" checked> Música</label>
       <p class="note">Suma música al menú, a las lluvias, a las tormentas de viento y a la huida en helicóptero del modo Historia. Los sonidos ambientales y los efectos no cambian. Viene activada.</p>
+      <label class="chk"><input type="checkbox" id="uiSndChk" checked> Sonidos de interfaz (botones)</label>
       <div class="field">
         <span class="lbl">Volumen de la música · <b id="musVal">70%</b></span>
         <input type="range" class="rng" id="musRng" min="0" max="100" step="5" value="70" aria-label="Volumen de la música">
@@ -1186,9 +1410,9 @@ function mkAction(c) {   // temas de acción (rondas 16-29): pulso rítmico, baj
       else { if ([0, 3, 8, 10].indexOf(st) >= 0) mKick(tr, t, 0.36); if (st === 4 || st === 12) mSnare(tr, t, 0.26); if (st % 2 === 0) mHat(tr, t, 0.035, false); }
       if (st === 0 && bar % 4 === 0) mNoise(tr, t, 1.6, 0.07, 'highpass', 5000, 9000, { send: 0.3 });
       var lp = C.lp && C.lp[bar];
-      if (lp !== undefined && lp >= 0) APH[lp].forEach(function (p) {
+      if (lp !== undefined && lp >= 0) C.ph[lp].forEach(function (p) {
         if (p[0] !== st) return;
-        var n = r + 24 + tone[p[1]];
+        var n = r + 24 + [0, 2, th, 5, 7, th === 3 ? 8 : 9, 10][p[1] % 7] + 12 * Math.floor(p[1] / 7);   // grado de la escala sobre la raíz del acorde
         mNote(tr, 'sawtooth', mf(n), t, p[2] * sd, 0.065, { a: 0.01, r: 0.18, lp: 3000, send: 0.4 }); mNote(tr, 'square', mf(n - 12), t, p[2] * sd, 0.025, { a: 0.01, r: 0.18, lp: 1500, send: 0.2 });
       });
       if (C.arp !== undefined && bar >= C.arp && st % 2 === 0) mNote(tr, 'triangle', mf(r + 36 + [0, th, 7, 12][(st >> 1) & 3]), t, sd * 3, 0.04, { pluck: true, lp: 3600, send: 0.45, pan: (st % 4 - 1) * 0.3 });
@@ -1201,9 +1425,26 @@ function mkAction(c) {   // temas de acción (rondas 16-29): pulso rítmico, baj
     }
   };
 }
-var APH = [   // frases melódicas sobre las notas del acorde: [paso, grado, duración]
-  [[0, 3, 4], [4, 4, 2], [6, 3, 2], [8, 2, 4], [12, 1, 4]], [[0, 4, 4], [4, 5, 2], [6, 4, 2], [8, 3, 4], [12, 2, 4]], [[0, 3, 6], [8, 4, 4], [12, 3, 4]],
-  [[0, 2, 2], [2, 3, 2], [4, 4, 4], [8, 5, 4], [12, 4, 4]], [[0, 5, 4], [4, 4, 2], [6, 3, 2], [8, 4, 4], [12, 5, 4]], [[0, 4, 8], [8, 3, 8]]
+// cada tema de acción tiene su propia biblioteca de frases: [paso, grado de la escala (0 raíz · 2 tercera · 4 quinta · 7 octava), duración]
+var PH1 = [   // "Equipándose": marcha heroica, saltos de quinta a octava
+  [[0, 4, 3], [4, 7, 2], [6, 6, 2], [8, 4, 4], [12, 2, 2], [14, 4, 2]], [[0, 7, 4], [4, 6, 2], [6, 4, 2], [8, 2, 6], [14, 3, 2]], [[0, 2, 2], [2, 4, 2], [4, 7, 4], [8, 9, 4], [12, 7, 4]],
+  [[0, 4, 2], [2, 4, 2], [4, 6, 2], [6, 7, 2], [8, 9, 8]], [[0, 9, 3], [4, 7, 2], [6, 6, 2], [8, 4, 8]], [[0, 4, 16]]
+];
+var PH2 = [   // "Línea de Fuego": síncopas rápidas, empuje constante
+  [[0, 4, 2], [3, 4, 1], [4, 6, 2], [7, 7, 1], [8, 9, 3], [12, 7, 2], [14, 6, 2]], [[0, 7, 2], [2, 6, 1], [3, 4, 2], [6, 2, 2], [8, 4, 2], [11, 6, 1], [12, 7, 4]], [[2, 2, 2], [5, 4, 2], [8, 2, 2], [10, 4, 2], [12, 6, 2], [14, 7, 2]],
+  [[0, 9, 1], [1, 7, 1], [2, 6, 2], [4, 4, 4], [10, 2, 2], [12, 4, 4]], [[0, 7, 6], [6, 9, 2], [8, 10, 4], [12, 9, 2], [14, 7, 2]], [[0, 4, 1], [2, 4, 1], [4, 4, 1], [6, 6, 2], [8, 7, 8]]
+];
+var PH3 = [   // "Refuerzos": líneas largas y cantables, escalas que suben y bajan
+  [[0, 7, 8], [8, 9, 4], [12, 7, 4]], [[0, 9, 6], [8, 10, 4], [12, 11, 4]], [[0, 4, 4], [4, 7, 4], [8, 9, 4], [12, 11, 4]],
+  [[0, 11, 4], [4, 9, 4], [8, 7, 4], [12, 4, 4]], [[0, 7, 2], [2, 9, 2], [4, 11, 8], [12, 9, 4]], [[0, 9, 12], [12, 7, 4]]
+];
+var PH4 = [   // "Lluvia de Acero": escasa y descendente, con silencios
+  [[0, 4, 4], [8, 2, 4], [12, 4, 4]], [[2, 7, 4], [8, 6, 2], [10, 4, 6]], [[0, 9, 8], [8, 7, 8]],
+  [[0, 4, 2], [4, 6, 2], [8, 4, 2], [12, 2, 4]], [[4, 7, 2], [6, 9, 2], [8, 7, 8]], [[0, 2, 16]]
+];
+var PH5 = [   // "Tormenta de Arena": giros cromáticos con sexta, aire de desierto
+  [[0, 7, 2], [2, 8, 2], [4, 7, 2], [6, 4, 2], [8, 4, 8]], [[0, 4, 4], [4, 5, 4], [8, 4, 4], [12, 2, 4]], [[0, 8, 3], [3, 7, 1], [4, 5, 4], [8, 4, 2], [10, 5, 2], [12, 4, 4]],
+  [[0, 9, 2], [2, 8, 2], [4, 7, 4], [8, 5, 4], [12, 4, 4]], [[0, 4, 2], [2, 5, 2], [4, 4, 2], [6, 2, 2], [8, 4, 8]], [[0, 7, 8], [8, 8, 8]]
 ];
 
 // pistas: sd = duración de un paso (s), len = pasos, play(tr, paso, t)
@@ -1231,19 +1472,19 @@ var TRACKS = {
     }
   },
   // Acción 1 · "Equipándose": mi menor, ritmo de ataque a 132 bpm
-  act1: mkAction({ bpm: 132, dr: 'four', arp: 8, lp: [-1, -1, -1, -1, 0, 1, 0, 2, 3, 4, 3, 5, 0, 1, 2, 5],
+  act1: mkAction({ bpm: 132, dr: 'four', arp: 8, ph: PH1, lp: [-1, -1, -1, -1, 0, 1, 2, 3, 4, 0, 1, 5, 2, 3, 0, 5],
     prog: [[40, 'm'], [36, 'M'], [43, 'M'], [38, 'M'], [40, 'm'], [36, 'M'], [38, 'M'], [38, 'M'], [40, 'm'], [36, 'M'], [43, 'M'], [38, 'M'], [36, 'M'], [38, 'M'], [40, 'm'], [35, 'M']] }),
   // Acción 2 · "Línea de Fuego": la menor, 140 bpm
-  act2: mkAction({ bpm: 140, dr: 'drive', stab: [0, 3, 6, 10, 14], lp: [-1, -1, -1, -1, 1, 0, 1, 3, 4, 5, 4, 2, 0, 1, 5, 3],
+  act2: mkAction({ bpm: 140, dr: 'drive', stab: [0, 3, 6, 10, 14], ph: PH2, lp: [-1, -1, -1, -1, 3, 0, 3, 1, 2, 4, 5, 1, 0, 3, 2, 4],
     prog: [[33, 'm'], [29, 'M'], [36, 'M'], [31, 'M'], [33, 'm'], [29, 'M'], [31, 'M'], [28, 'M'], [33, 'm'], [29, 'M'], [36, 'M'], [31, 'M'], [29, 'M'], [31, 'M'], [33, 'm'], [28, 'M']] }),
   // Acción 3 · "Refuerzos": re menor, 128 bpm con arpegios
-  act3: mkAction({ bpm: 128, dr: 'four', arp: 4, lp: [-1, -1, -1, -1, 2, 0, 2, 4, 5, 1, 5, 0, 3, 4, 1, 5],
+  act3: mkAction({ bpm: 128, dr: 'four', arp: 4, ph: PH3, lp: [-1, -1, 0, -1, 1, 2, 3, 4, 5, 2, 1, 0, 3, 4, 2, 5],
     prog: [[38, 'm'], [34, 'M'], [41, 'M'], [36, 'M'], [38, 'm'], [34, 'M'], [36, 'M'], [33, 'M'], [38, 'm'], [34, 'M'], [41, 'M'], [36, 'M'], [34, 'M'], [36, 'M'], [38, 'm'], [33, 'M']] }),
   // Lluvia de acción (rondas 16-29) · "Lluvia de Acero": sol menor bajo la lluvia
-  rain3: mkAction({ bpm: 120, dr: 'drive', rain: true, arp: 0, stab: [0, 6, 10], lp: [-1, -1, -1, -1, 0, 1, 0, 2, 3, 4, 3, 5, 0, 1, 2, 5],
+  rain3: mkAction({ bpm: 120, dr: 'drive', rain: true, arp: 0, stab: [0, 6, 10], ph: PH4, lp: [-1, -1, -1, -1, 0, -1, 1, -1, 2, 3, 0, -1, 4, 1, 2, 3],
     prog: [[31, 'm'], [39, 'M'], [34, 'M'], [29, 'M'], [31, 'm'], [39, 'M'], [34, 'M'], [29, 'M'], [31, 'm'], [39, 'M'], [29, 'M'], [34, 'M'], [36, 'm'], [34, 'M'], [31, 'm'], [26, 'M']] }),
   // Viento de acción (rondas 16-29) · "Tormenta de Arena": si menor con corrientes de aire
-  wind3: mkAction({ bpm: 136, dr: 'drive', wind: true, arp: 8, lp: [-1, -1, -1, -1, 1, 0, 1, 3, 4, 5, 4, 2, 0, 1, 5, 3],
+  wind3: mkAction({ bpm: 136, dr: 'drive', wind: true, arp: 8, ph: PH5, lp: [-1, -1, -1, -1, 1, 0, 2, 0, 3, 4, 3, 5, 0, 2, 1, 4],
     prog: [[35, 'm'], [31, 'M'], [38, 'M'], [33, 'M'], [35, 'm'], [31, 'M'], [33, 'M'], [30, 'M'], [35, 'm'], [31, 'M'], [38, 'M'], [33, 'M'], [31, 'M'], [33, 'M'], [35, 'm'], [30, 'M']] }),
   // Soledad 1 · "Cenizas": re menor, notas de piano muy espaciadas
   lone1: mkLone({ sd: 0.5, len: 96, pad: 'sawtooth', lp: 520, bell: [0, 48],
@@ -1563,7 +1804,7 @@ window.addEventListener('keydown', function (e) {
   if (c === BIND.torch && !e.repeat) toggleTorch();
   if (c === BIND.vote && !e.repeat) castVote();
   if (P.dead && NET.role !== 'none' && mode === 'play') { if (c === BIND.left || c === BIND.aimL) specStep(-1); else if (c === BIND.right || c === BIND.aimR) specStep(1); }
-  for (var wn = 1; wn <= 5; wn++) if (c === BIND['w' + wn]) { var wi = WORDER[wn - 1]; if (wi === 'fists' && P.can) wi = 'can'; if (wi) switchWeapon(wi); }
+  for (var wn = 1; wn <= 5; wn++) if (c === BIND['w' + wn]) { slotShow(); var wi = WORDER[wn - 1]; if (wi === 'fists' && P.can) wi = 'can'; if (wi) switchWeapon(wi); }
   if (c === BIND.reload) startReload();
   if (c === BIND.mute) toggleMute();
   if (c === 'Space' || c.indexOf('Arrow') === 0 || (mode === 'play' && (c === BIND.score || c === 'Tab'))) e.preventDefault();
@@ -2015,9 +2256,10 @@ function grantBuff(kind) {
   else if (kind === 'gre') { P.nades = Math.min(8, P.nades + 1); showPop('+1 granada'); }
   sfxPickup();
 }
+var PKY = { ammo: 0.21, med: 0.21, cash: 0.15, gre: 0.35, can: 0.02 };   // altura a la que descansa cada objeto (la mitad de su alto, ya escalado)
 function dropPickup(x, z, kind) {
   var g = PK[kind].g.clone(true);
-  g.position.set(x, 0.45, z); g.scale.setScalar(1.5);
+  g.position.set(x, PKY[kind] !== undefined ? PKY[kind] : 0.45, z); g.scale.setScalar(1.5);
   scene.add(g);
   var halo = addGlow(g, 0, 0.3, 0, PKCOL[kind], 1.6, 0, false).sp;
   pickups.push({ kind: kind, g: g, halo: halo, x: x, z: z, t: rand(0, TAU), life: kind === 'can' ? 1e9 : DIFF === 'nightmare' ? 5 : 16, max: DIFF === 'nightmare' ? 5 : 16, id: ++NET.kid });
@@ -2027,7 +2269,7 @@ function updatePickups(dt) {
     var pk = pickups[i], took = false;
     pk.t += dt; pk.life -= dt; if (pk.halo.visible !== CFG.light) pk.halo.visible = CFG.light;
     pk.g.rotation.y = pk.t * 1.6;
-    pk.g.position.y = 0.45 + Math.sin(pk.t * 3) * 0.07;
+    pk.g.position.y = PKY[pk.kind] !== undefined ? PKY[pk.kind] : 0.45 + Math.sin(pk.t * 3) * 0.07;   // cajas, billetes, granadas y bidones descansan en el suelo; las gemas flotan
     pk.g.visible = pk.life > Math.min(5, (pk.max || 16) * 0.35) || Math.floor(pk.life * 6) % 2 === 0;
     if (NET.role === 'client') {
       if (!pk.req && !P.dead && Math.hypot(pk.x - P.x, pk.z - P.z) < 1.7 && ((pk.kind === 'med' && P.hp < P.maxHp) || (pk.kind === 'ammo' && P.reserve < MAXRES) || (pk.kind !== 'med' && pk.kind !== 'ammo' && !(pk.kind === 'can' && P.can) && !(pk.kind === 'gre' && P.nades >= 8)))) { pk.req = 1; netSend({ t: 'take', id: pk.id }); }
@@ -2383,9 +2625,11 @@ function updateHud() {
   var bD = SV ? SV.bd : Math.ceil(P.tDmg), bS = SV ? SV.bs : Math.ceil(P.tSpd), bI = SV ? SV.bi : Math.ceil(P.tInf);
   var bt = (bD > 0 ? '<span class="buff dmg">Doble daño ' + bD + 's</span>' : '') + (bS > 0 ? '<span class="buff spd">Doble velocidad ' + bS + 's</span>' : '') + (bI > 0 ? '<span class="buff inf">Munición infinita ' + bI + 's</span>' : '') + (!SV && P.tRof > 0 ? '<span class="buff rof">Ráfaga de tiro ' + Math.ceil(P.tRof) + 's</span>' : '') + (!SV && P.tImm > 0 ? '<span class="buff imm">Inmortalidad ' + Math.ceil(P.tImm) + 's</span>' : '');
   if (hudCache.buffs !== bt) { hudCache.buffs = bt; $('buffs').innerHTML = bt; }
+  renderSlots(); renderUpgrades(SV);
   setText('amLbl', vW.melee ? vW.name : vRel ? 'Recargando' : (vAmmo === 0 && vRes === 0 && vInf <= 0 ? 'Sin balas' : vW.name));
   $('relFill').style.width = SV ? (SV.rel ? '100%' : '0') : (P.reloading > 0 ? ((1 - P.reloading / RELT) * 100).toFixed(0) + '%' : '0');
   var pv = PRE.on && mode === 'play';   // sala de espera: votación para empezar
+  if (PRE.mesh) PRE.mesh.visible = pv;
   if ($('vote').hidden === pv) $('vote').hidden = !pv;
   if (pv) {
     var need = Math.floor((PRE.n || NET.count()) / 2) + 1;
@@ -2547,12 +2791,40 @@ function resetWeapons() { P.can = false; P.up = { ammo: false, speed: false, iro
 function switchWeapon(id) {
   if (mode !== 'play' || !P.owned[id] || id === P.w) return;
   if (P.can && P.w === 'can' && id !== 'can') return;   // con el bidón en mano solo se puede soltar o cargar en el helicóptero
+  slotShow();
   P.store[P.w] = { a: P.ammo, r: P.reserve }; P.reloading = 0;
   applyWeapon(id);
   var st = P.store[id] || { a: MAG, r: W.res * amul() };
   P.ammo = st.a; P.reserve = st.r;
 }
+// visor de los 5 slots: se muestra unos segundos al elegir un slot (tecla, rueda o botón táctil)
+var slotUntil = 0;
+function slotShow() { slotUntil = clock + 2.8; }
+var SLOTIC = {
+  rifle:   '<rect x="1" y="10" width="30" height="4"/><rect x="30" y="8" width="14" height="8"/><rect x="44" y="9" width="13" height="6"/><rect x="31" y="16" width="5" height="8"/><rect x="40" y="16" width="4" height="6"/>',
+  shotgun: '<rect x="1" y="8" width="34" height="3"/><rect x="14" y="11" width="11" height="4"/><rect x="35" y="7" width="12" height="9"/><rect x="47" y="9" width="11" height="6"/><rect x="38" y="16" width="4" height="6"/>',
+  smg:     '<rect x="6" y="10" width="14" height="4"/><rect x="20" y="8" width="22" height="8"/><rect x="24" y="16" width="5" height="10"/><rect x="34" y="16" width="4" height="7"/><rect x="42" y="10" width="12" height="3"/>',
+  sniper:  '<rect x="1" y="11" width="37" height="2"/><rect x="16" y="5" width="14" height="4"/><rect x="21" y="9" width="4" height="2"/><rect x="38" y="9" width="10" height="6"/><rect x="48" y="9" width="10" height="8"/>',
+  fists:   '<rect x="12" y="5" width="15" height="15" rx="5"/><rect x="32" y="5" width="15" height="15" rx="5"/>',
+  can:     '<rect x="22" y="6" width="16" height="17" rx="2"/><rect x="35" y="3" width="4" height="4"/><rect x="24" y="2" width="9" height="3"/>'
+};
+function renderSlots() {
+  var el = $('slotbar'), on = mode === 'play' && !P.dead && !shopOpen && clock < slotUntil;
+  if (el.classList.contains('on') !== on) el.classList.toggle('on', on);
+  if (!on) return;
+  var ids = ['rifle', 'shotgun', 'smg', 'sniper', P.can ? 'can' : 'fists'], h = '', i;
+  for (i = 0; i < 5; i++) {
+    var id = ids[i], w = WEAPONS[id], own = !!P.owned[id], act = P.w === id, st = P.store[id] || { a: 0, r: 0 }, tx = '';
+    if (!own) tx = '—';
+    else if (id === 'can') tx = 'Bidón';
+    else if (w.melee) tx = 'Puños';
+    else tx = act ? (P.tInf > 0 ? '∞' : P.ammo) + '/' + (P.tInf > 0 ? '∞' : P.reserve) : st.a + '/' + st.r;
+    h += '<div class="sl' + (own ? '' : ' empty') + (act ? ' act' : '') + (id === 'can' ? ' can' : '') + '"><i>' + (i + 1) + '</i><svg viewBox="0 0 60 26">' + SLOTIC[id] + '</svg><small>' + tx + '</small></div>';
+  }
+  if (hudCache.slots !== h) { hudCache.slots = h; el.innerHTML = h; }
+}
 function cycleWeapon() {
+  slotShow();
   var k = WORDER.indexOf(P.w);
   for (var n = 1; n <= WORDER.length; n++) { var id = WORDER[(k + n) % WORDER.length]; if (P.owned[id]) { switchWeapon(id); return; } }
 }
@@ -2612,6 +2884,7 @@ function shopTick() {
 }
 function openShop() {
   if (shopOpen || mode !== 'play' || P.dead || !nearShop) return;
+  if (PRE.on) { showPop('Compras cerradas en la sala de espera'); return; }
   shopOpen = true; mouseDown = false; touchFire = false;
   renderShop(); show('shop', true);
   if (document.pointerLockElement) { try { document.exitPointerLock(); } catch (e) {} }
@@ -2659,7 +2932,13 @@ var NET = {
   count: function () { return 1 + Object.keys(NET.rp).length; },
   eachRemote: function (f) { for (var k in NET.rp) f(NET.rp[k]); }
 };
-var PRE = { on: false, votes: {}, mine: false, yes: 0, n: 0, cx: -5, cz: 3, r: 14 };   // sala de espera: pared invisible circular + votación
+var PRE = { on: false, votes: {}, mine: false, yes: 0, n: 0, cx: -5, cz: 3, r: 14 };
+(function () {   // la pared invisible de la sala de espera se ve como un cilindro rojo translúcido
+  PRE.mesh = new THREE.Mesh(new THREE.CylinderGeometry(PRE.r, PRE.r, 6, 56, 1, true),
+    new THREE.MeshBasicMaterial({ color: 0xff2a1a, transparent: true, opacity: 0.16, side: THREE.DoubleSide, depthWrite: false, fog: false }));
+  PRE.mesh.position.set(PRE.cx, 3, PRE.cz); PRE.mesh.visible = false; PRE.mesh.renderOrder = 5;
+  scene.add(PRE.mesh);
+})();   // sala de espera: pared invisible circular + votación
 function castVote() {
   if (!PRE.on || mode !== 'play' || P.dead || chatOpen) return;
   PRE.mine = !PRE.mine; noiseHit(2600, 1800, 0.18, 0.03, 'highpass');
@@ -3420,6 +3699,7 @@ var DIFFTXT = {
 function each(sel, f) { Array.prototype.forEach.call(document.querySelectorAll(sel), f); }
 function showMenuScreen(id) { ['menu', 'solo', 'coop', 'create', 'config', 'cfgGfx', 'cfgKeys', 'cfgCtl', 'cfgSnd'].forEach(function (s) { show(s, s === id); }); if (id === 'menu') refreshMenuBest(); }
 function refreshMenuBest() {
+  each('[data-best]', function (e) { try { e.textContent = parseInt(localStorage.getItem(DF[e.dataset.best].bk) || '0', 10) || 0; } catch (x) {} });
   try { [['mbN', 'normal'], ['mbH', 'hardcore'], ['mbX', 'extreme'], ['mbP', 'nightmare']].forEach(function (p) { $(p[0]).textContent = parseInt(localStorage.getItem(DF[p[1]].bk) || '0', 10) || 0; }); } catch (e) {}
 }
 function setDiff(d) {
@@ -3598,9 +3878,28 @@ function blackenCorpse(zb) {
 // cámara en 3ª persona para los caídos
 function specActive() { return P.dead && NET.role !== 'none' && mode === 'play'; }
 function specList() { var a = []; NET.eachRemote(function (r) { if (!r.dead) a.push(r); }); a.sort(function (x, y) { return x.id - y.id; }); return a; }
+var UPIC = {
+  ammo:  '<path d="M2 21V10l2.5-4L7 10v11zM9.5 21V10l2.5-4 2.5 4v11zM17 21V10l2.5-4 2.5 4v11z"/>',
+  speed: '<path d="M13 2 4 14h6l-1 8 9-12h-6z"/>',
+  iron:  '<path d="M12 21s-8-5.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.5-8 11-8 11z"/>',
+  share: '<circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M8.5 11 15.5 7M8.5 13l7 4" stroke="currentColor" stroke-width="1.6" fill="none"/>',
+  dbl:   '<path d="M6 2h12v4.5L13.5 12 18 17.5V22H6v-4.5L10.5 12 6 6.5z"/>'
+};
+var UPBIT = { ammo: [1, 16], speed: [2, 32], iron: [4, 64], share: [8, 0] };
+function renderUpgrades(SV) {   // íconos de las mejoras compradas; con "2x" al lado si se compró la mejora doble
+  var h = '', ks = ['ammo', 'speed', 'iron', 'share', 'dbl'], i, k, own, two;
+  if (mode === 'play') for (i = 0; i < ks.length; i++) {
+    k = ks[i];
+    if (SV) { var b = UPBIT[k]; if (!b) continue; own = !!(SV.ub & b[0]); two = !!(b[1] && (SV.ub & b[1])); }
+    else { own = !!P.up[k]; two = !!P.up2[k]; }
+    if (!own) continue;
+    h += '<span class="upg" style="--c:#' + ('000000' + MDEF[k].col.toString(16)).slice(-6) + '" title="' + MDEF[k].name + '"><svg viewBox="0 0 24 24">' + UPIC[k] + '</svg>' + (two ? '<b>2x</b>' : '') + '</span>';
+  }
+  if (hudCache.upgs !== h) { hudCache.upgs = h; $('upgs').innerHTML = h; }
+}
 function specView(r) {
   var ub = r.up | 0, bf = r.bf || [0, 0, 0];
-  return { W: WEAPONS[r.w] || WEAPONS.rifle, hp: Math.max(0, r.hp || 0), mhp: (ub & 64) ? 400 : (ub & 4) ? 200 : 100, iron: !!(ub & 4), aup: !!(ub & 1), am: r.am | 0, rs: r.rs | 0, rel: !!r.rel, bd: bf[0] | 0, bs: bf[1] | 0, bi: bf[2] | 0 };
+  return { W: WEAPONS[r.w] || WEAPONS.rifle, hp: Math.max(0, r.hp || 0), mhp: (ub & 64) ? 400 : (ub & 4) ? 200 : 100, iron: !!(ub & 4), aup: !!(ub & 1), am: r.am | 0, rs: r.rs | 0, rel: !!r.rel, bd: bf[0] | 0, bs: bf[1] | 0, bi: bf[2] | 0, ub: ub };
 }
 function specStep(d) {
   var a = specList(); if (!a.length) return;
@@ -3704,29 +4003,54 @@ function genMachines() {
   if (NET.role === 'host') { var rp = spot(2.5, 20); out.push({ t: 'm', k: 'revall', x: r2(rp.x), z: r2(rp.z), ry: r2(Math.atan2(-rp.x, -rp.z)) }); }
   return out;
 }
-var machGrp = null, machObs = [], MTEX = {};
+var machGrp = null, machObs = [], MTEX = {}, machFaces = [];
 function clearMachines() {
   LFX = LFX.filter(function (o) { return !o.mach; }); LSRC_M.length = 0;
   if (machGrp) { scene.remove(machGrp); machGrp = null; }
   machObs.forEach(function (o) { var k = obstacles.indexOf(o); if (k >= 0) obstacles.splice(k, 1); });
-  machObs = [];
+  machObs = []; machFaces.length = 0;
+}
+// información de la mejora doble (nivel II): reemplaza por completo a la de la mejora simple al comprarla
+var MDEF2 = {
+  ammo:  { name: 'Doble Munición II', info: 'Cargador y reserva x4' },
+  speed: { name: 'Pies Ágiles II',    info: 'Velocidad base x3' },
+  iron:  { name: 'Sangre de Hierro II', info: 'Vida x4' },
+  dbl:   { name: 'Doble Bonus II',    info: 'Bonus duran x4' }
+};
+function mlvl(k) { return !hasUp(k) ? 0 : (canUp2(k) ? (P.up2[k] ? 2 : 1) : 2); }   // 0 a la venta · 1 mejorable (muestra la mejora doble) · 2 al máximo / comprada
+function wrapTx(x, text, maxW, minLines) {   // parte el texto en líneas; si entra en una sola, lo reparte en dos de forma pareja
+  var words = text.split(' '), lines = [], cur = '', i;
+  words.forEach(function (w) { var t = cur ? cur + ' ' + w : w; if (cur && x.measureText(t).width > maxW) { lines.push(cur); cur = w; } else cur = t; });
+  if (cur) lines.push(cur);
+  if (lines.length < minLines && words.length > 1) {
+    var best = 1, bd = 1e9;
+    for (i = 1; i < words.length; i++) { var d = Math.abs(x.measureText(words.slice(0, i).join(' ')).width - x.measureText(words.slice(i).join(' ')).width); if (d < bd) { bd = d; best = i; } }
+    lines = [words.slice(0, best).join(' '), words.slice(best).join(' ')];
+  }
+  return lines;
 }
 function machTex(k) {
-  var ck = k + DIFF;
+  var lv = mlvl(k), ck = k + DIFF + lv;
   if (MTEX[ck]) return MTEX[ck];
-  var d = MDEF[k], c = document.createElement('canvas'); c.width = 256; c.height = 384;
-  var x = c.getContext('2d'), col = '#' + ('000000' + d.col.toString(16)).slice(-6);
+  var d = MDEF[k], u2 = MDEF2[k], c = document.createElement('canvas'); c.width = 256; c.height = 384;
+  var x = c.getContext('2d'), col = '#' + ('000000' + d.col.toString(16)).slice(-6), dbl = lv >= 1 && u2;
+  var name = dbl ? u2.name : d.name, info = dbl ? u2.info : d.info, price, cap = '', pcol = col;
+  if (lv === 0) price = money(mprice(k));
+  else if (lv === 1) { price = money(upPrice(k)); cap = 'MEJORA DOBLE'; }
+  else if (u2) { price = 'MÁXIMO'; cap = 'MEJORA COMPRADA'; pcol = '#f6c453'; }
+  else { price = 'COMPRADA'; pcol = '#f6c453'; }
   x.fillStyle = '#10171a'; x.fillRect(0, 0, 256, 384);
-  x.strokeStyle = col; x.lineWidth = 10; x.strokeRect(8, 8, 240, 368);
-  x.fillStyle = col; x.textAlign = 'center'; x.textBaseline = 'middle';
-  x.font = '700 38px Courier New, monospace';
-  var words = d.name.split(' '), y = 70;
-  words.forEach(function (w) { x.fillText(w, 128, y); y += 46; });
-  x.font = '600 19px Courier New, monospace'; x.fillStyle = '#e9e5d4'; x.fillText(d.info, 128, 250);
-  x.font = '700 44px Courier New, monospace'; x.fillStyle = col; x.fillText(money(mprice(k)), 128, 330);
-  if (canUp2(k)) { x.font = '600 15px Courier New, monospace'; x.fillStyle = '#e9e5d4'; x.fillText('Mejorable x2 por ' + money(mprice(k) * 4), 128, 362); }
+  x.strokeStyle = lv >= 1 ? '#f6c453' : col; x.lineWidth = 10; x.strokeRect(8, 8, 240, 368);
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.font = '700 36px Courier New, monospace'; x.fillStyle = col;
+  wrapTx(x, name, 216, 1).forEach(function (ln, i) { x.fillText(ln, 128, 62 + i * 42); });
+  x.font = '600 21px Courier New, monospace'; x.fillStyle = '#e9e5d4';
+  wrapTx(x, info, 190, 2).forEach(function (ln, i) { x.fillText(ln, 128, 218 + i * 27); });   // la descripción siempre ocupa al menos 2 líneas
+  if (cap) { x.font = '600 15px Courier New, monospace'; x.fillStyle = '#f6c453'; x.fillText(cap, 128, 300); }
+  x.font = '700 44px Courier New, monospace'; x.fillStyle = pcol; x.fillText(price, 128, 338);
   return (MTEX[ck] = new THREE.CanvasTexture(c));
 }
+function refreshMachines() { machFaces.forEach(function (f) { f.m.map = machTex(f.k); f.m.needsUpdate = true; }); }
 function buildMachines(L) {
   setTimeout(function () { if (machGrp) castAll(machGrp); }, 0);
   clearMachines();
@@ -3754,7 +4078,7 @@ function buildMachines(L) {
     } else if (it.t === 'm' && MDEF[it.k]) {
       var d = MDEF[it.k];
       var cab = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2.1, 0.8), body); cab.position.y = 1.05; g.add(cab);
-      var face = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 1.5), new THREE.MeshBasicMaterial({ map: machTex(it.k) })); face.position.set(0, 1.15, 0.405); g.add(face);
+      var faceM = new THREE.MeshBasicMaterial({ map: machTex(it.k) }); machFaces.push({ k: it.k, m: faceM }); var face = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 1.5), faceM); face.position.set(0, 1.15, 0.405); g.add(face);
       var strip = new THREE.Mesh(new THREE.BoxGeometry(1.24, 0.12, 0.84), new THREE.MeshBasicMaterial({ color: d.col })); strip.position.y = 2.16; g.add(strip);
       var base = new THREE.Mesh(new THREE.BoxGeometry(1.24, 0.1, 0.84), new THREE.MeshBasicMaterial({ color: d.col })); base.position.y = 0.05; g.add(base);
       ob(it.x, it.z, 0.8, 2.1);
@@ -3770,6 +4094,7 @@ function hasUp(k) { return k !== 'revall' && !!P.up[k]; }
 function canUp2(k) { return k === 'ammo' || k === 'speed' || k === 'iron' || k === 'dbl'; }   // Bonus Share y Resucitar no tienen segundo nivel
 function upPrice(k) { return mprice(k) * 4; }
 function buyMachine(k) {
+  if (PRE.on) { showPop('Compras cerradas en la sala de espera'); return; }
   var d = MDEF[k];
   if (hasUp(k)) {   // segunda compra: nivel II por el cuádruple del precio, con el doble de efecto
     if (!canUp2(k)) { showPop('Ya la tenés'); return; }
@@ -3779,7 +4104,7 @@ function buyMachine(k) {
     G.cash -= p2; sfxPickup(); P.up2[k] = true;
     if (k === 'ammo') { P.reloading = 0; applyWeapon(P.w); P.ammo = MAG; }
     else if (k === 'iron') { P.maxHp = 400; P.hp = Math.min(400, P.hp * 2); }
-    showBanner(d.name + ' II', 'Mejora potenciada: el doble de efecto');
+    showBanner(MDEF2[k] ? MDEF2[k].name : d.name + ' II', 'Mejora potenciada: el doble de efecto'); refreshMachines();
     return;
   }
   if (k === 'revall' && !anyDead()) { showPop('No hay caídos'); return; }
@@ -3790,8 +4115,9 @@ function buyMachine(k) {
   else if (k === 'speed') P.up.speed = true;
   else if (k === 'iron') { P.up.iron = true; P.maxHp = 200; P.hp = Math.min(200, P.hp * 2); }
   else if (k === 'share') P.up.share = true;
+  else if (k === 'dbl') P.up.dbl = true;
   else if (k === 'revall') { if (NET.role === 'client') netSend({ t: 'rvm' }); else reviveAll(); }
-  showBanner(d.name, 'Mejora activada');
+  showBanner(d.name, 'Mejora activada'); refreshMachines();
 }
 function useKey() {
   if (mode !== 'play' || P.dead || shopOpen || chatOpen || deadNear()) return;
@@ -3819,7 +4145,7 @@ function updateUse(dt) {
   } else {
     P.rvT = 0;
     var m = nearMachine();
-    if (m) { var d = MDEF[m.k]; txt = hasUp(m.k) ? (!canUp2(m.k) ? d.name + ' · Ya la tenés' : P.up2[m.k] ? d.name + ' II · Al máximo' : keyName(BIND.use) + ' · Mejorar ' + d.name + ' · ' + money(upPrice(m.k))) : keyName(BIND.use) + ' · ' + d.name + ' · ' + money(mprice(m.k)); }
+    if (m) { var d = MDEF[m.k]; txt = hasUp(m.k) ? (!canUp2(m.k) ? d.name + ' · Ya la tenés' : P.up2[m.k] ? MDEF2[m.k].name + ' · Al máximo' : keyName(BIND.use) + ' · Mejorar a ' + MDEF2[m.k].name + ' · ' + money(upPrice(m.k))) : keyName(BIND.use) + ' · ' + d.name + ' · ' + money(mprice(m.k)); }
   }
   var vis = !!txt; if (tip.hidden === vis) tip.hidden = !vis;
   if (vis) { setText('useTip', txt); tip.style.setProperty('--p', pct + '%'); }
@@ -3917,6 +4243,42 @@ $('btnCtlBack').addEventListener('click', function () { showMenuScreen('config')
   paint();
 })();
 
+
+/* ---------- GUI nueva/clásica y sonidos de interfaz ---------- */
+var UI = { gui: 'new', snd: true };
+(function () {
+  try { var u = JSON.parse(localStorage.getItem('nocheZombiUi') || '{}'); if (u.gui === 'old') UI.gui = 'old'; if (typeof u.snd === 'boolean') UI.snd = u.snd; } catch (e) {}
+  function saveUi() { try { localStorage.setItem('nocheZombiUi', JSON.stringify(UI)); } catch (e) {} }
+  function paintGui() {
+    document.body.classList.toggle('gui-old', UI.gui === 'old');
+    $('btnGuiSw').textContent = 'Interfaz: ' + (UI.gui === 'old' ? 'Clásica' : 'Nueva');
+  }
+  $('btnGuiSw').addEventListener('click', function () { UI.gui = UI.gui === 'old' ? 'new' : 'old'; saveUi(); paintGui(); });
+  [['btnSolo', 'btnSoloO'], ['btnCoop', 'btnCoopO'], ['btnConfig', 'btnConfigO']].forEach(function (p) {
+    $(p[1]).addEventListener('click', function () { $(p[0]).click(); });
+  });
+  paintGui();
+  var uc = $('uiSndChk'); uc.checked = UI.snd;
+  uc.addEventListener('change', function () { UI.snd = uc.checked; saveUi(); });
+  // sonidos: pasar el cursor y tocar
+  var lastB = null;
+  function btnOf(t) { var b = t && t.closest ? t.closest('.screen button, .screen .chk') : null; return b && !b.disabled ? b : null; }
+  document.addEventListener('mouseover', function (e) {
+    var b = btnOf(e.target);
+    if (b === lastB) return;
+    lastB = b;
+    if (b && UI.snd) tone('sine', 1250, 1700, 0.05, 0.045, undefined);
+  }, true);
+  document.addEventListener('pointerdown', function (e) {
+    var b = btnOf(e.target);
+    if (!b || !UI.snd) return;
+    var big = b.classList.contains('go') || b.classList.contains('primary');
+    tone('triangle', big ? 520 : 420, big ? 260 : 210, big ? 0.16 : 0.12, 0.09);
+    if (big) tone('sine', 780, 1170, 0.07, 0.1, undefined, 0.05);
+    noiseHit(2600, 1200, 0.05, 0.03, 'highpass');
+  }, true);
+})();
+
 /* ---------- post-proceso: bloom, tono fílmico, grading, aberración, viñeta y grano (cada efecto se activa por separado) ---------- */
 var PP = { sc: null, cam: null, quad: null, rt: null, bA: null, bB: null, mBright: null, mBlur: null, mFinal: null, failed: false, size: new THREE.Vector2() };
 function ppWanted() { return CFG.bloom || CFG.film || CFG.grade || CFG.chroma || CFG.vig || CFG.grain || CFG.cam || CFG.eye; }
@@ -3979,7 +4341,7 @@ var RFX = { flash: 0, exp: 1.2, t: 0 };
 function realFx(u) {   // estado de la "vista humana" que alimenta el shader
   var dt = clamp(clock - RFX.t, 0, 0.1); RFX.t = clock;
   var playing = mode === 'play' && !P.dead;
-  u.uMB.value = CFG.cam && playing ? clamp((P.speed - 6) / 4, 0, 1) * 0.07 + P.shake * 0.02 : 0;   // Deformaciones de cámara
+  u.uMB.value = CFG.cam && playing ? (P.tSpd > 0 ? clamp(P.speed / 8, 0, 1) * 0.07 : 0) + P.shake * 0.02 : 0;   // Deformaciones de cámara
   if (!CFG.eye) { u.uReal.value = 0; return; }                                                      // Adaptación del ojo
   RFX.flash = Math.max(0, RFX.flash - dt * 1.3);
   var dl = Math.hypot(camera.position.x, camera.position.z), kk = clamp(1 - dl / 38, 0, 1);
@@ -4011,7 +4373,7 @@ function renderFrame() {
 
 /* ---------- modos: Endless e Historia ---------- */
 var MODE = 'endless', FUEL = 0, FUEL_NEED = 7, FUEL_T = 20, fuelProg = {}, fuelSend = 0, fuelPct = 100, CINE = null;
-var FPR = { normal: 13000, hardcore: 30000, extreme: 45500, nightmare: 68500 };   // precio del bidón por dificultad (30.000$ en Difícil), balanceado como las máquinas
+var FPR = { normal: 1, hardcore: 30000, extreme: 45500, nightmare: 68500 };   // precio del bidón por dificultad (30.000$ en Difícil), balanceado como las máquinas
 var HG = { x: -38, z: -36 }, HGRY = Math.atan2(38, 36), INLET = [0, 0], hgGrp = null, hgObs = [], heli = null;
 var MODETXT = {
   endless: 'Las hordas nunca terminan. Tu objetivo es superar tu récord personal.',
@@ -4246,9 +4608,31 @@ setMode('endless');
 
 /* ---------- bucle principal ---------- */
 var lastT = performance.now(), clock = 0;
+/* ---------- estadísticas en pantalla: escribir C L A U D E las muestra u oculta ---------- */
+var DBG = { on: false, seq: '', el: null, acc: 0, n: 0, fps: 0, last: 0 };
+var TRKNAME = { menu: 'Refugio', lone1: 'Cenizas', lone2: 'Radio muerta', lone3: 'Último faro', act1: 'Equipándose', act2: 'Línea de Fuego', act3: 'Refuerzos', rain3: 'Lluvia de Acero', wind3: 'Tormenta de Arena',
+  shoot1: 'Sangre y Ceniza', shoot2: 'Cementerio Eléctrico', shoot3: 'Marcha de los Caídos', rain2: 'Tormenta de Plomo', wind2: 'Simún de Guerra', rain: 'Lluvia sobre las tumbas', wind: 'Simún', escape: 'Evacuación' };
+window.addEventListener('keydown', function (e) {
+  if (e.repeat || /^(INPUT|TEXTAREA)$/.test((e.target || {}).tagName || '')) return;
+  var m = /^Key([A-Z])$/.exec(e.code || ''); if (!m) { DBG.seq = ''; return; }
+  DBG.seq = (DBG.seq + m[1]).slice(-6);
+  if (DBG.seq === 'CLAUDE') {
+    DBG.seq = ''; DBG.on = !DBG.on;
+    if (!DBG.el) { DBG.el = document.createElement('div'); DBG.el.style.cssText = 'position:fixed;left:8px;top:8px;z-index:60;pointer-events:none;font:600 13px/1.45 Courier New,monospace;color:#fff;background:rgba(0,0,0,.55);padding:6px 9px;border-radius:4px;white-space:pre;text-shadow:1px 1px 0 #000'; document.body.appendChild(DBG.el); }
+    DBG.el.style.display = DBG.on ? 'block' : 'none'; DBG.acc = 0; DBG.n = 0; if (DBG.on) dbgDraw();
+  }
+});
+function dbgDraw() {
+  var cv = renderer.domElement, tn = !actx ? 'sin audio' : mus.cur ? (TRKNAME[mus.cur] || mus.cur) + ' (' + mus.cur + ')' : 'Silencio';
+  var l = ['Noche Zombi', 'FPS: ' + DBG.fps, 'Resolución: ' + cv.width + 'x' + cv.height + ' (x' + renderer.getPixelRatio().toFixed(2) + ')', 'Tema: ' + tn];
+  if (mode === 'play' || mode === 'paused') l.push('Modo: ' + (MODE === 'story' ? 'Historia' : 'Endless') + ' · Ronda ' + G.wave, 'Infectados: ' + zombies.length, 'XYZ: ' + P.x.toFixed(1) + ' / ' + (camera.position.y).toFixed(1) + ' / ' + P.z.toFixed(1), 'Clima: ' + (WIND ? 'viento' : RAIN ? 'lluvia' : 'despejado'));
+  if (NET.role !== 'none') l.push('Red: ' + NET.role + ' · ' + NET.ping + ' ms');
+  DBG.el.textContent = l.join('\n');
+}
 function frame(now) {
   requestAnimationFrame(frame);
   var dt = Math.min(0.05, (now - lastT) / 1000);
+  if (DBG.on) { DBG.acc += (now - lastT) / 1000; DBG.n++; if (DBG.acc >= 0.5) { DBG.fps = Math.round(DBG.n / DBG.acc); DBG.acc = 0; DBG.n = 0; dbgDraw(); } }
   lastT = now; clock += dt;
 
   if (mode === 'play') {
