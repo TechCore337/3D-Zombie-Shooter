@@ -161,6 +161,51 @@ body.touch .bottom{padding-bottom:120px}
 button.alt{font-family:var(--display);font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--bone);background:#162226;border:0;padding:11px 16px;cursor:pointer;box-shadow:0 0 0 1px var(--line),0 3px 0 #000}
 button.alt:hover:not(:disabled){background:#1f3036}
 button.alt:disabled{opacity:.4;cursor:not-allowed}
+button.go:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.6)}
+.pick{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:8px 0 14px}
+.pickc{display:flex;flex-direction:column;justify-content:center;gap:10px;min-height:min(46vh,260px);padding:26px;text-align:left;cursor:pointer;color:var(--bone);background:rgba(13,22,24,.82);border:0;border-left:5px solid var(--line);box-shadow:0 0 0 1px var(--line);transition:transform .15s,background .15s,border-color .15s;font-family:inherit}
+.pickc:hover{transform:translateY(-3px);background:rgba(24,38,41,.94);border-left-color:#ffc460}
+.pickc b{font-family:var(--display);font-size:clamp(26px,4vw,40px);letter-spacing:.12em;text-transform:uppercase;font-weight:400}
+.pickc span{font-size:16px;opacity:.8}
+.pickc .pkrec{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;opacity:.95;margin-top:6px}
+.pickc .pkrec i{font-style:normal;color:#ffc460;margin-left:4px}
+@media (max-width:640px){.pick{grid-template-columns:1fr}.pickc{min-height:150px}}
+.slist{display:flex;flex-direction:column;gap:8px;max-height:min(44vh,340px);overflow:auto;padding-right:2px}
+.srow{display:flex;align-items:center;gap:12px;background:rgba(13,22,24,.72);box-shadow:0 0 0 1px var(--line);padding:10px 12px}
+.srow .sm{flex:1;min-width:0}
+.sname{font-size:19px;color:var(--bone);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sdf{font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;background:#1f3036;margin-left:10px;border-radius:3px;vertical-align:middle}
+.smeta{font-size:14px;opacity:.75;margin-top:2px}
+.sbtn{width:42px;height:42px;border:0;border-radius:5px;cursor:pointer;display:grid;place-items:center;font-size:18px;font-weight:700;flex:0 0 auto;transition:transform .12s,filter .12s}
+.sbtn:hover{transform:scale(1.08);filter:brightness(1.12)}
+.splay{background:#6fdc7e;color:#fff}
+.sinfo{background:#26414a;color:#e8f3f6;font-family:Georgia,serif;font-style:italic}
+#saveInd{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--bone);background:rgba(8,14,16,.7);padding:4px 10px;box-shadow:0 0 0 1px var(--line);opacity:0;transition:opacity .3s;pointer-events:none}
+#saveInd.on{opacity:1}
+.sigrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.sigrid div{display:flex;flex-direction:column;border-left:2px solid var(--line);padding-left:10px}
+.sigrid b{font-size:20px;font-weight:600}
+.sigrid.t2{grid-template-columns:1fr 1fr;gap:14px;margin-bottom:6px}
+.sigrid.t2 b{font-size:21px;white-space:nowrap}
+.sigrid.v6{grid-template-columns:repeat(3,1fr)}
+@media (max-width:520px){.sigrid.v6{grid-template-columns:1fr 1fr}.sigrid.t2{grid-template-columns:1fr}}
+button.alt.del{background:#8f1f18;color:#fff;border-left-color:#ff5a4a}
+button.alt.del:hover:not(:disabled){background:#b32a20}
+#dlg{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(2,5,6,.72);backdrop-filter:blur(3px);padding:16px}
+.dlgbox{width:min(100%,460px);background:linear-gradient(180deg,#101b1e,#0b1315);box-shadow:0 0 0 1px var(--line),0 30px 80px rgba(0,0,0,.8);border-top:3px solid #ff5a4a;padding:24px 26px;display:flex;flex-direction:column;gap:12px;color:var(--bone)}
+.dlgbox h2{margin:0;font-family:var(--display);font-size:26px;letter-spacing:.1em;text-transform:uppercase;font-weight:400}
+.dlgbox p{margin:0;font-size:16px;opacity:.85;line-height:1.4}
+.svpan{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+.svp{display:flex;flex-direction:column;gap:10px;min-width:0;background:rgba(13,22,24,.6);box-shadow:0 0 0 1px var(--line);border-top:2px solid var(--toxic);padding:14px 16px}
+.svp:nth-child(2){border-top-color:#e8793a}
+.svp .slist{max-height:min(48vh,380px)}
+@media (max-width:720px){.svpan{grid-template-columns:1fr}}
+.sidecube{position:absolute;left:calc(100% + 10px);top:0}
+#pause .memo{position:relative;overflow:visible}
+.sidecube button{width:46px;height:46px;border:0;background:rgba(13,22,24,.78);box-shadow:0 0 0 1px var(--line);color:var(--bone);font-size:20px;cursor:pointer;opacity:.7;transition:opacity .15s,background .15s}
+.sidecube button:hover:not(:disabled){opacity:1;background:#1f3036}
+.sidecube button:disabled{opacity:.28;cursor:not-allowed}
+.sihd{font-size:13px;letter-spacing:.14em;text-transform:uppercase;opacity:.75;margin:8px 0 2px}
 .row2{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 #chat{position:absolute;left:max(16px,env(safe-area-inset-left,0px));bottom:150px;width:min(64vw,380px);display:flex;flex-direction:column;gap:4px;pointer-events:none;font-size:17px}
 #chatLog{display:flex;flex-direction:column;gap:3px}
@@ -440,12 +485,12 @@ body.gui-old #cfgUser .recIn{display:flex;flex-direction:column;gap:6px}
 /* ventanas centradas (todas salvo menú principal y configuración) */
 body:not(.gui-old) .screen:not(#menu){align-items:flex-start}
 body:not(.gui-old) .screen:not(#menu) .memo.wide{margin:0 auto}
-body:not(.gui-old) #solo,body:not(.gui-old) #pause,body:not(.gui-old) #win,body:not(.gui-old) #over,body:not(.gui-old) #lobby,body:not(.gui-old) #ach,body:not(.gui-old) #shop{justify-content:center;background:radial-gradient(ellipse at 50% 45%,rgba(3,7,8,.7),rgba(3,7,8,.92))}
-body:not(.gui-old) #solo .memo,body:not(.gui-old) #pause .memo,body:not(.gui-old) #win .memo,body:not(.gui-old) #over .memo,body:not(.gui-old) #lobby .memo,body:not(.gui-old) #ach .memo,body:not(.gui-old) #shop .memo{width:min(100%,600px)!important;min-height:0!important;margin:auto!important;background:linear-gradient(180deg,rgba(14,24,27,.97),rgba(9,16,18,.97))!important;box-shadow:0 0 0 1px var(--line),0 30px 80px rgba(0,0,0,.65)!important;border-top:3px solid var(--lamp);animation:memoIn .32s cubic-bezier(.2,.8,.2,1)}
-body:not(.gui-old) #solo .memo .in,body:not(.gui-old) #pause .memo .in,body:not(.gui-old) #win .memo .in,body:not(.gui-old) #over .memo .in,body:not(.gui-old) #lobby .memo .in,body:not(.gui-old) #ach .memo .in,body:not(.gui-old) #shop .memo .in{padding:clamp(20px,4vh,40px) clamp(20px,4vw,40px);margin-block:0}
-body:not(.gui-old) #solo .memo .kicker,body:not(.gui-old) #pause .memo .kicker,body:not(.gui-old) #win .memo .kicker,body:not(.gui-old) #over .memo .kicker,body:not(.gui-old) #lobby .memo .kicker,body:not(.gui-old) #ach .memo .kicker,body:not(.gui-old) #shop .memo .kicker{justify-content:center}
-body:not(.gui-old) #solo .memo h1,body:not(.gui-old) #pause .memo h1,body:not(.gui-old) #win .memo h1,body:not(.gui-old) #over .memo h1,body:not(.gui-old) #lobby .memo h1,body:not(.gui-old) #ach .memo h1,body:not(.gui-old) #shop .memo h1{text-align:center}
-body:not(.gui-old) #solo .memo .row2.foot,body:not(.gui-old) #pause .memo .row2.foot,body:not(.gui-old) #win .memo .row2.foot,body:not(.gui-old) #over .memo .row2.foot,body:not(.gui-old) #lobby .memo .row2.foot,body:not(.gui-old) #ach .memo .row2.foot,body:not(.gui-old) #shop .memo .row2.foot{flex-direction:row}
+body:not(.gui-old) #solo,body:not(.gui-old) #soloStory,body:not(.gui-old) #saveCoop,body:not(.gui-old) #saves,body:not(.gui-old) #saveInfo,body:not(.gui-old) #pause,body:not(.gui-old) #win,body:not(.gui-old) #over,body:not(.gui-old) #lobby,body:not(.gui-old) #ach,body:not(.gui-old) #shop{justify-content:center;background:radial-gradient(ellipse at 50% 45%,rgba(3,7,8,.7),rgba(3,7,8,.92))}
+body:not(.gui-old) #solo .memo,body:not(.gui-old) #soloStory .memo,body:not(.gui-old) #saveCoop .memo,body:not(.gui-old) #saves .memo,body:not(.gui-old) #saveInfo .memo,body:not(.gui-old) #pause .memo,body:not(.gui-old) #win .memo,body:not(.gui-old) #over .memo,body:not(.gui-old) #lobby .memo,body:not(.gui-old) #ach .memo,body:not(.gui-old) #shop .memo{width:min(100%,600px)!important;min-height:0!important;margin:auto!important;background:linear-gradient(180deg,rgba(14,24,27,.97),rgba(9,16,18,.97))!important;box-shadow:0 0 0 1px var(--line),0 30px 80px rgba(0,0,0,.65)!important;border-top:3px solid var(--lamp);animation:memoIn .32s cubic-bezier(.2,.8,.2,1)}
+body:not(.gui-old) #solo .memo .in,body:not(.gui-old) #soloStory .memo .in,body:not(.gui-old) #saveCoop .memo .in,body:not(.gui-old) #saves .memo .in,body:not(.gui-old) #saveInfo .memo .in,body:not(.gui-old) #pause .memo .in,body:not(.gui-old) #win .memo .in,body:not(.gui-old) #over .memo .in,body:not(.gui-old) #lobby .memo .in,body:not(.gui-old) #ach .memo .in,body:not(.gui-old) #shop .memo .in{padding:clamp(20px,4vh,40px) clamp(20px,4vw,40px);margin-block:0}
+body:not(.gui-old) #solo .memo .kicker,body:not(.gui-old) #soloStory .memo .kicker,body:not(.gui-old) #saveCoop .memo .kicker,body:not(.gui-old) #saves .memo .kicker,body:not(.gui-old) #saveInfo .memo .kicker,body:not(.gui-old) #pause .memo .kicker,body:not(.gui-old) #win .memo .kicker,body:not(.gui-old) #over .memo .kicker,body:not(.gui-old) #lobby .memo .kicker,body:not(.gui-old) #ach .memo .kicker,body:not(.gui-old) #shop .memo .kicker{justify-content:center}
+body:not(.gui-old) #solo .memo h1,body:not(.gui-old) #soloStory .memo h1,body:not(.gui-old) #saveCoop .memo h1,body:not(.gui-old) #saves .memo h1,body:not(.gui-old) #saveInfo .memo h1,body:not(.gui-old) #pause .memo h1,body:not(.gui-old) #win .memo h1,body:not(.gui-old) #over .memo h1,body:not(.gui-old) #lobby .memo h1,body:not(.gui-old) #ach .memo h1,body:not(.gui-old) #shop .memo h1{text-align:center}
+body:not(.gui-old) #solo .memo .row2.foot,body:not(.gui-old) #soloStory .memo .row2.foot,body:not(.gui-old) #saveCoop .memo .row2.foot,body:not(.gui-old) #saves .memo .row2.foot,body:not(.gui-old) #saveInfo .memo .row2.foot,body:not(.gui-old) #pause .memo .row2.foot,body:not(.gui-old) #win .memo .row2.foot,body:not(.gui-old) #over .memo .row2.foot,body:not(.gui-old) #lobby .memo .row2.foot,body:not(.gui-old) #ach .memo .row2.foot,body:not(.gui-old) #shop .memo .row2.foot{flex-direction:row}
 
 body:not(.gui-old) .memo.wide .hd{align-items:center;text-align:center}
 body:not(.gui-old) .memo.wide .hd .kicker{justify-content:center}
@@ -482,6 +527,7 @@ body.gui-old .mm{display:none}
 body:not(.gui-old) #mmOld{display:none}
 body.gui-old #menu{padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));align-items:center;background:rgba(3,7,8,.66)}
 body.gui-old .screen{background:rgba(3,7,8,.66)}
+body:not(.gui-old) #saves .memo{width:min(100%,1000px)!important}
 </style>
 
 <div id="stage">
@@ -507,6 +553,7 @@ body.gui-old .screen{background:rgba(3,7,8,.66)}
           <div class="tag"><span class="lbl">Dinero</span><b id="hCash">0</b></div>
         </div>
         <canvas id="radar" width="224" height="224" aria-label="Radar de infectados"></canvas>
+        <div id="saveInd"><span>💾</span><span id="saveIndT">Partida guardada</span></div>
       </div>
     </div>
 
@@ -601,7 +648,7 @@ body.gui-old .screen{background:rgba(3,7,8,.66)}
         <p class="note desk">Un tiro a la cabeza hace mucho más daño. Si el navegador no captura el mouse, apuntá con las flechas y disparás con <b data-k="fire">Espacio</b>.</p>
       </aside>
       <footer class="mm-rec">
-        <h2>Récords</h2>
+        <h2>Récords · Endless</h2>
         <div class="tags" id="menuBest">
           <div class="tag"><span class="lbl">Normal</span><b id="mbN">0</b></div>
           <div class="tag"><span class="lbl">Difícil</span><b id="mbH">0</b></div>
@@ -655,18 +702,69 @@ body.gui-old .screen{background:rgba(3,7,8,.66)}
     </div>
   </section>
 
-  <section class="screen" id="solo" hidden>
+  <section class="screen" id="soloPick" hidden>
+    <div class="memo wide"><div class="tape"></div><div class="in">
+      <div class="hd"><span class="kicker">Un jugador</span><h1>Elegí <em>tu modo</em></h1></div>
+      <div class="pick">
+        <button class="pickc" id="pkEndless" type="button"><b>Endless</b><span>Aguantá todo lo que puedas.</span>
+          <div class="pkrec"><span>Normal<i data-best="normal">0</i></span><span>Difícil<i data-best="hardcore">0</i></span><span>Hardcore<i data-best="extreme">0</i></span><span>Pesadilla<i data-best="nightmare">0</i></span></div></button>
+        <button class="pickc" id="pkStory" type="button"><b>Historia</b><span>Una pesadilla con final. Tu progreso se guarda.</span></button>
+      </div>
+      <div class="row2 foot"><button class="alt" id="btnPickBack" type="button">Volver</button></div>
+    </div></div>
+  </section>
+
+  <section class="screen" id="soloStory" hidden>
     <div class="memo"><div class="tape"></div><div class="in">
       <span class="kicker">Un jugador</span>
-      <h1 style="font-size:clamp(32px,8vw,52px)">Solo <em>contra todos</em></h1>
-      <div class="field">
-        <span class="lbl">Modo</span>
-        <div class="seg">
-          <button class="alt on" type="button" data-m="endless">Endless</button>
-          <button class="alt" type="button" data-m="story">Historia</button>
-        </div>
-        <p class="note modeDesc" style="margin-top:2px"></p>
+      <h1 style="font-size:clamp(32px,8vw,52px)">Histo<em>ria</em></h1>
+      <div class="row2"><button class="go" id="btnStoryNew" type="button">Crear partida</button></div>
+      <span class="lbl">Cargar partida</span>
+      <div class="slist" id="saveListSolo"></div>
+      <div class="row2"><button class="alt" id="btnStoryBack" type="button">Volver</button></div>
+    </div></div>
+  </section>
+
+  <section class="screen" id="saveCoop" hidden>
+    <div class="memo"><div class="tape"></div><div class="in">
+      <span class="kicker">Co-Op</span>
+      <h1 style="font-size:clamp(32px,8vw,52px)">Cargar <em>partida</em></h1>
+      <p class="note">Tocá ▶ para elegir la partida; se cargará al empezar desde la sala.</p>
+      <div class="slist" id="saveListCoop"></div>
+      <div class="row2"><button class="alt" id="btnSaveCoopBack" type="button">Volver</button></div>
+    </div></div>
+  </section>
+
+  <section class="screen" id="saves" hidden>
+    <div class="memo"><div class="tape"></div><div class="in">
+      <span class="kicker">Usuario</span>
+      <h1 style="font-size:clamp(32px,8vw,52px)">Partidas <em>guardadas</em></h1>
+      <div class="svpan">
+        <div class="svp"><span class="lbl">Un jugador</span><div class="slist" id="saveListU1"></div></div>
+        <div class="svp"><span class="lbl">Co-Op</span><div class="slist" id="saveListU2"></div></div>
       </div>
+      <div class="row2"><button class="alt" id="btnSavesBack" type="button">Volver</button></div>
+    </div></div>
+  </section>
+
+  <section class="screen" id="saveInfo" hidden>
+    <div class="memo"><div class="tape"></div><div class="in">
+      <span class="kicker" id="siKind">Partida guardada</span>
+      <h1 style="font-size:clamp(32px,8vw,52px)">Infor<em>mación</em></h1>
+      <div class="field"><span class="lbl">Nombre de la sala</span><input class="code nick" id="siName" maxlength="24" autocomplete="off" aria-label="Nombre de la partida"></div>
+      <label class="chk"><input type="checkbox" id="siAuto"> Autoguardado</label>
+      <div class="sigrid t2" id="siTimes"></div>
+      <div class="sigrid v6" id="siStats"></div>
+      <div class="row2"><button class="alt del" id="siDel" type="button">Eliminar partida</button></div>
+      <div class="row2"><button class="alt" id="siBack" type="button">Volver</button></div>
+    </div></div>
+  </section>
+
+  <section class="screen" id="solo" hidden>
+    <div class="memo"><div class="tape"></div><div class="in">
+      <span class="kicker" id="soloK">Un jugador</span>
+      <h1 style="font-size:clamp(32px,8vw,52px)" id="soloH">Solo <em>contra todos</em></h1>
+      <div class="field" data-st hidden><span class="lbl">Nombre de la partida</span><input class="code nick" id="saveName" maxlength="24" placeholder="Mi partida" autocomplete="off" aria-label="Nombre de la partida"></div>
       <div class="field">
         <span class="lbl">Dificultad</span>
         <div class="seg">
@@ -680,7 +778,16 @@ body.gui-old .screen{background:rgba(3,7,8,.66)}
       <label class="chk"><input type="checkbox" id="keepSolo"> Mantener cuerpos</label>
       <label class="chk"><input type="checkbox" id="upgSolo" checked> Máquinas de mejoras</label>
       <label class="chk" title="Genera 1,5 veces más árboles, tumbas, casas y demás terreno"><input type="checkbox" id="denseSolo"> Generación Densa (×1,5 terreno)</label>
-      <label class="chk" title="Zombis especiales raros: Toro, Escupidor, Llor&oacute;n, Glot&oacute;n y Globo"><input type="checkbox" id="spSolo"> Zombis especiales</label>
+      <label class="chk" title="Zombis especiales raros: Toro, Escupidor, Llor&oacute;n, y Glot&oacute;n"><input type="checkbox" id="spSolo"> Zombis especiales</label>
+      <label class="chk" data-st hidden title="Guarda la partida sola al terminar cada oleada"><input type="checkbox" id="autoSolo" checked> Autoguardado</label>
+      <div class="recIn" data-en><span class="lbl">Récords</span>
+        <div class="tags">
+          <div class="tag"><span class="lbl">Normal</span><b data-best="normal">0</b></div>
+          <div class="tag"><span class="lbl">Difícil</span><b data-best="hardcore">0</b></div>
+          <div class="tag"><span class="lbl">Hardcore</span><b data-best="extreme">0</b></div>
+          <div class="tag"><span class="lbl">Pesadilla</span><b data-best="nightmare">0</b></div>
+        </div>
+      </div>
       <div class="row2">
         <button class="go" id="btnStart" type="button">Entrar al cementerio</button>
         <button class="alt" id="btnSoloBack" type="button">Volver</button>
@@ -758,7 +865,7 @@ body.gui-old .screen{background:rgba(3,7,8,.66)}
           <label class="chk"><input type="checkbox" id="keepCr"> Mantener cuerpos</label>
           <label class="chk"><input type="checkbox" id="upgCr" checked> Máquinas de mejoras</label>
           <label class="chk" title="Genera 1,5 veces más árboles, tumbas, casas y demás terreno"><input type="checkbox" id="denseCr"> Generación Densa (×1,5 terreno)</label>
-          <label class="chk" title="Zombis especiales raros: Toro, Escupidor, Llor&oacute;n, Glot&oacute;n y Globo"><input type="checkbox" id="spCr"> Zombis especiales</label>
+          <label class="chk" title="Zombis especiales raros: Toro, Escupidor, Llor&oacute;n, y Glot&oacute;n"><input type="checkbox" id="spCr"> Zombis especiales</label>
         </div>
         <div class="grp">
           <div class="grp-h"><h2>Sala</h2></div>
@@ -782,6 +889,12 @@ body.gui-old .screen{background:rgba(3,7,8,.66)}
             <span class="lbl">Código del servidor</span>
             <div class="bigcode" id="crCode">-----</div>
           </div>
+          <div class="field" data-st hidden>
+            <div class="row2"><button class="alt" id="btnCrLoad" type="button">Cargar partida</button><button class="alt" id="btnCrUnload" type="button" hidden>✕ Quitar</button></div>
+            <p class="note" id="crLoadNote" style="margin-top:2px"></p>
+          </div>
+          <label class="chk" data-st hidden title="Activa el autoguardado de la partida y permite ponerle nombre"><input type="checkbox" id="saveCr"> Guardado</label>
+          <input class="code nick" id="saveNameCr" data-st maxlength="24" placeholder="Nombre de la partida" autocomplete="off" hidden aria-label="Nombre de la partida">
         </div>
       </div>
       <p class="note" id="crMsg"></p>
@@ -849,7 +962,9 @@ body.gui-old .screen{background:rgba(3,7,8,.66)}
           <div class="tag"><span class="lbl">Pesadilla</span><b data-best="nightmare">0</b></div>
         </div>
       </div>
-      <div class="row2"><button class="alt" id="btnAchReset" type="button">Reiniciar logros</button></div>
+      <div class="row2"><button class="alt" id="btnSavesU" type="button">Partidas guardadas</button></div>
+      <div class="row2"><button class="alt del" id="btnAchReset" type="button">Reiniciar logros</button></div>
+      <div class="row2"><button class="alt del" id="btnRecReset" type="button">Borrar récords</button></div>
       <div class="row2"><button class="alt" id="btnUserBack" type="button">Volver</button></div>
     </div></div>
     <aside class="side">
@@ -951,6 +1066,7 @@ body.gui-old .screen{background:rgba(3,7,8,.66)}
         <button class="alt" id="btnPauseCfg" type="button" style="align-self:flex-start">Configuración</button>
         <button class="alt" id="btnQuit" type="button" style="align-self:flex-start">Salir de la partida</button>
       </div>
+      <div class="sidecube" id="saveCube" hidden><button id="btnSaveNow" type="button" aria-label="Guardar partida" title="Guardar partida">💾</button></div>
     </div>
   </section>
 
@@ -987,12 +1103,15 @@ body.gui-old .screen{background:rgba(3,7,8,.66)}
           <div><span class="lbl">Puntería</span><b id="oAcc">0%</b></div>
         </div>
         <p id="oBest"></p>
+        <button class="go" id="btnLoadOver" type="button" hidden>Cargar partida guardada</button>
         <button class="go" id="btnRetry" type="button">Intentar de nuevo</button>
         <button class="alt" id="btnQuit2" type="button" style="align-self:flex-start">Salir al menú</button>
       </div>
     </div>
   </section>
 </div>
+
+<div id="dlg" hidden><div class="dlgbox" role="alertdialog" aria-modal="true"><h2 id="dlgT"></h2><p id="dlgP"></p><div class="row2"><button class="alt del" id="dlgYes" type="button">Sí</button><button class="alt" id="dlgNo" type="button">Cancelar</button></div></div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -1952,6 +2071,15 @@ var KEEP = false;     // Mantener cuerpos
 var COLORS = ['#d0442f', '#e8872f', '#f0b24a', '#e8dc4a', '#93c26b', '#4f9a5a', '#2f9a9a', '#4fd0ff', '#3d6ea8', '#2f4fa8', '#7a4fa8', '#c07bff', '#a84f86', '#ff7aa8', '#8a8f96', '#e9e5d4'];
 var COLNAME = ['Rojo', 'Naranja', 'Ámbar', 'Amarillo', 'Lima', 'Verde', 'Turquesa', 'Celeste', 'Azul', 'Añil', 'Violeta', 'Lila', 'Magenta', 'Rosa', 'Gris', 'Hueso'];
 function bestKey() { return DF[DIFF].bk; }
+var recDirty = false, recT = 0;
+function saveBest() { recDirty = false; recT = performance.now(); try { localStorage.setItem(bestKey(), String(G.best)); } catch (e) {} }
+function liveBest() {   // el récord (solo Endless) se guarda en el momento en que se supera, aunque después salgas de la partida
+  if (MODE === 'story' || mode !== 'play') return;
+  if (P.pscore > G.best) { G.best = P.pscore; G.rec = true; recDirty = true; }
+  if (recDirty && performance.now() - recT > 1500) saveBest();
+}
+window.addEventListener('pagehide', function () { if (recDirty) saveBest(); });
+document.addEventListener('visibilitychange', function () { if (document.hidden && recDirty) saveBest(); });
 function loadBest() { try { G.best = parseInt(localStorage.getItem(bestKey()) || '0', 10) || 0; } catch (e) { G.best = 0; } }
 loadBest();
 
@@ -2149,11 +2277,10 @@ var ZT = {
   walker: { hp: 60, speed: 1.9, dmg: 9, sc: 1.0, score: 60 },
   runner: { hp: 36, speed: 4.4, dmg: 6, sc: 0.94, score: 90 },
   brute: { hp: 240, speed: 1.5, dmg: 24, sc: 1.35, score: 240 },
-  bull: { hp: 260, speed: 2.2, dmg: 28, sc: 1.22, score: 350 },
-  spitter: { hp: 70, speed: 2.7, dmg: 8, sc: 0.95, score: 300 },
-  wailer: { hp: 55, speed: 3.3, dmg: 5, sc: 0.9, score: 300 },
-  glutton: { hp: 150, speed: 1.7, dmg: 10, sc: 1.1, score: 200 },
-  balloon: { hp: 50, speed: 2.6, dmg: 0, sc: 1.0, score: 250 }
+  bull: { hp: 420, speed: 3.0, dmg: 28, sc: 1.22, score: 350 },
+  spitter: { hp: 220, speed: 2.7, dmg: 8, sc: 0.95, score: 300 },
+  wailer: { hp: 200, speed: 3.3, dmg: 5, sc: 0.9, score: 300 },
+  glutton: { hp: 150, speed: 1.7, dmg: 10, sc: 1.1, score: 200 }
 };
 var SKIN = [0x6f9460, 0x7c9d6c, 0x62845a, 0x88a27a, 0x6b8a70];
 var SHIRT = [0x3c4350, 0x5b3d36, 0x30493c, 0x4b4b55, 0x6a5a3c];
@@ -2211,7 +2338,7 @@ function spawnZombie(typeName, px, pz, idle) {
   var zb = {
     type: typeName, T: T, root: root, head: head, armL: armL, armR: armR, legL: legL, legR: legR, blob: blob,
     eyeG: eyeG, mats: [mSkin, mShirt, mPants], x: px, z: pz, yaw: Math.atan2(P.x - px, P.z - pz),
-    hp: T.hp * hpMul, speed: T.speed * spMul * rand(0.9, 1.15) * (SPT[typeName] ? 1 + (DF[DIFF].spd - 1) * 0.25 : DF[DIFF].spd), dmg: T.dmg, sc: sc, r: 0.42 * sc,
+    hp: T.hp * hpMul * (SPT[typeName] ? 1 + (spDm() - 1) * 0.9 : 1), speed: T.speed * spMul * rand(0.9, 1.15) * (SPT[typeName] ? 1 + (DF[DIFF].spd - 1) * 0.25 : DF[DIFF].spd), dmg: T.dmg, sc: sc, r: 0.42 * sc,
     atkCd: rand(0.2, 0.7), swing: 0, flash: 0, anim: rand(0, TAU), groan: rand(1, 6),
     dead: false, dyingT: 0, inReach: false, idle: !!idle, id: ++NET.zid, tx: px, tz: pz, tyaw: 0
   };
@@ -2264,7 +2391,7 @@ function updateZombies(dt, active) {
       var reach = 0.55 + zb.sc * 0.8;
       if (dist > reach) {
         zb.inReach = false;
-        var step = zb.speed * adt * (zb.boost > 0 ? 1.5 : 1);
+        var step = zb.speed * adt * (zb.bstack ? 1 + 0.3 * zb.bstack : zb.boost > 0 ? 1.5 : 1);
         zb.x += Math.sin(zb.yaw) * step;
         zb.z += Math.cos(zb.yaw) * step;
         zb.anim += adt * zb.speed * 2.4;
@@ -2326,7 +2453,6 @@ function updateCorpses(dt) {
     c.root.position.y = 0.2 * c.sc * e - (!KEEP && c.dyingT > 4 ? (c.dyingT - 4) * 0.45 : 0);
     var kl = Math.min(1, dt * 6); c.legL.rotation.x -= c.legL.rotation.x * kl; c.legR.rotation.x -= c.legR.rotation.x * kl;   // piernas abajo al morir
     if (c.eyeG && c.eyeG.visible) c.eyeG.visible = false;
-    if (c.balloon && c.balloon.visible) c.balloon.visible = false;
     c.lean = 0;
     if (KEEP) { var ka = Math.min(1, dt * 6); c.armL.rotation.x -= c.armL.rotation.x * ka; c.armR.rotation.x -= c.armR.rotation.x * ka; }   // brazos caídos al piso
     if (c.flash > 0) { c.flash -= dt; if (c.flash <= 0) setEmissive(c, 0x000000); }
@@ -2350,12 +2476,12 @@ function clearZombies() {
 }
 
 
-/* ---------- zombis especiales (opcionales): Toro, Escupidor, Llorón, Glotón y Globo ---------- */
+/* ---------- zombis especiales (opcionales): Toro, Escupidor, Llorón y Glotón ---------- */
 var SPECIALS = false;
 var SPRATIO = { normal: 0.25, hardcore: 0.33, extreme: 0.42, nightmare: 0.5 };   // fracción de la probabilidad de los gigantes (muy raros)
 var SPT = {
   bull: { skin: 0x8a5a4a, shirt: 0x3a1a16 }, spitter: { skin: 0xa9c23c, shirt: 0x4a5a22 }, wailer: { skin: 0xb9c6d4, shirt: 0xd9d9d0 },
-  glutton: { skin: 0x9aa64a, shirt: 0x8a7a3a }, balloon: { skin: 0xd8a0b0, shirt: 0xe84a9c }
+  glutton: { skin: 0x9aa64a, shirt: 0x8a7a3a }
 };
 var SP = { lift: 0, lv: 0, pvx: 0, pvz: 0, vomit: 0, pools: [], globs: [], rings: [] };
 var SPG = { horn: new THREE.ConeGeometry(0.07, 0.34, 6), sph: new THREE.SphereGeometry(1, 14, 10), pool: new THREE.CircleGeometry(1, 28).rotateX(-Math.PI / 2), ring: new THREE.RingGeometry(0.92, 1, 32).rotateX(-Math.PI / 2), box: new THREE.BoxGeometry(1, 1, 1), str: new THREE.CylinderGeometry(0.012, 0.012, 1, 4) };
@@ -2363,8 +2489,6 @@ var SPM = {
   horn: new THREE.MeshPhongMaterial({ color: 0xe9e2c8, shininess: 30 }),
   acid: new THREE.MeshBasicMaterial({ color: 0x9cff3a }),
   mouth: new THREE.MeshBasicMaterial({ color: 0x050505 }),
-  bal: new THREE.MeshPhongMaterial({ color: 0xf0407f, shininess: 90, specular: 0xffffff }),
-  string: new THREE.MeshBasicMaterial({ color: 0xe9e5d4 })
 };
 function decorSpecial(t, root, head, mSkin) {
   var ex = {}, m;
@@ -2377,23 +2501,22 @@ function decorSpecial(t, root, head, mSkin) {
     m = new THREE.Mesh(SPG.box, SPM.mouth); m.scale.set(0.2, 0.26, 0.04); m.position.set(0, -0.1, 0.2); m.userData.head = true; head.add(m); ex.mouth = m;
   } else if (t === 'glutton') {
     m = new THREE.Mesh(SPG.sph, mSkin); m.scale.set(0.58, 0.62, 0.52); m.position.set(0, 1.05, 0.2); root.add(m);
-  } else if (t === 'balloon') {
-    m = new THREE.Mesh(SPG.sph, SPM.bal); m.scale.set(0.62, 0.74, 0.62); m.position.set(0, 3.15, 0); root.add(m); ex.balloon = m;
-    var st = new THREE.Mesh(SPG.str, SPM.string); st.scale.y = 1.15; st.position.set(0, 2.45, 0); st.raycast = function () {}; root.add(st);
   }
   return ex;
 }
 function initSpecial(zb, ex) {
-  zb.sp = true; zb.st = ''; zb.stT = 0; zb.sac = ex && ex.sac; zb.mouth = ex && ex.mouth; zb.balloon = ex && ex.balloon;
-  if (zb.type === 'bull') { zb.st = 'watch'; zb.stT = rand(1.5, 3); zb.cv = 0; }
-  else if (zb.type === 'spitter') { zb.st = 'roam'; zb.stT = rand(2, 4); zb.sdir = Math.random() < 0.5 ? 1 : -1; zb.sdT = rand(2, 4); zb.hs = []; zb.hsT = 0; }
-  else if (zb.type === 'wailer') { zb.st = 'stalk'; zb.stT = rand(2, 4); }
-  else if (zb.type === 'balloon') { zb.hover = 1.0; zb.dmg = 0; }
+  zb.sp = true; zb.st = ''; zb.stT = 0; zb.sac = ex && ex.sac; zb.mouth = ex && ex.mouth;
+  if (zb.type === 'bull') { zb.st = 'watch'; zb.stT = rand(1.2, 2.2); zb.cv = 0; }
+  else if (zb.type === 'spitter') { zb.st = 'roam'; zb.stT = rand(1.5, 3); zb.sdir = Math.random() < 0.5 ? 1 : -1; zb.sdT = rand(2, 4); zb.hs = []; zb.hsT = 0; }
+  else if (zb.type === 'wailer') { zb.st = 'stalk'; zb.stT = 0; zb.cd = rand(0.5, 2); }
+  zb.dmg = zb.dmg * (zb.type === 'glutton' ? 1 + (spS() - 1) * 0.5 : 1);
 }
+function spDm() { return { normal: 1, hardcore: 1.2, extreme: 1.45, nightmare: 1.7 }[DIFF] || 1; }
+function spS() { return Math.min(3.2, spDm() * (1 + 0.03 * Math.max(0, G.wave - 4))); }   // fuerza de los especiales: dificultad × oleada
 function pickSpecial() {
   var n = 0; zombies.forEach(function (q) { if (q.sp) n++; });
-  if (n >= 1 + (DIFF !== 'normal' ? 1 : 0) + (NET.count() > 2 ? 1 : 0)) return null;
-  return ['bull', 'spitter', 'wailer', 'glutton', 'balloon'][Math.floor(Math.random() * 5)];
+  if (n >= 1 + (G.wave >= 10 ? 1 : 0) + (DIFF !== 'normal' ? 1 : 0) + (NET.count() > 2 ? 1 : 0)) return null;
+  return ['bull', 'spitter', 'wailer', 'glutton'][Math.floor(Math.random() * 4)];
 }
 function specClear() {
   SP.pools.forEach(function (o) { scene.remove(o.m); o.m.material.dispose(); });
@@ -2408,14 +2531,14 @@ function specRing(x, z, col, rmax, life) {
   m.position.set(x, 0.09, z); m.scale.set(0.5, 1, 0.5); m.raycast = function () {}; scene.add(m);
   SP.rings.push({ m: m, t: 0, life: life, rmax: rmax });
 }
-function specFx(k, x, z, a, b) {   // se ejecuta en el anfitrión y se avisa a todos los clientes
-  if (NET.role === 'host') netBroadcast({ t: 'sx', k: k, x: Math.round(x * 10) / 10, z: Math.round(z * 10) / 10, a: a === undefined ? 0 : Math.round(a * 10) / 10, b: b === undefined ? 0 : Math.round(b * 10) / 10 });
-  specFxLocal(k, x, z, a, b);
+function specFx(k, x, z, a, b, c) {   // se ejecuta en el anfitrión y se avisa a todos los clientes
+  if (NET.role === 'host') netBroadcast({ t: 'sx', k: k, x: Math.round(x * 10) / 10, z: Math.round(z * 10) / 10, a: a === undefined ? 0 : Math.round(a * 10) / 10, b: b === undefined ? 0 : Math.round(b * 10) / 10, c: c || 0 });
+  specFxLocal(k, x, z, a, b, c);
 }
-function specAddPool(x, z, r, life) {
+function specAddPool(x, z, r, life, dm) {
   var m = new THREE.Mesh(SPG.pool, new THREE.MeshBasicMaterial({ color: 0x7fe02a, transparent: true, opacity: 0.55, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
   m.position.set(x, 0.06, z); m.scale.set(r, 1, r); m.raycast = function () {}; scene.add(m);
-  SP.pools.push({ m: m, x: x, z: z, r: r, life: life, max: life, tk: 0.3 });
+  SP.pools.push({ m: m, x: x, z: z, r: r, life: life, max: life, tk: 0.3, dm: dm || 5 });
 }
 function specKnock(x, z, dist, force, lift) {   // empuja y/o eleva al jugador local si está cerca
   if (P.dead || mode !== 'play') return false;
@@ -2425,7 +2548,8 @@ function specKnock(x, z, dist, force, lift) {   // empuja y/o eleva al jugador l
   SP.pvx += dx / d * f; SP.pvz += dz / d * f; if (lift) SP.lv = Math.max(SP.lv, lift);
   return true;
 }
-function specFxLocal(k, x, z, a, b) {
+function spFlight(dd) { return clamp(0.4 + dd / 55, 0.5, 0.95); }
+function specFxLocal(k, x, z, a, b, c) {
   var v = specDvol(x, z), pos = new THREE.Vector3(x, 1.2, z), i, q;
   if (k === 'bull') {   // resoplido + arranque de carrera
     noiseHit(500, 120, 0.7 * v, 0.5, 'lowpass'); tone('sawtooth', 70, 38, 0.5 * v, 0.9); setTimeout(function () { tone('sawtooth', 60, 130, 0.45 * v, 1.2); noiseHit(300, 900, 0.4 * v, 1.2, 'bandpass'); }, 900);
@@ -2440,23 +2564,24 @@ function specFxLocal(k, x, z, a, b) {
   } else if (k === 'spit') {   // a,b = destino · x,z = origen
     tone('sine', 200, 700, 0.4 * v, 0.25); noiseHit(1800, 600, 0.4 * v, 0.25, 'bandpass');
     var gm = new THREE.Mesh(SPG.sph, SPM.acid); gm.scale.set(0.22, 0.22, 0.22); gm.raycast = function () {}; scene.add(gm);
-    var dd = Math.hypot(a - x, b - z); SP.globs.push({ m: gm, x0: x, z0: z, x1: a, z1: b, t: 0, T: clamp(0.5 + dd / 34, 0.6, 1.3) });
+    var dd = Math.hypot(a - x, b - z); SP.globs.push({ m: gm, x0: x, z0: z, x1: a, z1: b, t: 0, T: spFlight(dd), r: c ? Math.floor(c / 100) / 10 : 3.4, life: c ? c % 100 : 8, dm: SP.spDmg || 5 });
   } else if (k === 'acid') { specAddPool(x, z, a || 3.4, b || 8); }
   else if (k === 'glut') {
     noiseHit(2400, 80, 1 * v, 0.7, 'lowpass'); tone('sine', 140, 28, 1 * v, 0.6); tone('sawtooth', 220, 60, 0.4 * v, 0.5);
-    burst(pos, 30, 0x78b02a, 6); specRing(x, z, 0x9cff3a, 8.5, 0.7); specAddPool(x, z, 2.6, 0.01 + 3);
-    if (specKnock(x, z, 8.5, 15, 0)) { SP.vomit = 5; showPop('¡Puaj!'); }
-    if (NET.role !== 'client') zombies.forEach(function (o) { var dx = o.x - x, dz = o.z - z, d = Math.hypot(dx, dz) || 0.01; if (d < 8 && !o.dead) { o.pvx = (o.pvx || 0) + dx / d * 6 * (1 - d / 9); o.pvz = (o.pvz || 0) + dz / d * 6 * (1 - d / 9); } });
-  } else if (k === 'pop') {
-    noiseHit(5000, 600, 0.9 * v, 0.12, 'highpass'); tone('square', 900, 200, 0.3 * v, 0.15); tone('sine', 400, 1200, 0.35 * v, 0.3, undefined, 0.1);
-    burst(pos, 26, 0xf0407f, 6); specRing(x, z, 0xff6fa8, 9, 0.7);
-    if (specKnock(x, z, 9, 11, 7.5)) showPop('¡Boing!');
-    if (NET.role !== 'client') zombies.forEach(function (o) { var dx = o.x - x, dz = o.z - z, d = Math.hypot(dx, dz) || 0.01; if (d < 9 && !o.dead) { var f = 11 * (1 - d / 10); o.pvx = (o.pvx || 0) + dx / d * f; o.pvz = (o.pvz || 0) + dz / d * f; o.hp = Math.max(1, o.hp - 20); } });
+    var gr = a || 9.5; burst(pos, 30, 0x78b02a, 6); specRing(x, z, 0x9cff3a, gr, 0.7); specAddPool(x, z, 2.6, 3);
+    if (specKnock(x, z, gr, 30 + (gr - 9.5) * 3, 6.5)) { SP.vomit = 4.5 + (gr - 9.5) * 1.2; showPop('¡Puaj!'); }
+    if (NET.role !== 'client') zombies.forEach(function (o) { var dx = o.x - x, dz = o.z - z, d = Math.hypot(dx, dz) || 0.01; if (d < 9 && !o.dead) { o.pvx = (o.pvx || 0) + dx / d * 9 * (1 - d / 10); o.pvz = (o.pvz || 0) + dz / d * 9 * (1 - d / 10); } });
+    var gk = 1.5 + Math.min(0.6, ((a || 9.5) - 9.5) * 0.2);   // la explosión fortalece a los zombis de alrededor: más velocidad, vida y daño, ojos verdes
+    zombies.forEach(function (o) {
+      if (o.dead || o.sp || Math.hypot(o.x - x, o.z - z) > gr) return;
+      if (o.eyeG) o.eyeG.material.color.setHex(0x59ff3a);
+      if (NET.role !== 'client' && !o.gl) { o.gl = 1; o.hp *= gk + 0.2; o.dmg *= gk; o.speed *= gk - 0.1; }
+    });
+
   }
 }
 function specDeath(zb) {
-  if (zb.type === 'glutton') specFx('glut', zb.x, zb.z);
-  else if (zb.type === 'balloon') { if (zb.balloon) zb.balloon.visible = false; specFx('pop', zb.x, zb.z); }
+  if (zb.type === 'glutton') specFx('glut', zb.x, zb.z, 9.5 + Math.min(3, (spS() - 1) * 1.6));
   zb.lean = 0;
 }
 function updateSpecials(dt) {
@@ -2470,8 +2595,8 @@ function updateSpecials(dt) {
   }
   for (i = SP.globs.length - 1; i >= 0; i--) {
     o = SP.globs[i]; o.t += dt; var u = Math.min(1, o.t / o.T);
-    o.m.position.set(o.x0 + (o.x1 - o.x0) * u, 1.6 + Math.sin(u * Math.PI) * 7 * (1 - 0.3 * u) - 1.55 * u, o.z0 + (o.z1 - o.z0) * u);
-    if (u >= 1) { scene.remove(o.m); SP.globs.splice(i, 1); specAddPool(o.x1, o.z1, 3.4, 8); noiseHit(1500, 300, 0.5 * specDvol(o.x1, o.z1), 0.3, 'lowpass'); tone('sine', 300, 90, 0.4 * specDvol(o.x1, o.z1), 0.25); burst(new THREE.Vector3(o.x1, 0.5, o.z1), 12, 0x7fe02a, 4); }
+    o.m.position.set(o.x0 + (o.x1 - o.x0) * u, 1.6 + Math.sin(u * Math.PI) * 1.6 - 1.55 * u, o.z0 + (o.z1 - o.z0) * u);
+    if (u >= 1) { scene.remove(o.m); SP.globs.splice(i, 1); specAddPool(o.x1, o.z1, o.r, o.life, o.dm); noiseHit(1500, 300, 0.5 * specDvol(o.x1, o.z1), 0.3, 'lowpass'); tone('sine', 300, 90, 0.4 * specDvol(o.x1, o.z1), 0.25); burst(new THREE.Vector3(o.x1, 0.5, o.z1), 12, 0x7fe02a, 4); }
   }
   for (i = SP.pools.length - 1; i >= 0; i--) {
     o = SP.pools[i]; o.life -= dt;
@@ -2481,8 +2606,8 @@ function updateSpecials(dt) {
       o.tk -= dt;
       if (o.tk <= 0) {
         o.tk = 0.45;
-        if (!P.dead && Math.hypot(P.x - o.x, P.z - o.z) < o.r && SP.lift < 0.5) damageTarget(P, 5);
-        NET.eachRemote(function (r) { if (!r.dead && Math.hypot(r.x - o.x, r.z - o.z) < o.r) damageTarget(r, 5); });
+        if (!P.dead && Math.hypot(P.x - o.x, P.z - o.z) < o.r && SP.lift < 0.5) damageTarget(P, o.dm);
+        NET.eachRemote(function (r) { if (!r.dead && Math.hypot(r.x - o.x, r.z - o.z) < o.r) damageTarget(r, o.dm); });
       }
     }
     if (o.life <= 0) { scene.remove(o.m); o.m.material.dispose(); SP.pools.splice(i, 1); }
@@ -2499,56 +2624,83 @@ function specialAI(zb, tg, dx, dz, dist, dt) {
   function turn(rate) { zb.yaw += clamp(wrapAngle(ang - zb.yaw), -rate * dt, rate * dt); }
   function go(a, v) { zb.x += Math.sin(a) * v * dt; zb.z += Math.cos(a) * v * dt; zb.anim += dt * v * 2.4; }
   zb.stT -= dt;
+  var S = spS();
   if (t === 'bull') {
     zb.lean = 0;
-    if (zb.st === 'watch') {   // observa a distancia
-      turn(3); zb.anim += dt * 0.9;
-      if (dist > 27) go(zb.yaw, zb.speed); else if (dist < 15) go(zb.yaw + Math.PI, zb.speed * 0.8);
-      zb.lean = -0.05;
-      if (zb.stT <= 0 && dist < 42 && dist > 10) { zb.st = 'wind'; zb.stT = 1.3; specFx('bull', zb.x, zb.z); setEmissive(zb, 0x5a0f06); }
-    } else if (zb.st === 'wind') {   // escarba el suelo y se prepara
-      turn(4.5); zb.anim += dt * 16; zb.lean = 0.5 + Math.sin(clock * 30) * 0.05;
-      if (zb.stT <= 0) { zb.st = 'charge'; zb.stT = 3.6; zb.cv = 3; }
+    if (zb.st === 'watch') {   // observa; solo embiste con línea recta y despejada hacia el jugador
+      zb.anim += dt * 0.9; zb.lean = -0.05;
+      if (clearLine(zb.x, zb.z, tg.x, tg.z)) {
+        zb.goal = null; turn(3.5);
+        if (dist > 19) go(zb.yaw, zb.speed * 1.1);
+        if (dist < 9) { zb.st = 'wind'; zb.stT = 0.3; specFx('bull', zb.x, zb.z); setEmissive(zb, 0x5a0f06); }   // si te pegás, embiste casi sin preparación
+        else if (zb.stT <= 0 && dist < 27) { zb.st = 'wind'; zb.stT = 0.95 / Math.sqrt(S); specFx('bull', zb.x, zb.z); setEmissive(zb, 0x5a0f06); }
+      } else {   // sin visión limpia: se reubica despacio hasta conseguirla
+        zb.mvT = (zb.mvT || 0) - dt;
+        if (!zb.goal || zb.mvT <= 0) zb.goal = bullGoal(zb, tg), zb.mvT = 0.6;
+        var ga = Math.atan2(zb.goal[0] - zb.x, zb.goal[1] - zb.z);
+        zb.yaw += clamp(wrapAngle(ga - zb.yaw), -3.5 * dt, 3.5 * dt); go(ga, zb.speed * 0.4);
+        if (zb.stT < 0.4) zb.stT = 0.4;
+      }
+    } else if (zb.st === 'wind') {   // escarba el suelo y toma carrera
+      var wl = clearLine(zb.x, zb.z, tg.x, tg.z);
+      if (wl) { zb.goal = null; turn(6); zb.anim += dt * 16; }
+      else {   // sin línea recta y despejada: sigue tomando carrera pero se mueve (40 % más lento) hasta conseguirla
+        zb.mvT = (zb.mvT || 0) - dt;
+        if (!zb.goal || zb.mvT <= 0) { zb.goal = bullGoal(zb, tg); zb.mvT = 0.5; }
+        var wa = Math.atan2(zb.goal[0] - zb.x, zb.goal[1] - zb.z);
+        zb.yaw += clamp(wrapAngle(wa - zb.yaw), -6 * dt, 6 * dt); go(wa, zb.speed * 0.6); zb.anim += dt * 12;
+      }
+      zb.lean = 0.5 + Math.sin(clock * 30) * 0.05;
+      if (!wl && zb.stT < 0.15) zb.stT = 0.15;   // no arranca hasta tener la línea libre
+      if (zb.stT <= 0) { zb.st = 'charge'; zb.stT = 3.2; zb.cv = 4; }
     } else if (zb.st === 'charge') {   // embestida: el giro mejora con la oleada y la dificultad
-      zb.cv = Math.min(zb.cv + 17 * dt, 14.5);
-      var tr = Math.min(2.6, (0.22 + Math.min(wv, 40) * 0.028) * dm);
+      var vmax = 14.5 * Math.min(1.3, 1 + (S - 1) * 0.12);
+      zb.cv = Math.min(zb.cv + 20 * dt, vmax);
+      var tr = Math.min(2.8, (0.22 + Math.min(wv, 40) * 0.028) * dm);
       turn(tr); zb.lean = 0.42;
       var px = zb.x, pz = zb.z; go(zb.yaw, zb.cv);
       var crash = Math.hypot(zb.x, zb.z) > ARENA - 1.5;
       for (i = 0; i < obstacles.length && !crash; i++) { o = obstacles[i]; if (Math.hypot(zb.x - o.x, zb.z - o.z) < o.r + zb.r + 0.15) crash = true; }
       for (i = 0; i < zombies.length; i++) {   // empuja a otros zombis y les hace un poco de daño
         o = zombies[i]; if (o === zb || o.dead) continue;
-        if (Math.hypot(zb.x - o.x, zb.z - o.z) < zb.r + o.r + 0.5) { o.pvx = (o.pvx || 0) + Math.sin(zb.yaw) * 9; o.pvz = (o.pvz || 0) + Math.cos(zb.yaw) * 9; if (!o.bumped || clock - o.bumped > 0.6) { o.bumped = clock; o.hp = Math.max(1, o.hp - 14); o.flash = 0.09; } }
+        if (Math.hypot(zb.x - o.x, zb.z - o.z) < zb.r + o.r + 0.5) { o.pvx = (o.pvx || 0) + Math.sin(zb.yaw) * 9; o.pvz = (o.pvz || 0) + Math.cos(zb.yaw) * 9; if (!o.bumped || clock - o.bumped > 0.6) { o.bumped = clock; o.hp = Math.max(1, o.hp - 14 * S); o.flash = 0.09; } }
       }
-      if (dist < 1.9) {   // embiste al objetivo
-        damageTarget(tg, zb.dmg * (1 + Math.min(wv, 40) * 0.01));
+      if (dist < 1.9 + Math.min(1, (S - 1) * 0.2)) {   // embiste al objetivo
+        damageTarget(tg, zb.dmg * Math.min(S, 2.4));
         if (!tg.remote) { SP.pvx += Math.sin(zb.yaw) * 14; SP.pvz += Math.cos(zb.yaw) * 14; }
-        zb.st = 'rest'; zb.stT = 1.8; zb.cv = 0; setEmissive(zb, 0);
+        zb.st = 'rest'; zb.stT = 1.6 / Math.sqrt(S); zb.cv = 0; setEmissive(zb, 0);
       } else if (crash) {   // falla: se estrella, sin perder vida
         zb.x = px; zb.z = pz; specFx('crash', zb.x + Math.sin(zb.yaw) * 1.2, zb.z + Math.cos(zb.yaw) * 1.2);
         zb.st = 'stun'; zb.stT = 2.6; zb.cv = 0; setEmissive(zb, 0);
-      } else if (zb.stT <= 0) { zb.st = 'rest'; zb.stT = 1.6; zb.cv = 0; setEmissive(zb, 0); }
+      } else if (zb.stT <= 0) { zb.st = 'rest'; zb.stT = 1.4; zb.cv = 0; setEmissive(zb, 0); }
     } else if (zb.st === 'stun') {   // aturdido: se tambalea
       zb.lean = -0.25 + Math.sin(clock * 11) * 0.22; zb.yaw += Math.sin(clock * 9) * 0.01; zb.anim += dt * 3;
-      if (zb.stT <= 0) { zb.st = 'watch'; zb.stT = rand(2, 3.5); }
+      if (zb.stT <= 0) { zb.st = 'watch'; zb.stT = rand(1, 2); }
     } else {   // rest: jadea
       zb.lean = 0.1 + Math.sin(clock * 9) * 0.05; zb.anim += dt * 2;
-      if (zb.stT <= 0) { zb.st = 'watch'; zb.stT = rand(2, 3.5); }
+      if (zb.stT <= 0) { zb.st = 'watch'; zb.stT = rand(1, 2); }
     }
     return true;
   }
   if (t === 'spitter') {
     zb.hsT -= dt;
-    if (zb.hsT <= 0) { zb.hsT = 0.35; zb.hs.push([tg.x, tg.z]); if (zb.hs.length > 14) zb.hs.shift(); }
-    if (zb.sac) { var gs = zb.st === 'aim' ? 0.32 + Math.sin(clock * 25) * 0.05 : 0.2 + (1 - Math.max(0, zb.stT) / 7) * 0.1; zb.sac.scale.set(gs, gs, gs); }
+    if (zb.hsT <= 0) { zb.hsT = 0.3; zb.hs.push([tg.x, tg.z]); if (zb.hs.length > 16) zb.hs.shift(); }
+    if (zb.sac) { var gs = zb.st === 'aim' ? 0.32 + Math.sin(clock * 25) * 0.05 : 0.2 + (1 - Math.max(0, Math.min(1, zb.stT / 7))) * 0.1; zb.sac.scale.set(gs, gs, gs); }
     if (zb.st === 'aim') {
-      turn(4); zb.anim += dt * 2; zb.lean = -0.35; zb.armL.rotation.x = -2.6; zb.armR.rotation.x = -2.6;
+      turn(5); zb.anim += dt * 2; zb.lean = -0.35; zb.armL.rotation.x = -2.6; zb.armR.rotation.x = -2.6;
       zb.aT -= dt;
-      if (zb.aT <= 0) { var pt = spitTarget(zb, tg); specFx('spit', zb.x, zb.z, pt[0], pt[1]); zb.st = 'roam'; zb.stT = ({ normal: 7, hardcore: 6, extreme: 5, nightmare: 4 }[DIFF] || 7) + rand(0, 2); zb.lean = 0; }
+      if (zb.aT <= 0) {
+        var pt = spitTarget(zb, tg), rad = Math.min(5.2, 3.4 * (1 + 0.07 * (S - 1))), lf = Math.min(15, Math.round(8 * (1 + 0.18 * (S - 1))));
+        SP.spDmg = 5 * Math.min(S, 2.6);
+        specFx('spit', zb.x, zb.z, pt[0], pt[1], Math.round(rad * 10) * 100 + lf);
+        zb.st = 'roam'; zb.stT = Math.max(2.2, ({ normal: 7, hardcore: 6, extreme: 5, nightmare: 4 }[DIFF] || 7) * (1 - 0.03 * Math.max(0, wv - 4)) + rand(0, 1.5)); zb.lean = 0;
+      }
     } else {
       turn(3); zb.sdT -= dt; if (zb.sdT <= 0) { zb.sdir = -zb.sdir; zb.sdT = rand(2, 5); }
+      var near = dist < 10;
+      if (near) zb.stT -= dt * 3;   // si te acercás, recarga mucho más rápido
       if (dist > 25) go(zb.yaw, zb.speed); else if (dist < 14) go(zb.yaw + Math.PI, zb.speed * 1.1); else go(zb.yaw + zb.sdir * 1.45, zb.speed * 0.55);
-      if (zb.stT <= 0 && dist < 36 && dist > 6) { zb.st = 'aim'; zb.aT = 0.9; }
+      if (zb.stT <= 0 && dist < 36 && dist > 3) { zb.st = 'aim'; zb.aT = near ? 0.28 : Math.max(0.45, 0.9 / Math.sqrt(S)); }
     }
     return true;
   }
@@ -2557,10 +2709,10 @@ function specialAI(zb, tg, dx, dz, dist, dt) {
       turn(2); zb.anim += dt * 3; zb.lean = -0.4; zb.armL.rotation.x = -2.8; zb.armR.rotation.x = -2.8;
       if (zb.mouth) zb.mouth.scale.set(0.24, 0.34 + Math.sin(clock * 30) * 0.05, 0.04);
       zb.aT -= dt;
-      if (zb.aT <= 0) {   // efecto del grito: los zombis presentes se aceleran y llegan refuerzos
-        zombies.forEach(function (q) { if (!q.dead && q !== zb) q.boost = 9; });
-        G.toSpawn += 3 + NET.count();
-        zb.st = 'flee'; zb.stT = 6.5; zb.cd = 18; zb.lean = 0;
+      if (zb.aT <= 0) {   // el grito acelera a todos (en los gigantes se acumula) y trae refuerzos
+        zombies.forEach(function (q) { if (q.dead || q === zb) return; if (q.type === 'brute') q.bstack = Math.min(6, (q.bstack || 0) + 1); else q.boost = 9 + (S - 1) * 3; });
+        G.toSpawn += Math.round(5 + 4 * S) + NET.count() * 2;
+        zb.st = 'flee'; zb.stT = 6; zb.cd = Math.max(6, 15 / Math.sqrt(S)); zb.lean = 0;
       }
     } else if (zb.st === 'flee') {   // huye asustado
       var fa = ang + Math.PI + Math.sin(clock * 3) * 0.35; zb.yaw += clamp(wrapAngle(fa - zb.yaw), -6 * dt, 6 * dt); go(zb.yaw, zb.speed * 1.9);
@@ -2568,34 +2720,48 @@ function specialAI(zb, tg, dx, dz, dist, dt) {
       if (zb.stT <= 0) zb.st = 'stalk';
     } else {   // acecha acercándose
       zb.cd = (zb.cd || 0) - dt; turn(4);
-      if (dist > 9) go(zb.yaw, zb.speed); else zb.anim += dt * 2;
-      if (dist < 16 && zb.cd <= 0 && zb.stT <= 0) { zb.st = 'scream'; zb.aT = 1.3; specFx('wail', zb.x, zb.z); }
+      if (dist > 8) go(zb.yaw, zb.speed * 1.15); else zb.anim += dt * 2;
+      zb.close = (zb.close || 0) - dt;
+      if (dist < 6 && zb.close <= 0) { zb.st = 'scream'; zb.aT = 0.08; zb.close = 7; specFx('wail', zb.x, zb.z); }   // si te le pegás, grita al instante
+      else if (dist < 24 && zb.cd <= 0) { zb.st = 'scream'; zb.aT = Math.max(0.5, 0.9 / Math.sqrt(S)); specFx('wail', zb.x, zb.z); }
     }
-    return true;
-  }
-  if (t === 'balloon') {   // flota cerca de los jugadores sin atacar
-    zb.hover = 1.0 + Math.sin(clock * 2 + zb.id) * 0.3; zb.lean = 0; turn(2);
-    if (dist > 7) go(zb.yaw, zb.speed); else if (dist < 3.5) go(zb.yaw + Math.PI, zb.speed * 0.7); else go(zb.yaw + 1.5, zb.speed * 0.35);
-    zb.armL.rotation.x = -2.9 + Math.sin(clock * 3) * 0.15; zb.armR.rotation.x = -2.9 - Math.sin(clock * 3) * 0.15;
     return true;
   }
   return false;   // glotón: se mueve como un zombi común
 }
-function spitTarget(zb, tg) {   // quieto → debajo; con ritmo constante y predecible → delante o detrás de su ruta
+function clearLine(ax, az, bx, bz, rr) {   // ¿hay un trayecto recto sin obstáculos entre dos puntos?
+  var abx = bx - ax, abz = bz - az, l2 = abx * abx + abz * abz || 1, m = (rr === undefined ? 0.9 : rr);
+  for (var i = 0; i < obstacles.length; i++) {
+    var o = obstacles[i], t = clamp(((o.x - ax) * abx + (o.z - az) * abz) / l2, 0, 1);
+    if (Math.hypot(o.x - (ax + abx * t), o.z - (az + abz * t)) < o.r + m) return false;
+  }
+  return true;
+}
+function bullGoal(zb, tg) {   // punto cercano desde el que haya recorrido libre hasta el jugador
+  var best = null, bd = 1e9, i, r, a, cx, cz, d;
+  for (r = 4; r <= 12; r += 4) for (i = 0; i < 12; i++) {
+    a = i / 12 * TAU; cx = zb.x + Math.sin(a) * r; cz = zb.z + Math.cos(a) * r;
+    if (Math.hypot(cx, cz) > ARENA - 2 || Math.hypot(cx - tg.x, cz - tg.z) < 5) continue;
+    if (!clearLine(zb.x, zb.z, cx, cz, 0.6) || !clearLine(cx, cz, tg.x, tg.z)) continue;
+    d = r + Math.hypot(cx - tg.x, cz - tg.z) * 0.1; if (d < bd) { bd = d; best = [cx, cz]; }
+  }
+  return best || [zb.x + (tg.x - zb.x) * 0.25, zb.z + (tg.z - zb.z) * 0.25];
+}
+function spitTarget(zb, tg) {   // quieto → debajo; con ritmo constante y predecible → delante (o a veces detrás) de su ruta
   var h = zb.hs, n = h.length, x = tg.x, z = tg.z;
   if (n < 4) return [x, z];
-  var k = Math.min(n - 1, 4), vx = (h[n - 1][0] - h[n - 1 - k][0]) / (k * 0.35), vz = (h[n - 1][1] - h[n - 1 - k][1]) / (k * 0.35), sp = Math.hypot(vx, vz);
+  var k = Math.min(n - 1, 3), vx = (x - h[n - 1 - k][0]) / (k * 0.3 + 0.15), vz = (z - h[n - 1 - k][1]) / (k * 0.3 + 0.15), sp = Math.hypot(vx, vz);
   if (sp < 1.6) return [x, z];
   var ux = vx / sp, uz = vz / sp, dh = 0, c = 0;
   for (var i = n - 1; i >= 2; i--) {   // cuánto cambia de rumbo: poco = ruta predecible (recta o vuelta constante)
     var a1 = Math.atan2(h[i][0] - h[i - 1][0], h[i][1] - h[i - 1][1]), a0 = Math.atan2(h[i - 1][0] - h[i - 2][0], h[i - 1][1] - h[i - 2][1]);
     dh += Math.abs(wrapAngle(a1 - a0)); c++;
   }
-  var dev = c ? dh / c : 0, px, pz;
+  var dev = c ? dh / c : 0, px, pz, T = spFlight(Math.hypot(x + vx * 0.5 - zb.x, z + vz * 0.5 - zb.z));
   if (dev < 0.55) {
-    if (Math.random() < 0.62) { var L = clamp(sp * 1.5, 6, 15); px = x + ux * L; pz = z + uz * L; }   // delante: le corta el paso
-    else { px = x - ux * 5; pz = z - uz * 5; }   // detrás: bloquea la vuelta
-  } else { px = x + vx * 0.7; pz = z + vz * 0.7; }
+    if (Math.random() < 0.78) { var L = clamp(sp * (T + 0.55), 4, 20); px = x + ux * L; pz = z + uz * L; }   // justo delante, donde va a estar al caer
+    else { px = x - ux * 3; pz = z - uz * 3; }   // detrás: bloquea la vuelta
+  } else { px = x + vx * (T + 0.1); pz = z + vz * (T + 0.1); }
   var fr = Math.hypot(px, pz); if (fr > ARENA - 2) { px *= (ARENA - 2) / fr; pz *= (ARENA - 2) / fr; }
   return [px, pz];
 }
@@ -2696,7 +2862,7 @@ function dropPickup(x, z, kind) {
   g.position.set(x, PKY[kind] !== undefined ? PKY[kind] : 0.45, z); g.scale.setScalar(1.5);
   scene.add(g);
   var halo = addGlow(g, 0, 0.3, 0, PKCOL[kind], 1.6, 0, false).sp;
-  pickups.push({ kind: kind, g: g, halo: halo, x: x, z: z, t: rand(0, TAU), life: kind === 'can' ? 1e9 : DIFF === 'nightmare' ? 5 : 16, max: DIFF === 'nightmare' ? 5 : 16, id: ++NET.kid });
+  pickups.push({ kind: kind, g: g, halo: halo, x: x, z: z, t: rand(0, TAU), life: kind === 'can' ? 1e9 : PKLIFE[DIFF], max: PKLIFE[DIFF], id: ++NET.kid });
 }
 function updatePickups(dt) {
   for (var i = pickups.length - 1; i >= 0; i--) {
@@ -2860,7 +3026,7 @@ function killZombie(zb, head, by) {
   if (idx >= 0) zombies.splice(idx, 1);
   corpses.push(zb);
   zb.dyingT = 0; zb.blob.visible = false; blackenCorpse(zb);
-  if (zb.sp) specDeath(zb);
+  if (zb.sp) { G.spKills = (G.spKills | 0) + 1; specDeath(zb); if (!by) ach('spec1'); else netSendTo(by, { t: 'ach', id: 'spec1' }); }
   G.kills++;
   if (!by) achKill(head && !inBlast && zb.nShots === 1);
   else if (head && !inBlast && zb.nShots === 1) netSendTo(by, { t: 'ach', id: 'head1' });
@@ -2914,6 +3080,7 @@ function updateWaves(dt) {
       var a = rand(0, TAU), r = rand(5, 12);
       dropPickup(clamp(P.x + Math.cos(a) * r, -ARENA + 4, ARENA - 4), clamp(P.z + Math.sin(a) * r, -ARENA + 4, ARENA - 4), k === 0 ? 'ammo' : 'med');
     }
+    saveStory();
   }
   if (G.cleared) {
     G.inter -= dt;
@@ -3047,7 +3214,7 @@ function updateHud() {
   if (rs) setText('rest', 'Descanso · ' + rs + ' s');
   $('cross').style.opacity = String(1 - P.adsK * 0.6);
   if (MODE === 'story') setText('hScore', FUEL + ' / ' + FUEL_NEED);
-  else { setText('hScore', G.score); setText('hBest', P.pscore); }
+  else { setText('hScore', G.score); setText('hBest', P.pscore); liveBest(); }
   $('tagGame').hidden = NET.role === 'none';
   var tgS = sa ? NET.rp[P.spec] : null, SV = tgS ? specView(tgS) : null;   // al espectar, vida, munición y bonus son los del jugador observado
   var vW = SV ? SV.W : W, vHp = SV ? SV.hp : P.hp, vMax = SV ? SV.mhp : P.maxHp, vIron = SV ? SV.iron : !!P.up.iron, vAup = SV ? SV.aup : !!P.up.ammo;
@@ -3122,7 +3289,7 @@ function resetGame() {
   P.x = 0; P.z = 9; P.yaw = 0; P.pitch = 0; P.hp = 100;
   P.ammo = MAG; P.reserve = 96; P.reloading = 0; P.fireCd = 0; P.heat = 0; P.kick = 0;
   P.flashT = 0; P.hurt = 0; P.shake = 0; P.shots = 0; P.hits = 0; P.speed = 0;
-  G.wave = 0; G.toSpawn = 0; G.kills = 0; G.score = 0; G.cleared = false; P.pscore = 0;
+  G.wave = 0; G.toSpawn = 0; G.kills = 0; G.score = 0; G.cleared = false; P.pscore = 0; G.rec = false; if (recDirty) saveBest();
   RAIN = false; rainK = 0; P.spec = -1; P.rvT = 0; rvProg = {}; FUEL = 0; fuelProg = {}; G.time = 0; CINE = null; P.fuelT = 0;
   P.streak = 0; P.iN = 0; P.cT = -99; WIND = false; windK = 0;
   NET.eachRemote(function (r) { r.score = 0; r.cash = 0; r.streak = 0; r.iN = 0; r.cT = -99; });
@@ -3144,26 +3311,201 @@ function genWorld(seed) {   // regenera todo el terreno de forma determinista (G
   wObjs = scene.children.slice(c0); wObs = obstacles.slice(o0);
   wObjs.forEach(castAll);
 }
+/* ---------- guardado de partida (Historia: solo y Co-Op) ---------- */
+// Se guarda automáticamente al terminar cada oleada; al cargar se aparece en el Descanso previo a la oleada siguiente.
+var SAVESK = 'nocheZombiSaves', LOADID = null, CRSEL = null, SAVEWAIT = null, SIBACK = 'saves', SIID = null;
+function allSaves() { try { var a = JSON.parse(localStorage.getItem(SAVESK) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+function putSaves(a) { try { localStorage.setItem(SAVESK, JSON.stringify(a)); } catch (e) {} }
+function saveById(id) { var a = allSaves(); for (var i = 0; i < a.length; i++) if (a[i].id === id) return a[i]; return null; }
+function updSave(id, f) { var a = allSaves(); for (var i = 0; i < a.length; i++) if (a[i].id === id) { f(a[i]); putSaves(a); return a[i]; } return null; }
+function deleteSave(id) { putSaves(allSaves().filter(function (e) { return e.id !== id; })); }
+function newSaveId() { return Date.now().toString(36) + Math.floor(Math.random() * 1679616).toString(36); }
+function saveMoney(o) { var t = (o.h && o.h.c) | 0; for (var k in (o.ps || {})) t += (o.ps[k] && o.ps[k].c) | 0; return t; }
+function fillEntry(E, o) { E.played = Date.now(); E.d = o.d; E.w = o.w; E.money = saveMoney(o); E.cans = o.fu | 0; E.kills = o.k | 0; E.sk = o.sk | 0; E.data = o; }
+(function migrateSaves() {   // guardados de versiones anteriores → lista de partidas
+  try {
+    [['nocheZombiSaveSolo', 'solo'], ['nocheZombiSaveCoop', 'coop']].forEach(function (p) {
+      var raw = localStorage.getItem(p[0]); if (!raw) return;
+      var o = JSON.parse(raw), a = allSaves();
+      if (o && o.v === 1 && o.w > 0 && o.h) { var E = { id: newSaveId(), kind: p[1], name: 'Partida guardada', auto: true, created: o.ts || Date.now() }; fillEntry(E, o); E.played = o.ts || E.played; a.push(E); putSaves(a); }
+      localStorage.removeItem(p[0]);
+    });
+  } catch (e) {}
+})();
+function pState() {   // estado propio del jugador local (armas, munición, mejoras, dinero…)
+  var st = {}, ow = {}, k;
+  for (k in P.store) if (P.store[k]) st[k] = { a: P.store[k].a | 0, r: P.store[k].r | 0 };
+  if (!W.melee) st[P.w] = { a: P.ammo | 0, r: P.reserve | 0 };
+  for (k in P.owned) if (P.owned[k]) ow[k] = 1;
+  return { o: ow, s: st, w: P.can ? 'rifle' : P.w, u: P.up, u2: P.up2, mh: P.maxHp, hp: Math.ceil(P.hp), n: P.nades | 0, c: G.cash | 0, ps: P.pscore | 0, can: P.can ? 1 : 0 };
+}
+function applyPState(d) {
+  if (!d || typeof d !== 'object') return;
+  var ok = {}, k, o = d.o || {}, s = d.s || {}, u = d.u || {}, u2 = d.u2 || {};
+  for (k in o) if (WEAPONS[k] && k !== 'can') ok[k] = 1;
+  ok.fists = 1;
+  P.owned = ok; P.store = {};
+  for (k in s) if (WEAPONS[k] && s[k]) P.store[k] = { a: clamp(+s[k].a || 0, 0, 999), r: clamp(+s[k].r || 0, 0, 9999) };
+  P.up = { ammo: !!u.ammo, speed: !!u.speed, iron: !!u.iron, share: !!u.share, dbl: !!u.dbl };
+  P.up2 = { ammo: !!u2.ammo, speed: !!u2.speed, iron: !!u2.iron, dbl: !!u2.dbl };
+  P.maxHp = clamp(+d.mh || 100, 100, 400); P.nades = clamp(d.n | 0, 0, 8); G.cash = clamp(+d.c || 0, 0, 1e8); P.pscore = clamp(+d.ps || 0, 0, 1e9);
+  var w = (WEAPONS[d.w] && ok[d.w] && d.w !== 'can') ? d.w : (ok.rifle ? 'rifle' : 'fists');
+  applyWeapon(w); var q = P.store[w];
+  if (q) { P.ammo = q.a; P.reserve = q.r; } else if (!W.melee) { P.ammo = MAG; P.reserve = W.res * amul(); }
+  P.hp = clamp(Math.ceil(+d.hp || 0), Math.min(50, P.maxHp), P.maxHp); P.dead = false;
+  if (d.can && MODE === 'story') takeCan();
+}
+function restoreCorpses(list) {   // "Mantener cuerpos": los cadáveres vuelven donde estaban
+  if (!KEEP || !Array.isArray(list)) return;
+  list.slice(-90).forEach(function (c) {
+    if (!c || !ZT[c.t]) return;
+    var zb = spawnZombie(c.t, +c.x || 0, +c.z || 0), i = zombies.indexOf(zb);
+    if (i >= 0) zombies.splice(i, 1);
+    zb.dead = true; corpses.push(zb); zb.dyingT = 1; zb.blob.visible = false; blackenCorpse(zb);
+    zb.yaw = +c.y || 0; zb.root.rotation.y = zb.yaw; zb.root.position.set(zb.x, 0.2 * zb.sc, zb.z);
+  });
+}
+var indT = 0;
+function saveInd(txt) { var e = $('saveInd'); if (!e) return; $('saveIndT').textContent = txt; e.classList.add('on'); clearTimeout(indT); indT = setTimeout(function () { e.classList.remove('on'); }, 3200); }
+function slotAuto() { var E = G.slot && G.slot.id ? saveById(G.slot.id) : null; return E ? !!E.auto : !!(G.slot && G.slot.auto); }
+function commitSave(o, auto) {   // escribe la instantánea en la lista de partidas guardadas
+  if (!G.slot) return;
+  var a = allSaves(), E = null, i;
+  if (G.slot.id) for (i = 0; i < a.length; i++) if (a[i].id === G.slot.id) E = a[i];
+  if (!E) { E = { id: newSaveId(), kind: o.co ? 'coop' : 'solo', name: G.slot.name, auto: !!G.slot.auto, created: G.slot.created || Date.now() }; a.push(E); G.slot.id = E.id; }
+  fillEntry(E, o); putSaves(a);
+  saveInd('Partida guardada'); if (!auto) showPop('💾 Partida guardada · Oleada ' + o.w);
+  refreshPauseSave();
+}
+function refreshPauseSave() {
+  var b = $('btnSaveNow'), ok = MODE === 'story' && NET.role !== 'client' && !!G.slot;
+  $('saveCube').hidden = !ok; if (!ok) return;
+  var au = slotAuto(); b.disabled = au || !G.snap;
+  b.title = au ? 'Bloqueado mientras el autoguardado esté activo' : (G.snap ? 'Guarda en el descanso de la última oleada superada' : 'Terminá la primera oleada para poder guardar');
+}
+function saveStory() {   // se llama al empezar el Descanso (oleada superada) · solo anfitrión / un jugador
+  if (MODE !== 'story' || NET.role === 'client' || mode !== 'play' || !G.slot) return;
+  var co = NET.role === 'host', pe = G.slot.id ? saveById(G.slot.id) : null, prev = pe && pe.data, o = {
+    v: 1, co: co ? 1 : 0, ts: Date.now(), d: DIFF, dn: DENSE > 1 ? 1 : 0, up: UPG ? 1 : 0, sp: SPECIALS ? 1 : 0, sd: WSEED >>> 0, mc: MACH,
+    w: G.wave, k: G.kills, sk: G.spKills | 0, sc: G.score, fu: FUEL, t: Math.floor(G.time), h: pState(), ps: prev && prev.ps ? prev.ps : {}, cp: [], cn: []
+  };
+  if (KEEP) o.cp = corpses.slice(-90).filter(function (c) { return ZT[c.type]; }).map(function (c) { return { t: c.type, x: Math.round(c.x * 10) / 10, z: Math.round(c.z * 10) / 10, y: Math.round(c.yaw * 100) / 100 }; });
+  pickups.forEach(function (q) { if (q.kind === 'can') o.cn.push([Math.round(q.x * 10) / 10, Math.round(q.z * 10) / 10]); });
+  function done(oo) { G.snap = oo; if (slotAuto()) { saveInd('Guardando partida…'); commitSave(oo, true); } else refreshPauseSave(); }
+  if (!co) { done(o); return; }
+  SAVEWAIT = { o: o, got: {} };
+  netBroadcast({ t: 'sv' });
+  setTimeout(function () {   // espera un instante a que cada cliente envíe su estado
+    var w = SAVEWAIT; SAVEWAIT = null;
+    if (!w || NET.role !== 'host') return;
+    NET.eachRemote(function (r) { if (w.got[r.id]) w.o.ps[r.name] = w.got[r.id]; });
+    done(w.o);
+  }, 1200);
+}
+function sendLd(r) {   // el anfitrión le devuelve a cada jugador su progreso (por nombre)
+  var L = NET.LD; if (!L || !r) return;
+  r.ldDone = true;
+  netSendTo(r.id, { t: 'ld', d: L.ps[r.name] || null, w: L.w, k: L.k, sc: L.sc, fu: L.fu, cp: KEEP ? L.cp : [] });
+}
+function applyLd(m) {   // cliente
+  G.wave = m.w | 0; G.kills = m.k | 0; G.score = m.sc | 0; FUEL = clamp(m.fu | 0, 0, FUEL_NEED);
+  applyPState(m.d); restoreCorpses(m.cp);
+}
+function loadRest(L) {   // anfitrión / solo: aparecer en el Descanso posterior a la última oleada superada
+  G.wave = L.w | 0; G.kills = L.k | 0; G.score = L.sc | 0; FUEL = clamp(L.fu | 0, 0, FUEL_NEED); G.time = +L.t || 0;
+  G.toSpawn = 0; G.cleared = true; G.inter = G.wave <= 15 ? 15 : 10; G.revived = true; G.mus = 0; RAIN = false; WIND = false;
+  restoreCorpses(L.cp);
+  (L.cn || []).forEach(function (c) { if (Array.isArray(c)) dropPickup(clamp(+c[0] || 0, -ARENA, ARENA), clamp(+c[1] || 0, -ARENA, ARENA), 'can'); });
+  showBanner('Partida cargada', 'Oleada ' + G.wave + ' superada · Descanso de ' + G.inter + ' s');
+}
+function askConfirm(title, text, okLabel, onYes) {   // aviso de confirmación en pantalla
+  var d = $('dlg'); $('dlgT').textContent = title; $('dlgP').textContent = text; $('dlgYes').textContent = okLabel;
+  function close() { d.hidden = true; $('dlgYes').onclick = $('dlgNo').onclick = null; document.removeEventListener('keydown', esc, true); }
+  function esc(ev) { if (ev.key === 'Escape') { ev.stopPropagation(); ev.preventDefault(); close(); } }
+  $('dlgYes').onclick = function () { close(); onYes(); };
+  $('dlgNo').onclick = close;
+  document.addEventListener('keydown', esc, true);
+  d.hidden = false; $('dlgNo').focus();
+}
+var DIFFCOL = { normal: '#6fdc7e', hardcore: '#ffc460', extreme: '#ff8a3c', nightmare: '#ff4a4a' };
+function fmtDate(t) { try { return new Date(t).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' }); } catch (e) { return String(new Date(t)); } }
+function mk(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt !== undefined) e.textContent = txt; return e; }
+function renderSaveList(box, kind, ctx) {
+  box.innerHTML = '';
+  var list = allSaves().filter(function (e) { return e.kind === kind; }).sort(function (a, b) { return b.played - a.played; });
+  if (!list.length) { box.appendChild(mk('p', 'note', 'No hay partidas guardadas.')); return; }
+  list.forEach(function (e) {
+    var row = mk('div', 'srow'), sm = mk('div', 'sm'), nm = mk('div', 'sname'), ch = mk('span', 'sdf', DF[e.d] ? DF[e.d].name : '');
+    nm.appendChild(mk('span', '', e.name)); ch.style.color = DIFFCOL[e.d] || ''; nm.appendChild(ch);
+    sm.appendChild(nm); sm.appendChild(mk('div', 'smeta', 'Oleada ' + e.w + ' · $' + (e.money | 0) + ' · Bidones ' + (e.cans | 0) + '/' + FUEL_NEED));
+    var bp = mk('button', 'sbtn splay', '▶'); bp.type = 'button'; bp.title = 'Jugar'; bp.setAttribute('aria-label', 'Jugar'); bp.addEventListener('click', function () { savePlay(e.id, ctx); });
+    var bi = mk('button', 'sbtn sinfo', 'i'); bi.type = 'button'; bi.title = 'Información'; bi.setAttribute('aria-label', 'Información'); bi.addEventListener('click', function () { openSaveInfo(e.id, ctx); });
+    row.appendChild(sm); row.appendChild(bp); row.appendChild(bi); box.appendChild(row);
+  });
+}
+function savePlay(id, ctx) {
+  var e = saveById(id); if (!e) return;
+  initAudio();
+  if (e.kind === 'solo') { if (NET.role !== 'none') return; LOADID = id; startGame(); return; }
+  if (ctx !== 'coopSel') openCreate();   // Co-Op: se elige la partida y se vuelve al creador de servidores
+  CRSEL = id; setMode('story'); setDiff(e.d); updateCreateSaveUi(); showMenuScreen('create');
+}
+var SIBACKS = { solo: 'soloStory', coopSel: 'saveCoop', user: 'saves' };
+function openSaveInfo(id, ctx) {
+  var e = saveById(id); if (!e) return;
+  SIID = id; SIBACK = SIBACKS[ctx] || 'saves';
+  $('siKind').textContent = e.kind === 'coop' ? 'Co-Op · Partida guardada' : 'Un jugador · Partida guardada';
+  $('siName').value = e.name; $('siAuto').checked = !!e.auto;
+  function fill(g, arr) { g.innerHTML = ''; arr.forEach(function (p) { var d = mk('div'); d.appendChild(mk('span', 'lbl', p[0])); d.appendChild(mk('b', '', String(p[1]))); g.appendChild(d); }); }
+  fill($('siTimes'), [['Fecha de creación', fmtDate(e.created)], ['Última vez jugada', fmtDate(e.played)]]);
+  fill($('siStats'), [['Dificultad', DF[e.d] ? DF[e.d].name : '—'], ['Dinero total', '$' + (e.money | 0)], ['N° de oleada', e.w], ['Zombis asesinados', e.kills | 0], ['Especiales asesinados', e.sk | 0], ['Bidones colocados', (e.cans | 0) + ' / ' + FUEL_NEED]]);
+  showMenuScreen('saveInfo');
+}
+function updateCreateSaveUi() {
+  var sel = CRSEL ? saveById(CRSEL) : null; if (!sel) CRSEL = null;
+  $('crLoadNote').textContent = sel ? 'Cargando: ' + sel.name + ' · Oleada ' + sel.w : '';
+  $('btnCrUnload').hidden = !sel; $('saveCr').disabled = !!sel;
+  $('saveNameCr').hidden = MODE !== 'story' || !$('saveCr').checked || !!sel;
+}
+function storyFields() {   // muestra u oculta los campos propios de Historia / Endless
+  var st = MODE === 'story';
+  each('[data-st]', function (e) { if (e.id === 'saveNameCr') return; e.hidden = !st; });
+  each('[data-en]', function (e) { e.hidden = st; });
+  var k = $('soloK'); if (k) { k.textContent = st ? 'Un jugador · Historia' : 'Un jugador · Endless'; $('soloH').innerHTML = st ? 'Nueva <em>partida</em>' : 'Solo <em>contra todos</em>'; }
+  if (!st) CRSEL = null;
+  updateCreateSaveUi();
+}
 function startGame() {
   initAudio();
+  var L = null, E = null;
+  if (NET.role !== 'client' && LOADID) { E = saveById(LOADID); if (E && E.kind === (NET.role === 'host' ? 'coop' : 'solo') && E.data && E.data.h) L = E.data; else E = null; }
+  LOADID = null;
+  if (L) { setMode('story'); setDiff(L.d); DENSE = L.dn ? 1.5 : 1; UPG = !!L.up; SPECIALS = !!L.sp; }
+  NET.LD = L; NET.eachRemote(function (r) { r.ldDone = false; });
   resetGame();
-  if (NET.role !== 'client') WSEED = (Math.random() * 4294967296) >>> 0;
+  G.spKills = L ? (L.sk | 0) : 0; G.snap = L || null; G.slot = null;
+  if (L) { G.slot = { id: E.id, name: E.name, kind: E.kind, created: E.created, auto: !!E.auto }; updSave(E.id, function (x) { x.played = Date.now(); }); }
+  else if (MODE === 'story' && NET.role === 'none') G.slot = { id: null, kind: 'solo', created: Date.now(), auto: $('autoSolo').checked, name: ($('saveName').value || '').trim().slice(0, 24) || ('Partida ' + (allSaves().filter(function (x) { return x.kind === 'solo'; }).length + 1)) };
+  else if (MODE === 'story' && NET.role === 'host' && $('saveCr').checked) G.slot = { id: null, kind: 'coop', created: Date.now(), auto: true, name: ($('saveNameCr').value || '').trim().slice(0, 24) || ('Partida Co-Op ' + (allSaves().filter(function (x) { return x.kind === 'coop'; }).length + 1)) };
+  if (L) WSEED = L.sd >>> 0; else if (NET.role !== 'client') WSEED = (Math.random() * 4294967296) >>> 0;
   genWorld(WSEED);
   ach('play1'); if (NET.role !== 'none') ach('play2');
   fdSt = {};
   if (NET.role === 'none') PRE.on = false;
-  else if (NET.role === 'host') { PRE.on = true; PRE.votes = {}; PRE.yes = 0; PRE.n = NET.count(); }
+  else if (NET.role === 'host') { PRE.on = !L; PRE.votes = {}; PRE.yes = 0; PRE.n = NET.count(); }
   PRE.mine = false;
   if (PRE.on) { P.owned = { fists: 1 }; P.store = {}; applyWeapon('fists'); P.ammo = 0; P.reserve = 0; }   // sin fusil inicial hasta que empiece la partida
   shopOpen = false; show('shop', false); show('lobby', false);
   loadBest();
-  if (NET.role !== 'client') { clearMachines(); MACH = UPG ? genMachines() : []; }
+  if (NET.role !== 'client') { clearMachines(); MACH = L ? (Array.isArray(L.mc) ? L.mc : []) : UPG ? genMachines() : []; }
   buildMachines(MACH); buildStory(); applyModeUi();
   if (NET.role === 'host') netBroadcast({ t: 'start', d: DKEYS.indexOf(DIFF), kb: KEEP ? 1 : 0, up: UPG ? 1 : 0, mc: MACH, md: MODE === 'story' ? 1 : 0, pr: PRE.on ? 1 : 0, dn: DENSE > 1 ? 1 : 0, sd: WSEED });
   showMenuScreen(''); show('over', false); show('pause', false); show('hud', true);
   mode = 'play';
   requestLock();
-  if (NET.role !== 'client' && !PRE.on) startWave(1);
+  if (L) { applyPState(L.h); loadRest(L); NET.eachRemote(sendLd); }
+  else if (NET.role !== 'client' && !PRE.on) startWave(1);
+  if (NET.role === 'client' && NET.loadMine) { applyLd(NET.loadMine); NET.loadMine = null; }
 }
 
 function pauseGame() {
@@ -3171,7 +3513,7 @@ function pauseGame() {
   if (NET.role === 'none') mode = 'paused';
   mouseDown = false; touchFire = false;
   $('pauseMsg').textContent = NET.role === 'none' ? 'Los infectados esperan. Cuando estés listo, seguí.' : 'En Co-Op el juego no se detiene. Volvé rápido.';
-  updatePauseInfo(true);
+  updatePauseInfo(true); refreshPauseSave();
   show('pause', true);
   if (document.pointerLockElement) { try { document.exitPointerLock(); } catch (e) {} }
 }
@@ -3208,20 +3550,23 @@ function endGame() {
   mode = 'over';
   mouseDown = false; touchFire = false;
   if (document.pointerLockElement) { try { document.exitPointerLock(); } catch (e) {} }
-  var newBest = MODE !== 'story' && P.pscore > G.best;
+  var newBest = MODE !== 'story' && (G.rec || P.pscore > G.best);
   if (newBest) {
-    G.best = P.pscore;
-    try { localStorage.setItem(bestKey(), String(G.best)); } catch (e) {}
+    if (P.pscore > G.best) G.best = P.pscore;
+    saveBest();
   }
   $('oWave').textContent = G.wave;
   $('oKills').textContent = G.kills;
   $('oScore').textContent = MODE === 'story' ? '—' : P.pscore;
   $('oAcc').textContent = (P.shots ? Math.round(P.hits / P.shots * 100) : 0) + '%';
   $('oBest').textContent = MODE === 'story' ? 'Historia: sin puntaje. Combustible entregado: ' + FUEL + ' / ' + FUEL_NEED + '.' : newBest ? 'Nuevo récord. Nadie aguantó tanto en este sector.' : 'Tu récord es de ' + G.best + ' puntos.';
+  $('btnLoadOver').hidden = !(MODE === 'story' && NET.role !== 'client' && G.slot && G.slot.id && saveById(G.slot.id));
   show('over', true);
 }
 
 $('btnStart').addEventListener('click', startGame);
+$('btnLoadOver').addEventListener('click', function () { if (G.slot && G.slot.id) { LOADID = G.slot.id; startGame(); } });
+$('btnSaveNow').addEventListener('click', function () { if (G.snap && G.slot && !slotAuto()) { commitSave(G.snap, false); $('pauseMsg').textContent = '💾 Partida guardada en el descanso previo a la oleada ' + (G.snap.w + 1) + '.'; } });
 $('btnRetry').addEventListener('click', function () {
   if (NET.role === 'client') { $('oBest').textContent = 'Esperando que el anfitrión reinicie…'; return; }
   startGame();
@@ -3415,7 +3760,7 @@ function preGo() {   // termina la espera: se retira la pared y se entrega el fu
   PRE.on = false; PRE.votes = {}; PRE.mine = false;
   if (mode === 'play') { P.owned.rifle = 1; P.store.rifle = { a: WEAPONS.rifle.mag * amul(), r: WEAPONS.rifle.res * amul() }; switchWeapon('rifle'); }
 }
-var CODECH = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789', ZTN = ['walker', 'runner', 'brute', 'bull', 'spitter', 'wailer', 'glutton', 'balloon'];
+var CODECH = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789', ZTN = ['walker', 'runner', 'brute', 'bull', 'spitter', 'wailer', 'glutton'];
 function r2(v) { return Math.round(v * 100) / 100; }
 function netMsg(t) { $('netMsg').textContent = t; $('lobMsg').textContent = t; $('crMsg').textContent = t; }
 function netSend(m) { if (NET.role === 'client' && NET.host && NET.host.open) NET.host.send(m); }
@@ -3448,6 +3793,29 @@ function q10(v) { return Math.round(v * 10); }
 function q20(v) { return Math.round(v * 20); }
 
 var AV_COL = [0x3d6ea8, 0xa84a3d, 0x4f9a5a, 0x9a7a2f, 0x7a4fa8, 0x2f9a9a, 0xa84f86, 0x8a8f96];
+// estado de cada jugador (emoji sobre el nombre): 1 pausa · 2 armería · 3 AFK · 4 escribiendo
+var STEMO = { 1: '⏸️', 2: '🛒', 3: '💤', 4: '💬' }, STTEX = {};
+function stTex(c) {
+  if (STTEX[c]) return STTEX[c];
+  var cv = document.createElement('canvas'); cv.width = cv.height = 96; var x = cv.getContext('2d');
+  x.font = '64px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(STEMO[c] || '', 48, 52);
+  return STTEX[c] = new THREE.CanvasTexture(cv);
+}
+var LASTIN = performance.now();
+['keydown', 'mousedown', 'mousemove', 'wheel', 'touchstart', 'pointerdown'].forEach(function (ev) { window.addEventListener(ev, function () { LASTIN = performance.now(); }, { passive: true, capture: true }); });
+function myStatus() {
+  if (mode !== 'play' && mode !== 'paused') return 0;
+  if (!$('pause').hidden) return 1;
+  if (chatOpen) return 4;
+  if (shopOpen) return 2;
+  if (performance.now() - LASTIN > 20000) return 3;
+  return 0;
+}
+function setAvStatus(g, c) {
+  var u = g.userData; if (u.stc === c) return; u.stc = c;
+  if (!c) { u.st.visible = false; return; }
+  u.st.material.map = stTex(c); u.st.material.needsUpdate = true; u.st.visible = true;
+}
 function makeAvatar(name, id, col) {
   var g = new THREE.Group();
   var tc = (col != null && COLORS[col]) ? parseInt(COLORS[col].slice(1), 16) : AV_COL[(id || 0) % AV_COL.length];
@@ -3466,6 +3834,7 @@ function makeAvatar(name, id, col) {
   var can = canMesh(); can.scale.setScalar(0.9); can.position.set(0.32, 1.15, -0.2); can.visible = false; g.userData.can = can;
   g.add(body, head, gun, fist, sp, can); g.rotation.order = 'YXZ'; scene.add(g);
   g.userData.gun = gun; g.userData.fist = fist; g.userData.flash = fl; g.userData.gmat = gmat;
+  var ss = new THREE.Sprite(new THREE.SpriteMaterial({ map: stTex(1), depthTest: false, fog: false })); ss.scale.set(0.55, 0.55, 1); ss.position.y = 2.95; ss.renderOrder = 9; ss.visible = false; g.add(ss); g.userData.st = ss; g.userData.stc = 0;
   return g;
 }
 
@@ -3602,7 +3971,7 @@ function netTick(dt) {
     var ak = r.name + '|' + (r.col == null ? '' : r.col);
     if (r.mesh && r.mesh.userData.nm !== ak) { scene.remove(r.mesh); r.mesh = null; }   // el nombre o el color llegó después
     if (!r.mesh) { r.mesh = makeAvatar(r.name, r.id, r.col); r.mesh.userData.nm = ak; r.mesh.position.set(r.x, 0, r.z); }
-    var ud = r.mesh.userData;
+    var ud = r.mesh.userData; setAvStatus(r.mesh, r.dead ? 0 : (r.stt | 0));
     r.punchT = Math.max(0, (r.punchT || 0) - dt);
     var isF = r.w === 'fists';
     var isC = r.w === 'can'; ud.gun.visible = !isF && !isC; ud.fist.visible = isF; ud.can.visible = isC;
@@ -3622,8 +3991,8 @@ function netTick(dt) {
 }
 function clientState() {   // solo se envía si cambió algo (o como latido cada 0,5 s)
   var fl = (P.dead ? 1 : 0) | (P.tSpd > 0 ? 2 : 0) | (P.reloading > 0 ? 4 : 0), wi = WORDER.indexOf(P.w);
-  var m = { t: 'st', x: q10(P.x), z: q10(P.z), y: q20(P.yaw), p: q20(P.pitch), h: Math.ceil(P.hp), f: fl, w: wi, ca: G.cash, pi: NET.ping, u: upBits(), am: P.ammo | 0, re: P.reserve | 0, b: [Math.ceil(P.tDmg), Math.ceil(P.tSpd), Math.ceil(P.tInf)] };
-  var sig = [m.x, m.z, m.y, m.p, m.h, m.f, m.w, m.ca, m.pi, m.u, m.am, m.re, m.b[0], m.b[1], m.b[2]].join(',');
+  var m = { t: 'st', x: q10(P.x), z: q10(P.z), y: q20(P.yaw), p: q20(P.pitch), h: Math.ceil(P.hp), f: fl, w: wi, ca: G.cash, pi: NET.ping, u: upBits(), am: P.ammo | 0, re: P.reserve | 0, b: [Math.ceil(P.tDmg), Math.ceil(P.tSpd), Math.ceil(P.tInf)], s: myStatus() };
+  var sig = [m.x, m.z, m.y, m.p, m.h, m.f, m.w, m.ca, m.pi, m.u, m.am, m.re, m.b[0], m.b[1], m.b[2], m.s].join(',');
   NET.stT += 0.1;
   if (sig === NET.stSig && NET.stT < 0.5) return;
   NET.stSig = sig; NET.stT = 0; netSend(m);
@@ -3642,8 +4011,8 @@ function hostSnapshot() {
   NET.eachRemote(function (r) { ps.push(r.id, q10(r.x), q10(r.z), q20(r.yaw), Math.ceil(r.hp), (r.dead ? 1 : 0) | (r.spd ? 2 : 0), q20(r.pitch || 0)); });
   var info = null;
   if (slow) {
-    info = [[0, NET.hostName, P.pscore, G.cash, 0, WORDER.indexOf(P.w), P.col]];
-    NET.eachRemote(function (r) { info.push([r.id, r.name, r.score || 0, r.cash || 0, r.ping || 0, Math.max(0, WORDER.indexOf(r.w || 'rifle')), r.col == null ? -1 : r.col]); });
+    info = [[0, NET.hostName, P.pscore, G.cash, 0, WORDER.indexOf(P.w), P.col, myStatus()]];
+    NET.eachRemote(function (r) { info.push([r.id, r.name, r.score || 0, r.cash || 0, r.ping || 0, Math.max(0, WORDER.indexOf(r.w || 'rifle')), r.col == null ? -1 : r.col, r.stt | 0]); });
   }
   var pkSig = pickups.map(function (q) { return q.id; }).join(','), left = zombies.length + G.toSpawn, rs = G.cleared ? Math.ceil(G.inter) : 0;
   var full = (snapN & 1) === 0, spb = null;
@@ -3719,7 +4088,7 @@ function clientSnapshot(m) {
   if (m.pi) m.pi.forEach(function (b) {   // datos lentos (nombre, puntos, dinero, ping, arma, color): cada medio segundo
     var r = NET.rp[b[0]]; if (!r) return;
     if (b[1]) r.name = b[1];
-    r.score = +b[2] || 0; r.cash = +b[3] || 0; r.ping = +b[4] || 0; r.w = WORDER[b[5]] || 'rifle'; r.col = (b[6] >= 0 && b[6] < 16) ? b[6] : undefined;
+    r.score = +b[2] || 0; r.cash = +b[3] || 0; r.ping = +b[4] || 0; r.w = WORDER[b[5]] || 'rifle'; r.col = (b[6] >= 0 && b[6] < 16) ? b[6] : undefined; r.stt = clamp(b[7] | 0, 0, 4);
   });
   for (var k in NET.rp) if (!live[k]) { if (NET.rp[k].mesh) scene.remove(NET.rp[k].mesh); delete NET.rp[k]; }
 }
@@ -3738,7 +4107,7 @@ function lobbyList() {
   $('lobInfo').textContent = (DF[DIFF].name + (MODE === 'story' ? ' · Historia' : '')) + (NET.role === 'host' ? ' · ' + NET.count() + '/' + NET.max + ' jugadores' : '');
 }
 function netLeave() {
-  dirStop(); var was = mode, wasNet = NET.role !== 'none';
+  dirStop(); var was = mode, wasNet = NET.role !== 'none'; NET.LD = null; NET.loadMine = null;
   NET.eachRemote(function (r) { if (r.mesh) scene.remove(r.mesh); });
   try { if (NET.peer) NET.peer.destroy(); } catch (e) {}
   NET.peer = null; NET.host = null; NET.conns = {}; NET.rp = {}; NET.role = 'none'; NET.ready = false; NET.myId = 0; NET.left = 0;
@@ -3789,8 +4158,10 @@ function hostGot(id, m) {
   if (m.t === 'nm') {
     r.name = String(m.n || '').replace(/[<>]/g, '').trim().slice(0, 12) || r.name; if (m.c != null) r.col = clamp(m.c | 0, 0, 15);
     if (!r.joined) { r.joined = true; if (mode === 'play') feed('j', r.name); }
+    if (NET.LD && mode === 'play' && !r.ldDone) sendLd(r);
     hostVoteCheck();
   }
+  else if (m.t === 'svr') { if (SAVEWAIT && m.d && typeof m.d === 'object') SAVEWAIT.got[id] = m.d; }
   else if (m.t === 'vt') { if (PRE.on) { PRE.votes[id] = !!m.v; hostVoteCheck(); } }
   else if (m.t === 'pg') { netSendTo(id, { t: 'pn', ts: m.ts }); }
   else if (m.t === 'rv' && !r.dead) {
@@ -3811,7 +4182,7 @@ function hostGot(id, m) {
   else if (m.t === 'st') {
     r.pitch = clamp((+m.p || 0) / 20, -1.4, 1.4); r.spd = !!(m.f & 2); if (WORDER[m.w | 0]) r.w = WORDER[m.w | 0]; r.cash = clamp(+m.ca || 0, 0, 1e8); r.ping = clamp(+m.pi || 0, 0, 9999);
     r.x = clamp((+m.x || 0) / 10, -ARENA, ARENA); r.z = clamp((+m.z || 0) / 10, -ARENA, ARENA); r.yaw = (+m.y || 0) / 20; r.hp = +m.h || 0; r.dead = !!(m.f & 1); r.up = m.u | 0;
-    r.rel = !!(m.f & 4); r.am = clamp(+m.am || 0, 0, 999); r.rs = clamp(+m.re || 0, 0, 999);
+    r.stt = clamp(m.s | 0, 0, 4); r.rel = !!(m.f & 4); r.am = clamp(+m.am || 0, 0, 999); r.rs = clamp(+m.re || 0, 0, 999);
     if (Array.isArray(m.b)) r.bf = [clamp(m.b[0] | 0, 0, 60), clamp(m.b[1] | 0, 0, 60), clamp(m.b[2] | 0, 0, 60)];
     if (r.dead) { r.streak = 0; r.iN = 0; hostCheckOver(); }
   } else if (m.t === 'h' && !r.dead && Array.isArray(m.a)) {
@@ -3864,6 +4235,8 @@ function joinGame(code) {
 
 function clientGot(m) {
   if (m.t === 'hi') { NET.myId = m.id; NET.max = +m.mx || 4; NET.pub = !!m.pb; KEEP = !!m.kb; setMode(m.md ? 'story' : 'endless'); setDiff(DKEYS[m.d | 0]); }
+  else if (m.t === 'sv') { if (MODE === 'story' && mode === 'play') netSend({ t: 'svr', d: pState() }); }
+  else if (m.t === 'ld') { NET.loadMine = m; if (mode === 'play') { applyLd(m); NET.loadMine = null; } }
   else if (m.t === 'pn') { NET.ping = clamp(Math.round(performance.now() - (+m.ts || 0)), 0, 9999); }
   else if (m.t === 'start') {
     if (mode === 'play') return;
@@ -3874,10 +4247,10 @@ function clientGot(m) {
   }
   else if (m.t === 's') { if (mode === 'play') clientSnapshot(m); }
   else if (m.t === 'hurt') hurtPlayer(m.v);
-  else if (m.t === 'sx') specFxLocal(m.k, +m.x || 0, +m.z || 0, m.a, m.b);
+  else if (m.t === 'sx') specFxLocal(m.k, +m.x || 0, +m.z || 0, m.a, m.b, +m.c || 0);
   else if (m.t === 'rev') { if (P.dead) { respawnMe(); ach('still'); showBanner('¡Te revivieron!', ''); sfxPickup(); } }
   else if (m.t === 'rvall') { if (P.dead) { respawnMe(); if (!m.a) ach('still'); showBanner('¡Los caídos regresan!', ''); sfxPickup(); } }
-  else if (m.t === 'ach') { if (m.id === 'head1' || m.id === 'kaboom') ach(m.id); }
+  else if (m.t === 'ach') { if (m.id === 'head1' || m.id === 'kaboom' || m.id === 'spec1') ach(m.id); }
   else if (m.t === 'c') addChat(String(m.n || '').slice(0, 12), String(m.x || '').slice(0, 120));
   else if (m.t === 'fx') { var fr = NET.rp[m.id]; if (fr && m.id !== NET.myId) fxRemote(fr, m.k === 'r' ? 'r' : 's', WORDER[m.w | 0] || 'rifle', m.d); }
   else if (m.t === 'bx') { if (m.f !== NET.myId) boom(+m.x || 0, +m.y || 0, +m.z || 0); }
@@ -3902,7 +4275,7 @@ function clientGot(m) {
 
 $('btnJoin').addEventListener('click', function () { initAudio(); joinGame($('joinCode').value); });
 $('voteBtn').addEventListener('click', castVote);
-$('btnLobStart').addEventListener('click', function () { initAudio(); NET.ready = false; startGame(); });
+$('btnLobStart').addEventListener('click', function () { initAudio(); NET.ready = false; if (NET.role === 'host') LOADID = CRSEL || null; startGame(); });
 $('btnLobBack').addEventListener('click', netLeave);
 
 /* ---------- apuntar, granadas y chat ---------- */
@@ -3991,9 +4364,19 @@ function chatKick(q) {   // solo el anfitrión
   netSendTo(hit.id, { t: 'kick' });
   setTimeout(function () { try { if (cn) cn.close(); } catch (e) {} }, 400);
 }
+var CODEBUF = '';
+function secretCode(txt) {   // "I DONT WANT TO COMPLETE IT" → completa el modo Historia (solo en partidas de Historia)
+  CODEBUF = (CODEBUF + txt.toLowerCase().replace(/[^a-z]/g, '')).slice(-40);
+  if (CODEBUF.slice(-21) === 'idontwanttocompleteit') {
+    CODEBUF = '';
+    if (mode === 'play' && MODE === 'story' && NET.role !== 'client') { FUEL = FUEL_NEED; if (NET.role === 'host') netBroadcast({ t: 'esc' }); startCine(true); }
+  }
+}
+window.addEventListener('keydown', function (e) { if (!chatOpen && e.key && e.key.length === 1 && !e.ctrlKey && !e.metaKey) secretCode(e.key); });
 function sendChat(x) {
   x = (x || '').trim().slice(0, 120); if (!x) return;
   if (/^san juan$/i.test(x)) ach('sj');
+  if (/^i\s*d\s*o\s*n\s*t\s*w\s*a\s*n\s*t\s*t\s*o\s*c\s*o\s*m\s*p\s*l\s*e\s*t\s*e\s*i\s*t$/i.test(x)) secretCode(x);
   if (/^\/kick(\s|$)/i.test(x)) { chatKick(x.slice(5).trim()); return; }
   if (NET.role === 'host') { addChat(NET.hostName, x); netBroadcast({ t: 'c', n: NET.hostName, x: x }); }
   else netSend({ t: 'c', x: x });
@@ -4160,7 +4543,13 @@ var DIFFTXT = {
   nightmare: 'La prueba definitiva. Pocos sobreviven.'
 };
 function each(sel, f) { Array.prototype.forEach.call(document.querySelectorAll(sel), f); }
-function showMenuScreen(id) { ['menu', 'solo', 'coop', 'create', 'ach', 'config', 'cfgUser', 'cfgGfx', 'cfgKeys', 'cfgCtl', 'cfgSnd'].forEach(function (s) { show(s, s === id); }); if (id === 'menu') refreshMenuBest(); }
+function showMenuScreen(id) {
+  ['menu', 'soloPick', 'soloStory', 'solo', 'saves', 'saveInfo', 'saveCoop', 'coop', 'create', 'ach', 'config', 'cfgUser', 'cfgGfx', 'cfgKeys', 'cfgCtl', 'cfgSnd'].forEach(function (s) { show(s, s === id); });
+  if (id === 'menu' || id === 'solo' || id === 'soloPick' || id === 'cfgUser') refreshMenuBest();
+  if (id === 'soloStory') renderSaveList($('saveListSolo'), 'solo', 'solo');
+  if (id === 'saveCoop') renderSaveList($('saveListCoop'), 'coop', 'coopSel');
+  if (id === 'saves') { renderSaveList($('saveListU1'), 'solo', 'user'); renderSaveList($('saveListU2'), 'coop', 'user'); }
+}
 function refreshMenuBest() {
   each('[data-best]', function (e) { try { e.textContent = parseInt(localStorage.getItem(DF[e.dataset.best].bk) || '0', 10) || 0; } catch (x) {} });
   try { [['mbN', 'normal'], ['mbH', 'hardcore'], ['mbX', 'extreme'], ['mbP', 'nightmare']].forEach(function (p) { $(p[0]).textContent = parseInt(localStorage.getItem(DF[p[1]].bk) || '0', 10) || 0; }); } catch (e) {}
@@ -4182,15 +4571,33 @@ function setMax(n) {
 function genCode() { var c = ''; for (var i = 0; i < 5; i++) c += CODECH[Math.floor(Math.random() * CODECH.length)]; return c; }
 function openCoop() { showMenuScreen('coop'); fetchRooms(); }
 function openCreate() {
-  pendCode = genCode(); $('crCode').textContent = pendCode; $('crMsg').textContent = '';
+  CRSEL = null; pendCode = genCode(); $('crCode').textContent = pendCode; $('crMsg').textContent = '';
   setDiff(DIFF); setMode(MODE); setVis(pubSel); setMax(maxSel); showMenuScreen('create');
 }
 each('[data-d]', function (b) { b.addEventListener('click', function () { setDiff(b.dataset.d); }); });
 each('[data-v]', function (b) { b.addEventListener('click', function () { setVis(b.dataset.v === 'pub'); }); });
 $('crMinus').addEventListener('click', function () { setMax(maxSel - 1); });
 $('crPlus').addEventListener('click', function () { setMax(maxSel + 1); });
-$('btnSolo').addEventListener('click', function () { setDiff(DIFF); setMode(MODE); showMenuScreen('solo'); });
-$('btnSoloBack').addEventListener('click', function () { showMenuScreen('menu'); });
+$('btnSolo').addEventListener('click', function () { showMenuScreen('soloPick'); });
+$('btnPickBack').addEventListener('click', function () { showMenuScreen('menu'); });
+$('pkEndless').addEventListener('click', function () { setMode('endless'); setDiff(DIFF); showMenuScreen('solo'); });
+$('pkStory').addEventListener('click', function () { setMode('story'); showMenuScreen('soloStory'); });
+$('btnStoryBack').addEventListener('click', function () { showMenuScreen('soloPick'); });
+$('btnStoryNew').addEventListener('click', function () { setMode('story'); setDiff(DIFF); showMenuScreen('solo'); });
+$('btnSoloBack').addEventListener('click', function () { showMenuScreen(MODE === 'story' ? 'soloStory' : 'soloPick'); });
+$('btnSavesU').addEventListener('click', function () { showMenuScreen('saves'); });
+$('btnSavesBack').addEventListener('click', function () { showMenuScreen('cfgUser'); });
+$('btnSaveCoopBack').addEventListener('click', function () { showMenuScreen('create'); });
+$('btnCrLoad').addEventListener('click', function () { showMenuScreen('saveCoop'); });
+$('btnCrUnload').addEventListener('click', function () { CRSEL = null; updateCreateSaveUi(); });
+$('saveCr').addEventListener('change', updateCreateSaveUi);
+$('siBack').addEventListener('click', function () { showMenuScreen(SIBACK); });
+$('siName').addEventListener('input', function () { if (SIID) updSave(SIID, function (e) { e.name = $('siName').value.trim().slice(0, 24) || 'Partida'; }); });
+$('siAuto').addEventListener('change', function () { if (SIID) updSave(SIID, function (e) { e.auto = $('siAuto').checked; }); });
+$('siDel').addEventListener('click', function () {
+  var e = SIID ? saveById(SIID) : null; if (!e) return;
+  askConfirm('Eliminar partida', '¿Eliminar "' + e.name + '"? Esta acción no se puede deshacer.', 'Eliminar', function () { deleteSave(SIID); SIID = null; showMenuScreen(SIBACK); });
+});
 $('btnCoop').addEventListener('click', openCoop);
 $('btnCoopBack').addEventListener('click', function () { showMenuScreen('menu'); });
 $('btnCreate').addEventListener('click', openCreate);
@@ -4796,9 +5203,9 @@ var ACH_LIST = [];   // st: estrella del menú que entrega · e = Endless (amari
   A('upall', 'Mejoras y tienda', 'special', '💪', 'Super Humano', 'Compra todas Las Mejoras');
   A('up2all', 'Mejoras y tienda', 'epic', '🛡️', 'Imbatible', 'Compra todas las Mejoras Dobles');
   A('nobuy', 'Mejoras y tienda', 'special', '🚫', 'Es todo lo que tiene?', 'No Puedes comprar nada', { sp: 1 });   // se logra cuando la tienda y las máquinas ya no tienen nada para venderte
-  [[200, 'common', 'Tengo Hambre...', '🥪'], [200, 'common', 'Salario No Mínimo', '💵'], [1500, 'common', 'Mundo Laboral', '💼'], [15000, 'common', 'Para el Alquiler?', '🏠'],
-    [50000, 'special', 'Yo Invito', '🍻'], [100000, 'epic', 'Me pueden dar un Helicóptero?', '🚁'], [1000000, 'legend', 'Ricachón', '💎']].forEach(function (x, i) {
-    A('c' + i, 'Dinero', x[1], x[3], x[2], 'Obtén $' + x[0].toLocaleString('es-AR'), { cash: x[0] });
+  [[200, 'common', 'Tengo Hambre...', '🥪', 0], [1500, 'common', 'Mundo Laboral', '💼', 2], [15000, 'common', 'Para el Alquiler?', '🏠', 3],
+    [50000, 'special', 'Yo Invito', '🍻', 4], [100000, 'epic', 'Me pueden dar un Helicóptero?', '🚁', 5], [1000000, 'legend', 'Ricachón', '💎', 6]].forEach(function (x) {   // ids fijos para no romper el progreso guardado
+    A('c' + x[4], 'Dinero', x[1], x[3], x[2], 'Obtén $' + x[0].toLocaleString('es-AR'), { cash: x[0] });
   });
   A('bonus3', 'Hazañas', 'special', '🎉', 'Muy Satisfactorio', 'Usa 3 Bonus a la Vez');
   A('insta', 'Hazañas', 'special', '☢️', "\"Kill 'em all, let God sort 'em out.\"", 'Usa el Bonus "Insta-Kill"', { sp: 1 });
@@ -4807,6 +5214,7 @@ var ACH_LIST = [];   // st: estrella del menú que entrega · e = Endless (amari
   A('head1', 'Hazañas', 'special', '🎯', 'Headshot!', 'Tranquilo, ellos no te lo harán', { sp: 1 });
   A('free', 'Hazañas', 'epic', '👊', '"Freeman"', 'Eres Imparable');
   A('still', 'Hazañas', 'common', '💓', '"Still Alive"', 'Se reanimado', { sp: 1 });
+  A('spec1', 'Hazañas', 'common', '🧟', 'Y este quien es?', 'Mata un Zombi Especial');
   A('sj', 'Hazañas', 'common', '🔤', '"Secret Phrase"', 'Escribir la Frase...');
   A('kaboom', 'Hazañas', 'special', '💥', 'Kaboom!', 'Mata 8 Zombis con una granada', { sp: 1 });
   A('esc10', 'Hazañas', 'legend', '🏅', 'Escape Deportivo', 'Escapa 10 Veces', { sp: 1 });
@@ -4995,11 +5403,19 @@ var ACH = { got: {}, st: { kills: 0, secs: 0, story: 0, heard: {} }, gun: false,
   $('btnCtlTog').addEventListener('click', function () { var o = $('mmCtl').classList.toggle('open'); this.setAttribute('aria-expanded', o); this.textContent = o ? 'Ocultar Controles' : 'Ver Controles'; });
   $('btnAch').addEventListener('click', open);
   $('btnAchO').addEventListener('click', open);
+  var rrb = $('btnRecReset'), rrt = 0;
+  rrb.addEventListener('click', function () {
+    askConfirm('Borrar récords', '¿Borrar los récords de todas las dificultades? Esta acción no se puede deshacer.', 'Borrar', function () {
+      try { for (var d in DF) localStorage.removeItem(DF[d].bk); } catch (e) {}
+      refreshMenuBest(); rrb.textContent = 'Récords borrados'; setTimeout(function () { rrb.textContent = 'Borrar récords'; }, 1800);
+    });
+  });
   $('btnAchBack').addEventListener('click', function () { showMenuScreen('menu'); });
   var rb = $('btnAchReset'), rt = 0;
   rb.addEventListener('click', function () {
-    if (!rt) { rb.textContent = '¿Seguro? Tocá de nuevo'; rt = setTimeout(function () { rt = 0; rb.textContent = 'Reiniciar logros'; }, 4000); return; }
-    clearTimeout(rt); rt = 0; ACH.got = {}; ACH.st = { kills: 0, secs: 0, story: 0, heard: {} }; ACH.earn = 0; save(); stSave(); stars(); rb.textContent = 'Logros reiniciados'; setTimeout(function () { rb.textContent = 'Reiniciar logros'; }, 1800);
+    askConfirm('Reiniciar logros', '¿Reiniciar todos los logros y su progreso? Esta acción no se puede deshacer.', 'Reiniciar', function () {
+      ACH.got = {}; ACH.st = { kills: 0, secs: 0, story: 0, heard: {} }; ACH.earn = 0; save(); stSave(); stars(); rb.textContent = 'Logros reiniciados'; setTimeout(function () { rb.textContent = 'Reiniciar logros'; }, 1800);
+    });
   });
 })();
 
@@ -5131,7 +5547,8 @@ function renderFrame() {
 }
 
 /* ---------- modos: Endless e Historia ---------- */
-var MODE = 'endless', FUEL = 0, FUEL_NEED = 7, FUEL_T = 20, fuelProg = {}, fuelSend = 0, fuelPct = 100, CINE = null;
+var MODE = 'endless', FUEL = 0, FUEL_NEED = 7, FUEL_T = 15, fuelProg = {}, fuelSend = 0, fuelPct = 100, CINE = null;
+var PKLIFE = { normal: 25, hardcore: 20, extreme: 16, nightmare: 5 };   // segundos que duran los bonus en el suelo (más tiempo en dificultades bajas)
 var FPR = { normal: 13000, hardcore: 30000, extreme: 45500, nightmare: 68500 };   // precio del bidón por dificultad (30.000$ en Difícil), balanceado como las máquinas
 var HG = { x: -38, z: -36 }, HGRY = Math.atan2(38, 36), INLET = [0, 0], hgGrp = null, hgObs = [], heli = null;
 var MODETXT = {
@@ -5293,7 +5710,7 @@ function buildStory() {
   INLET = hlw(1.2, 1.2);
 }
 
-// carga del helicóptero: 20 s por bidón; al llegar a 7, cinemática y fin
+// carga del helicóptero: 15 s por bidón; al llegar a 7, cinemática y fin
 function fuelUse(dt) {
   if (NET.role !== 'client') for (var k in fuelProg) if (clock - fuelProg[k].last > 0.6) delete fuelProg[k];
   if (!nearInlet()) { P.fuelT = 0; return ''; }
@@ -5340,6 +5757,7 @@ function updateCine(dt) {
 }
 function endStory() {
   mode = 'win'; achStory();
+  if (NET.role !== 'client' && G.slot && G.slot.id) deleteSave(G.slot.id);   // historia completada: se borra su guardado
   var alive = P.dead ? 0 : 1, total = 1; NET.eachRemote(function (r) { total++; if (!r.dead) alive++; });
   var sec = Math.floor(G.time), mm = Math.floor(sec / 60), ss = sec % 60;
   $('wTime').textContent = mm + ':' + (ss < 10 ? '0' : '') + ss;
@@ -5352,7 +5770,7 @@ function endStory() {
 $('btnWinMenu').addEventListener('click', netLeave);
 
 function applyModeUi() {
-  var st = MODE === 'story';
+  var st = MODE === 'story'; storyFields();
   $('tagGame').querySelector('.lbl').textContent = st ? 'Combustible' : 'Partida';
   $('hBest').parentNode.hidden = st;
 }
