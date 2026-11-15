@@ -1121,6 +1121,20 @@ body:not(.gui-old) #saves .memo{width:min(100%,1000px)!important}
 (function () {
 'use strict';
 
+(function () {
+'use strict';
+
+// --- INTERCEPTOR DE ERRORES GLOBALES ---
+window.onerror = function (msg, url, line, col, error) {
+  console.error("Error capturado:", msg, "en línea", line, "columna", col);
+  // Si usas Eruda (ya integrado arriba), esto se mostrará en su consola flotante
+  return false;
+};
+
+window.addEventListener('unhandledrejection', function (event) {
+  console.error("Promesa rechazada sin capturar:", event.reason);
+});r
+
 /* ---------- utilidades ---------- */
 var TAU = Math.PI * 2;
 function rand(a, b) { return a + Math.random() * (b - a); }
@@ -1178,6 +1192,34 @@ scene.fog = new THREE.FogExp2(FOGC, CFG.fogNear ? FOG_NEAR : FOG_FAR);
 var camera = new THREE.PerspectiveCamera(72, 1, 0.05, 170);
 camera.rotation.order = 'YXZ';
 scene.add(camera);
+
+var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, powerPreference: 'high-performance' });
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap;
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+
+// --- CAPTURA DE PÉRDIDA DE CONTEXTO WEBGL ---
+canvas.addEventListener('webglcontextlost', function (event) {
+    event.preventDefault();
+    console.warn("¡Contexto WebGL perdido (caída de tarjeta gráfica / GPU)!");
+    
+    // Pausa el juego automáticamente para evitar bucles o errores fatales
+    if (typeof pauseGame === 'function') pauseGame();
+    
+    // Muestra un aviso visual en el banner o consola
+    if (typeof showBanner === 'function') {
+        showBanner('¡Error de GPU!', 'La tarjeta gráfica se ha detenido. Recargando...');
+    }
+    
+    // Opcional: Recargar la página tras unos segundos para intentar recuperar el contexto
+    setTimeout(function() {
+        window.location.reload();
+    }, 3000);
+}, false);
+
+canvas.addEventListener('webglcontextrestored', function (event) {
+    console.log("Contexto WebGL restaurado exitosamente.");
+    window.location.reload();
+}, false);
 
 function resize() {
   var w = Math.max(1, stage.clientWidth), h = Math.max(1, stage.clientHeight);
